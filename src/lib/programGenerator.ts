@@ -365,6 +365,7 @@ export class ProgramGenerator {
         // 4. Build schedule day by day
         const schedule: WorkoutDay[] = [];
         const usedExerciseNamesThisWeek = new Set<string>(); // Track to avoid repeating same exercise too soon if possible
+        const addedNames = new Set<string>(); // Track names added within a single day selection call
 
         for (let i = 0; i < days; i++) {
             const dayType = dayTypes[i];
@@ -382,10 +383,14 @@ export class ProgramGenerator {
             const filteredCompounds = availableCompound.filter(ex => !usedExerciseNamesThisWeek.has(ex.name));
             const filteredIsolations = availableIsolation.filter(ex => !usedExerciseNamesThisWeek.has(ex.name));
 
+            // Determine target compound count for the day
+            const targetCompoundCount = dayType === 'full_body' ? Math.max(1, Math.min(3, Math.floor(maxExercises * 0.5)))
+                                     : Math.max(1, Math.floor(maxExercises * (goal === 'force' || goal === 'powerbuilding' ? 0.6 : 0.5)));
+
             let selectedExercises = selectExercisesForDay(
                 dayType,
-                filteredCompounds.length > targetCompoundCount / 2 ? filteredCompounds : availableCompound, // Use filtered if enough options remain
-                filteredIsolations.length > (maxExercises - targetCompoundCount) / 2 ? filteredIsolations : availableIsolation,
+                filteredCompounds.length >= targetCompoundCount ? filteredCompounds : availableCompound, // Use filtered if enough options remain, else use all available
+                filteredIsolations.length >= (maxExercises - targetCompoundCount) / 2 ? filteredIsolations : availableIsolation, // Similar logic for isolation
                 maxExercises,
                 goal,
                 level
@@ -394,16 +399,24 @@ export class ProgramGenerator {
             // Add selected exercises to the tracking set for the week
             selectedExercises.forEach(ex => usedExerciseNamesThisWeek.add(ex.name));
             // Basic reset for next week simulation if days > cycleLength (simplistic)
-            if ((i + 1) % cycleLength === 0) usedExerciseNamesThisWeek.clear();
+            // Reset if we completed a full cycle (e.g., PPL, UL, or FB A/B)
+            if ((i + 1) % cycleLength === 0 && days > cycleLength) {
+                 console.log(`Resetting used exercises after day ${i+1} (cycle length ${cycleLength})`);
+                 usedExerciseNamesThisWeek.clear();
+            }
 
 
             // Add Core work suggestion if not explicitly included often
-            const hasCoreWork = selectedExercises.some(ex => ex.name.toLowerCase().includes('plank') || ex.name.toLowerCase().includes('crunch') || ex.name.toLowerCase().includes('core'));
+            const hasCoreWork = selectedExercises.some(ex => ex.name.toLowerCase().includes('plank') || ex.name.toLowerCase().includes('crunch') || ex.name.toLowerCase().includes('core') || ex.name.toLowerCase().includes('windmill'));
             if (!hasCoreWork && level !== 'debutant' && selectedExercises.length < maxExercises) {
                  const coreEx = availableIsolation.find(ex => ex.target.includes('core'));
-                 if (coreEx && !addedNames.has(coreEx.name)) {
+                 // Check against addedNames for the current day as well
+                 if (coreEx && !addedNames.has(coreEx.name) && !selectedExercises.some(e => e.name === coreEx.name)) {
                      const coreParams = getSetsRepsRpe(goal, level, 'isolation');
-                     selectedExercises.push({ name: coreEx.name, sets: Math.min(3, typeof coreParams.sets === 'number' ? coreParams.sets : 2), reps: "10-15", rpe: 8, rest: "30-45s" });
+                     // Reduce sets/reps slightly for core added at the end
+                     selectedExercises.push({ name: coreEx.name, sets: Math.min(2, typeof coreParams.sets === 'number' ? coreParams.sets : 2), reps: "10-15", rpe: 8, rest: "30-45s" });
+                     addedNames.add(coreEx.name); // Add to day's set
+                     usedExerciseNamesThisWeek.add(coreEx.name); // Add to week's set
                  }
             }
 
@@ -413,6 +426,7 @@ export class ProgramGenerator {
                 title: dayTitle,
                 exercises: selectedExercises,
             });
+            addedNames.clear(); // Clear daily added names for the next day
         }
 
         // 5. Finalize Program Details
