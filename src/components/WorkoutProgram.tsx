@@ -68,6 +68,7 @@ const WorkoutProgram: React.FC<WorkoutProgramProps> = ({ program, onReset, formD
   };
 
   const handleShare = async () => {
+    console.log("Attempting to share..."); // Added console log for debugging
     const shareData = {
       title: 'Smoothie Banane Fraise - Générateur de Programme Muscu',
       text: 'Viens générer ton programme de musculation personnalisé gratuitement ! 💪🍌🍓',
@@ -76,9 +77,11 @@ const WorkoutProgram: React.FC<WorkoutProgramProps> = ({ program, onReset, formD
 
     try {
       if (navigator.share) {
+        console.log("Using navigator.share");
         await navigator.share(shareData);
         showSuccess('Merci pour le partage !');
       } else {
+        console.log("navigator.share not available, falling back to clipboard");
         // Fallback: Copy URL to clipboard
         await navigator.clipboard.writeText(shareData.url);
         showSuccess('Lien copié dans le presse-papiers ! Partage-le à tes amis.');
