@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
+  Select, // Keep Select import for other potential uses if needed, or remove if not
   SelectContent,
   SelectItem,
   SelectTrigger,
@@ -23,13 +23,21 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { showError, showSuccess } from '@/utils/toast';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils'; // Import cn utility
+import { useToast } from "@/components/ui/use-toast"; // Import useToast from shadcn/ui toast
 import { supabase } from '@/integrations/supabase/client'; // Import Supabase client
 
 // Define the schema for form validation using Zod
 const formSchema = z.object({
-  email: z.string().email({ message: "Adresse email invalide." }),
+  // Modified email validation to accept 'b' or a standard email format
+  email: z.union([z.literal('b'), z.string().email({ message: "Adresse email invalide." })], {
+    errorMap: (issue, ctx) => {
+      if (issue.code === z.ZodIssueCode.invalid_union) {
+        return { message: "Adresse email invalide." };
+      }
+      return { message: ctx.defaultError };
+    }
+  }),
   goal: z.enum(["prise_masse", "seche", "force", "powerbuilding"], { required_error: "Objectif requis." }),
   level: z.enum(["debutant", "intermediaire", "avance"], { required_error: "Niveau requis." }),
   split: z.enum(["full_body", "half_body", "ppl", "autre"], { required_error: "Split requis." }),
@@ -39,8 +47,7 @@ const formSchema = z.object({
     barre_halteres: z.boolean().default(false),
     machines_guidees: z.boolean().default(false),
     poids_corp: z.boolean().default(false),
-    elastiques: z.boolean().default(false),
-    kettlebells: z.boolean().default(false),
+    // Removed elastiques and kettlebells from schema
   }).refine(data => Object.values(data).some(Boolean), {
     message: "Sélectionnez au moins un type d'équipement.",
     path: ["equipment"], // Attach error to the equipment field group
@@ -65,15 +72,32 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
         barre_halteres: false,
         machines_guidees: false,
         poids_corp: true, // Default to bodyweight
-        elastiques: false,
-        kettlebells: false,
+        // Removed elastiques and kettlebells from defaultValues
       },
+      // Set default values for goal and level if needed, matching the enum
+      goal: "prise_masse", // Example default
+      level: "intermediaire", // Example default
     },
   });
 
-  // Make onSubmit async to handle Supabase call
+  // Call useToast hook at the top level of the component
+  const { toast } = useToast();
+
   async function onSubmit(values: FormData) {
     console.log("Form submitted:", values);
+
+    // --- Added bypass logic for email 'b' ---
+    if (values.email === 'b') {
+        console.log("Bypassing Supabase insertion for test email 'b'.");
+        toast({
+            title: "Formulaire soumis !",
+            description: "Génération du programme...",
+        });
+        onGenerate(values);
+        return; // Exit the function early
+    }
+    // --- End bypass logic ---
+
 
     // Disable button during submission (already handled by isLoading prop)
 
@@ -89,6 +113,11 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
           console.warn('Email already exists:', values.email);
           // Decide how to handle: show success anyway, or a specific message?
           // Let's proceed to generation but maybe show a different toast later
+           toast({
+                title: "Email déjà enregistré",
+                description: "Cet email est déjà dans notre liste. Génération du programme...",
+                variant: "default", // Or 'secondary' or similar
+            });
         } else {
           // Throw other errors to be caught by the catch block
           throw error;
@@ -96,15 +125,22 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
       } else {
         console.log('Email successfully added to Supabase:', values.email);
         // Optionally show a success toast for email submission here if needed
+         toast({
+            title: "Email enregistré !",
+            description: "Votre email a été ajouté. Génération du programme...",
+        });
       }
 
       // Proceed with program generation regardless of whether email was new or duplicate
-      showSuccess("Formulaire soumis ! Génération du programme...");
       onGenerate(values);
 
     } catch (error) {
       console.error('Error inserting email into Supabase:', error);
-      showError("Erreur lors de l'enregistrement de l'email. Veuillez réessayer.");
+      toast({
+          title: "Erreur d'enregistrement",
+          description: "Erreur lors de l'enregistrement de l'email. Veuillez réessayer.",
+          variant: "destructive",
+      });
       // Do not proceed with generation if there was a critical error saving the email
       // Or, you could choose to proceed anyway by calling onGenerate(values) here too,
       // depending on desired behavior. Let's prevent generation on error for now.
@@ -116,32 +152,39 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
     { id: "barre_halteres", label: "Barre & Haltères" },
     { id: "machines_guidees", label: "Machines Guidées" },
     { id: "poids_corp", label: "Poids du Corps" },
-    { id: "elastiques", label: "Élastiques" },
-    { id: "kettlebells", label: "Kettlebells" },
+    // Removed elastiques and kettlebells from equipmentItems
   ] as const;
 
-  // Base animation classes for cascade effect
-  const baseAnimation = "animate-in fade-in zoom-in-95 duration-700 fill-mode-both";
-  const slideAnimation = "slide-in-from-bottom-4";
+  const goalItems = [
+    { value: "prise_masse", label: "Prise de Masse 💪" },
+    { value: "seche", label: "Sèche / Perte de Gras 🔥" },
+    { value: "force", label: "Powerlifting 🏋️" }, // Changed label and added emoji
+    { value: "powerbuilding", label: "Powerbuilding ⚡" }, // Added emoji
+  ] as const;
+
+  const levelItems = [
+    { value: "debutant", label: "Débutant (< 1 an)" },
+    { value: "intermediaire", label: "Intermédiaire (1-3 ans)" },
+    { value: "avance", label: "Avancé (3+ ans)" },
+  ] as const;
+
 
   return (
-    // Card animation
-    <Card className={cn("w-full max-w-2xl mx-auto", baseAnimation)}>
-      {/* Header animation */}
-      <CardHeader className={cn(baseAnimation, "delay-100")}>
+    <Card className="w-full max-w-2xl mx-auto animate-in fade-in duration-500">
+      <CardHeader className="animate-in fade-in delay-100 duration-500">
         <CardTitle className="text-2xl font-bold text-center">Smoothie Banane Fraise 🍌🍓</CardTitle>
         <CardDescription className="text-center">Générez votre programme d'entraînement personnalisé</CardDescription>
       </CardHeader>
-      {/* Content animation */}
-      <CardContent className={cn(baseAnimation, "delay-200")}>
+      <CardContent className="animate-in fade-in delay-200 duration-500">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Email */}
             <FormField
+              key="email-field" // Added key
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem className={cn(baseAnimation, slideAnimation, "delay-300")}>
+                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-300 duration-500">
                   <FormLabel>Votre Email</FormLabel>
                   <FormControl>
                     <Input placeholder="vous@email.com" {...field} />
@@ -154,50 +197,59 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               )}
             />
 
-            {/* Goal */}
+            {/* Goal (Radio Buttons) */}
             <FormField
+              key="goal-field" // Added key
               control={form.control}
               name="goal"
               render={({ field }) => (
-                <FormItem className={cn(baseAnimation, slideAnimation, "delay-[350ms]")}>
+                <FormItem className="space-y-3 animate-in fade-in slide-in-from-bottom-2 delay-[350ms]">
                   <FormLabel>Objectif Principal</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choisissez votre objectif" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="prise_masse">Prise de Masse</SelectItem>
-                      <SelectItem value="seche">Sèche / Perte de Gras</SelectItem>
-                      <SelectItem value="force">Force</SelectItem>
-                      <SelectItem value="powerbuilding">Powerbuilding</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                      {goalItems.map((item) => (
+                        <FormItem key={item.value} className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value={item.value} />
+                          </FormControl>
+                          <FormLabel className="font-normal">{item.label}</FormLabel>
+                        </FormItem>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Level */}
+            {/* Level (Radio Buttons) */}
             <FormField
+              key="level-field" // Added key
               control={form.control}
               name="level"
               render={({ field }) => (
-                <FormItem className={cn(baseAnimation, slideAnimation, "delay-400")}>
+                <FormItem className="space-y-3 animate-in fade-in slide-in-from-bottom-2 delay-400 duration-500">
                   <FormLabel>Niveau d'Expérience</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choisissez votre niveau" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="debutant">Débutant (&lt; 1 an)</SelectItem>
-                      <SelectItem value="intermediaire">Intermédiaire (1-3 ans)</SelectItem>
-                      <SelectItem value="avance">Avancé (3+ ans)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                       {levelItems.map((item) => (
+                        <FormItem key={item.value} className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value={item.value} />
+                          </FormControl>
+                          <FormLabel className="font-normal">{item.label}</FormLabel>
+                        </FormItem>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -205,10 +257,11 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
 
             {/* Split */}
             <FormField
+              key="split-field" // Added key
               control={form.control}
               name="split"
               render={({ field }) => (
-                <FormItem className={cn("space-y-3", baseAnimation, slideAnimation, "delay-[450ms]")}>
+                <FormItem className="space-y-3 animate-in fade-in slide-in-from-bottom-2 delay-[450ms] duration-500">
                   <FormLabel>Type de Split Préféré</FormLabel>
                   <FormControl>
                     <RadioGroup
@@ -216,25 +269,25 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem key="split-full-body" className="flex items-center space-x-3 space-y-0"> {/* Added key */}
                         <FormControl>
                           <RadioGroupItem value="full_body" />
                         </FormControl>
                         <FormLabel className="font-normal">Full Body (Tout le corps)</FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem key="split-half-body" className="flex items-center space-x-3 space-y-0"> {/* Added key */}
                         <FormControl>
                           <RadioGroupItem value="half_body" />
                         </FormControl>
                         <FormLabel className="font-normal">Half Body (Haut / Bas)</FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem key="split-ppl" className="flex items-center space-x-3 space-y-0"> {/* Added key */}
                         <FormControl>
                           <RadioGroupItem value="ppl" />
                         </FormControl>
                         <FormLabel className="font-normal">Push Pull Legs</FormLabel>
                       </FormItem>
-                       <FormItem className="flex items-center space-x-3 space-y-0">
+                       <FormItem key="split-autre" className="flex items-center space-x-3 space-y-0"> {/* Added key */}
                         <FormControl>
                           <RadioGroupItem value="autre" />
                         </FormControl>
@@ -249,10 +302,11 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
 
             {/* Days per week */}
             <FormField
+              key="days-field" // Added key
               control={form.control}
               name="days"
               render={({ field }) => (
-                <FormItem className={cn(baseAnimation, slideAnimation, "delay-500")}>
+                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-500 duration-500">
                   <FormLabel>Jours d'entraînement / semaine</FormLabel>
                   <FormControl>
                     <Input type="number" min="1" max="7" {...field} />
@@ -264,10 +318,11 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
 
             {/* Session duration */}
             <FormField
+              key="duration-field" // Added key
               control={form.control}
               name="duration"
               render={({ field }) => (
-                <FormItem className={cn(baseAnimation, slideAnimation, "delay-[550ms]")}>
+                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-[550ms] duration-500">
                   <FormLabel>Durée max par séance (minutes)</FormLabel>
                   <FormControl>
                     <Input type="number" min="30" max="180" step="15" {...field} />
@@ -279,26 +334,26 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
 
             {/* Equipment */}
             <FormField
+              key="equipment-field-group" // Added key for the group wrapper
               control={form.control}
               name="equipment"
               render={() => (
-                <FormItem className={cn(baseAnimation, slideAnimation, "delay-600")}>
+                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-600 duration-500">
                   <div className="mb-4">
                     <FormLabel className="text-base">Matériel Disponible</FormLabel>
                     <FormDescription>
                       Cochez tout ce que vous avez à disposition.
                     </FormDescription>
                   </div>
-                  {equipmentItems.map((item, index) => (
+                  {equipmentItems.map((item) => (
                     <FormField
-                      key={item.id}
+                      key={item.id} // Key for each individual equipment checkbox FormField
                       control={form.control}
                       name={`equipment.${item.id}`} // Access nested field
                       render={({ field }) => (
                         <FormItem
-                          key={item.id}
-                          // Stagger animation for checkboxes
-                          className={cn("flex flex-row items-start space-x-3 space-y-0 mb-2", baseAnimation, `delay-[${600 + index * 50}ms]`)}
+                          key={item.id} // Key for the FormItem wrapping the checkbox
+                          className="flex flex-row items-start space-x-3 space-y-0 mb-2" // Added margin-bottom
                         >
                           <FormControl>
                             <Checkbox
@@ -323,13 +378,12 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
             <Button
               type="submit"
               className={cn(
-                "w-full",
-                 baseAnimation, slideAnimation, "delay-[750ms]", // Animate button last
+                "w-full animate-in fade-in slide-in-from-bottom-2 delay-[650ms] duration-500",
                 isLoading && "animate-pulse-subtle" // Apply subtle pulse when loading
               )}
               disabled={isLoading}
             >
-              {isLoading ? "Enregistrement..." : "Générer mon Programme"}
+              {isLoading ? "Génération en cours..." : "Générer mon Programme"}
             </Button>
           </form>
         </Form>
