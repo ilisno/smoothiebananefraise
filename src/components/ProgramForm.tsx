@@ -151,7 +151,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
   const equipmentItems = [
     { id: "barre_halteres", label: "Barre & Haltères" },
     { id: "machines_guidees", label: "Machines Guidées" },
-    { id: "poids_corp", label: "Poids du Corps" },
+    { id: "poids_corp", label: "Poids du Corps (dips tractions)" }, // Updated label
     // Removed elastiques and kettlebells from equipmentItems
   ] as const;
 
@@ -165,7 +165,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
   const levelItems = [
     { value: "debutant", label: "Débutant (< 1 an)" },
     { value: "intermediaire", label: "Intermédiaire (1-3 ans)" },
-    { value: "avance", label: "Avancé (3+ ans)" },
+    { value: "avance", label: "Avancé (8+ ans)" }, // Updated label
   ] as const;
 
 
