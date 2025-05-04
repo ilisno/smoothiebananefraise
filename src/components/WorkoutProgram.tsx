@@ -30,25 +30,32 @@ const goalMapPDF: Record<FormData['goal'], string> = {
     powerbuilding: "Powerbuilding"
 };
 
-// Helper function to format rest time from seconds to minutes
+// Helper function to format rest time from seconds string to simplified minutes
 const formatRestTime = (rest: string | undefined): string => {
     if (!rest || rest === 'Comme nécessaire') {
         return 'Comme nécessaire';
     }
-    // Remove 's' and split by '-'
-    const parts = rest.replace('s', '').split('-').map(Number);
 
-    if (parts.length === 1) {
-        const minutes = parts[0] / 60;
-        return minutes >= 1 ? `${minutes} min` : `${parts[0]} sec`; // Keep seconds if less than a minute
-    } else if (parts.length === 2) {
-        const minMinutes = parts[0] / 60;
-        const maxMinutes = parts[1] / 60;
-        // Format based on whether they are whole minutes or need decimals
-        const formatMin = minMinutes % 1 === 0 ? minMinutes.toString() : minMinutes.toFixed(1);
-        const formatMax = maxMinutes % 1 === 0 ? maxMinutes.toString() : maxMinutes.toFixed(1);
-        return `${formatMin}-${formatMax} min`;
+    // Attempt to parse the rest time string (e.g., "60-90s", "120s")
+    const secondsMatch = rest.match(/(\d+)-?(\d*)s?/);
+
+    if (secondsMatch) {
+        const minSeconds = parseInt(secondsMatch[1], 10);
+        const maxSeconds = secondsMatch[2] ? parseInt(secondsMatch[2], 10) : minSeconds;
+        const avgSeconds = (minSeconds + maxSeconds) / 2;
+
+        // Map average seconds to simplified minute values
+        if (avgSeconds >= 120) { // 2 minutes or more
+            return '3-5 min'; // Use a range for heavier lifts
+        } else if (avgSeconds >= 75) { // Between 75s and 120s
+            return '2-3 min'; // Use a range for compounds/hypertrophy
+        } else if (avgSeconds >= 45) { // Between 45s and 75s
+             return '1-2 min'; // Use a range for isolation/shorter rest
+        } else { // Less than 45s
+             return `${Math.round(avgSeconds)} sec`; // Keep seconds if very short
+        }
     }
+
     return rest; // Return original if format is unexpected
 };
 
@@ -113,7 +120,7 @@ const WorkoutProgram: React.FC<WorkoutProgramProps> = ({ program, onReset, formD
              const restCells = document.querySelectorAll('#program-content table td:nth-child(5)'); // Select the 5th cell (Rest)
              restCells.forEach(cell => {
                  const originalText = cell.textContent || '';
-                 cell.textContent = formatRestTime(originalText);
+                 cell.textContent = formatRestTime(originalText); // Use the simplified format for PDF too
              });
         }
     })
