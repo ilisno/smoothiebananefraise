@@ -84,13 +84,20 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
     { id: "kettlebells", label: "Kettlebells" },
   ] as const;
 
+  // Base animation classes for cascade effect
+  const baseAnimation = "animate-in fade-in zoom-in-95 duration-700 fill-mode-both";
+  const slideAnimation = "slide-in-from-bottom-4";
+
   return (
-    <Card className="w-full max-w-2xl mx-auto animate-in fade-in duration-500">
-      <CardHeader className="animate-in fade-in delay-100 duration-500">
+    // Card animation
+    <Card className={cn("w-full max-w-2xl mx-auto", baseAnimation)}>
+      {/* Header animation */}
+      <CardHeader className={cn(baseAnimation, "delay-100")}>
         <CardTitle className="text-2xl font-bold text-center">Smoothie Banane Fraise 🍌🍓</CardTitle>
         <CardDescription className="text-center">Générez votre programme d'entraînement personnalisé</CardDescription>
       </CardHeader>
-      <CardContent className="animate-in fade-in delay-200 duration-500">
+      {/* Content animation */}
+      <CardContent className={cn(baseAnimation, "delay-200")}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Email */}
@@ -98,7 +105,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-300 duration-500">
+                <FormItem className={cn(baseAnimation, slideAnimation, "delay-300")}>
                   <FormLabel>Votre Email</FormLabel>
                   <FormControl>
                     <Input placeholder="vous@email.com" {...field} />
@@ -116,7 +123,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="goal"
               render={({ field }) => (
-                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-350 duration-500">
+                <FormItem className={cn(baseAnimation, slideAnimation, "delay-[350ms]")}>
                   <FormLabel>Objectif Principal</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
@@ -141,7 +148,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="level"
               render={({ field }) => (
-                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-400 duration-500">
+                <FormItem className={cn(baseAnimation, slideAnimation, "delay-400")}>
                   <FormLabel>Niveau d'Expérience</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
@@ -165,7 +172,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="split"
               render={({ field }) => (
-                <FormItem className="space-y-3 animate-in fade-in slide-in-from-bottom-2 delay-450 duration-500">
+                <FormItem className={cn("space-y-3", baseAnimation, slideAnimation, "delay-[450ms]")}>
                   <FormLabel>Type de Split Préféré</FormLabel>
                   <FormControl>
                     <RadioGroup
@@ -209,7 +216,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="days"
               render={({ field }) => (
-                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-500 duration-500">
+                <FormItem className={cn(baseAnimation, slideAnimation, "delay-500")}>
                   <FormLabel>Jours d'entraînement / semaine</FormLabel>
                   <FormControl>
                     <Input type="number" min="1" max="7" {...field} />
@@ -224,7 +231,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="duration"
               render={({ field }) => (
-                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-550 duration-500">
+                <FormItem className={cn(baseAnimation, slideAnimation, "delay-[550ms]")}>
                   <FormLabel>Durée max par séance (minutes)</FormLabel>
                   <FormControl>
                     <Input type="number" min="30" max="180" step="15" {...field} />
@@ -239,14 +246,14 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="equipment"
               render={() => (
-                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-600 duration-500">
+                <FormItem className={cn(baseAnimation, slideAnimation, "delay-600")}>
                   <div className="mb-4">
                     <FormLabel className="text-base">Matériel Disponible</FormLabel>
                     <FormDescription>
                       Cochez tout ce que vous avez à disposition.
                     </FormDescription>
                   </div>
-                  {equipmentItems.map((item) => (
+                  {equipmentItems.map((item, index) => (
                     <FormField
                       key={item.id}
                       control={form.control}
@@ -254,7 +261,8 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
                       render={({ field }) => (
                         <FormItem
                           key={item.id}
-                          className="flex flex-row items-start space-x-3 space-y-0 mb-2" // Added margin-bottom
+                          // Stagger animation for checkboxes
+                          className={cn("flex flex-row items-start space-x-3 space-y-0 mb-2", baseAnimation, `delay-[${600 + index * 50}ms]`)}
                         >
                           <FormControl>
                             <Checkbox
@@ -279,7 +287,8 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
             <Button
               type="submit"
               className={cn(
-                "w-full animate-in fade-in slide-in-from-bottom-2 delay-650 duration-500",
+                "w-full",
+                 baseAnimation, slideAnimation, "delay-[750ms]", // Animate button last
                 isLoading && "animate-pulse-subtle" // Apply subtle pulse when loading
               )}
               disabled={isLoading}
