@@ -2,28 +2,76 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Download, RotateCcw, Share2 } from 'lucide-react'; // Import Share2 icon
+import { Download, RotateCcw } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { Program, WorkoutDay, Exercise } from '@/pages/Index'; // Import types from Index
-import { showSuccess, showError } from '@/utils/toast';
+import { Program, WorkoutDay, Exercise } from '@/lib/programGenerator';
+import { useToast } from "@/components/ui/use-toast";
+import { FormData } from '@/components/ProgramForm';
 
 type WorkoutProgramProps = {
   program: Program;
   onReset: () => void;
-  formData: any; // Receive form data if needed for display or PDF
+  formData: FormData;
 };
 
+// Level map for PDF display
+const levelMapPDF: Record<string, string> = {
+    debutant: "Débutant",
+    intermediaire: "Intermédiaire",
+    avance: "Avancé"
+};
+
+// Goal map for PDF display
+const goalMapPDF: Record<FormData['goal'], string> = {
+    prise_masse: "Prise de Masse",
+    seche: "Sèche / Perte de Gras",
+    force: "Powerlifting",
+    powerbuilding: "Powerbuilding"
+};
+
+// Helper function to format rest time from seconds to minutes
+const formatRestTime = (rest: string | undefined): string => {
+    if (!rest || rest === 'Comme nécessaire') {
+        return 'Comme nécessaire';
+    }
+    // Remove 's' and split by '-'
+    const parts = rest.replace('s', '').split('-').map(Number);
+
+    if (parts.length === 1) {
+        const minutes = parts[0] / 60;
+        return minutes >= 1 ? `${minutes} min` : `${parts[0]} sec`; // Keep seconds if less than a minute
+    } else if (parts.length === 2) {
+        const minMinutes = parts[0] / 60;
+        const maxMinutes = parts[1] / 60;
+        // Format based on whether they are whole minutes or need decimals
+        const formatMin = minMinutes % 1 === 0 ? minMinutes.toString() : minMinutes.toFixed(1);
+        const formatMax = maxMinutes % 1 === 0 ? maxMinutes.toString() : maxMinutes.toFixed(1);
+        return `${formatMin}-${formatMax} min`;
+    }
+    return rest; // Return original if format is unexpected
+};
+
+
 const WorkoutProgram: React.FC<WorkoutProgramProps> = ({ program, onReset, formData }) => {
+
+  const { toast } = useToast();
 
   const exportToPDF = () => {
     const input = document.getElementById('program-content');
     if (!input) {
-        showError("Erreur: Impossible de trouver le contenu du programme pour l'export.");
+        toast({
+            title: "Erreur PDF",
+            description: "Impossible de trouver le contenu du programme pour l'export.",
+            variant: "destructive",
+        });
         return;
     }
 
-    showSuccess("Génération du PDF en cours...");
+    toast({
+        title: "Génération PDF",
+        description: "Génération du PDF en cours...",
+    });
 
     const originalStyles = {
         boxShadow: input.style.boxShadow,
@@ -41,6 +89,32 @@ const WorkoutProgram: React.FC<WorkoutProgramProps> = ({ program, onReset, formD
             pdfOnlyElements.forEach(el => (el as HTMLElement).style.display = 'block');
             const screenOnlyElements = document.querySelectorAll('.screen-only');
             screenOnlyElements.forEach(el => (el as HTMLElement).style.display = 'none');
+
+            // Update PDF header/footer with correct mapped values
+            const pdfTitleElement = document.querySelector('.pdf-only h2');
+            if (pdfTitleElement && formData) {
+                 pdfTitleElement.textContent = `Programme ${goalMapPDF[formData.goal]} - ${levelMapPDF[formData.level]}`;
+            }
+             const pdfDescriptionElement = document.querySelector('.pdf-only p.text-sm');
+             if (pdfDescriptionElement && formData) {
+                 const splitMapPDF: Record<string, string> = {
+                     full_body: "Full Body",
+                     half_body: "Half Body (Haut/Bas)",
+                     ppl: "Push Pull Legs",
+                     autre: "Adapté"
+                 };
+                 const effectiveSplitMatch = program.description.match(/Format (.*) sur/);
+                 const effectiveSplitPDF = effectiveSplitMatch ? effectiveSplitMatch[1] : splitMapPDF[formData.split] || 'Inconnu';
+
+                 pdfDescriptionElement.textContent = `Format ${effectiveSplitPDF} sur ${formData.days} jours. Objectif: ${goalMapPDF[formData.goal]}. Durée max: ${formData.duration} min.`;
+             }
+
+             // Update rest times in the cloned document for PDF
+             const restCells = document.querySelectorAll('#program-content table td:nth-child(5)'); // Select the 5th cell (Rest)
+             restCells.forEach(cell => {
+                 const originalText = cell.textContent || '';
+                 cell.textContent = formatRestTime(originalText);
+             });
         }
     })
     .then((canvas) => {
@@ -55,47 +129,23 @@ const WorkoutProgram: React.FC<WorkoutProgramProps> = ({ program, onReset, formD
       input.style.boxShadow = originalStyles.boxShadow;
       input.style.padding = originalStyles.padding;
 
-      const filename = `Programme_${formData?.goal || 'perso'}_${formData?.level || 'standard'}.pdf`.replace(/[^a-z0-9_.-]/gi, '_').toLowerCase();
+      const filename = `Programme_${formData?.goal || 'perso'}_${levelMapPDF[formData?.level || 'debutant']}.pdf`.replace(/[^a-z0-9_.-]/gi, '_').toLowerCase();
       pdf.save(filename);
-      showSuccess("PDF généré avec succès !");
+      toast({
+          title: "PDF Généré",
+          description: "Le PDF a été généré avec succès !",
+      });
     })
     .catch(err => {
-        console.error("Erreur lors de la génération du PDF:", err);
-        showError("Erreur lors de la génération du PDF.");
+        console.error("erreur lors de la génération du PDF:", err);
         input.style.boxShadow = originalStyles.boxShadow;
         input.style.padding = originalStyles.padding;
+        toast({
+            title: "Erreur PDF",
+            description: "Erreur lors de la génération du PDF.",
+            variant: "destructive",
+        });
     });
-  };
-
-  const handleShare = async () => {
-    console.log("Attempting to share..."); // Added console log for debugging
-    const shareData = {
-      title: 'Smoothie Banane Fraise - Générateur de Programme Muscu',
-      text: 'Viens générer ton programme de musculation personnalisé gratuitement ! 💪🍌🍓',
-      url: window.location.href // Share the current page URL
-    };
-
-    try {
-      if (navigator.share) {
-        console.log("Using navigator.share");
-        await navigator.share(shareData);
-        showSuccess('Merci pour le partage !');
-      } else {
-        console.log("navigator.share not available, falling back to clipboard");
-        // Fallback: Copy URL to clipboard
-        await navigator.clipboard.writeText(shareData.url);
-        showSuccess('Lien copié dans le presse-papiers ! Partage-le à tes amis.');
-      }
-    } catch (err) {
-      // Handle errors (e.g., user cancelled share)
-      // Don't show error if it's just AbortError (user cancellation)
-      if (err instanceof Error && err.name !== 'AbortError') {
-          console.error('Erreur de partage:', err);
-          showError('Le partage a échoué. Réessaie ou copie le lien manuellement.');
-      } else {
-          console.log('Partage annulé par l\'utilisateur ou non supporté.');
-      }
-    }
   };
 
 
@@ -106,15 +156,12 @@ const WorkoutProgram: React.FC<WorkoutProgramProps> = ({ program, onReset, formD
                 <CardTitle className="text-2xl font-bold">Votre Programme Personnalisé</CardTitle>
                 <CardDescription>{program.description}</CardDescription>
             </div>
-            <div className="flex flex-wrap gap-2"> {/* Use gap for spacing and flex-wrap */}
+            <div className="flex flex-wrap gap-2">
                  <Button variant="outline" onClick={onReset}>
                     <RotateCcw className="mr-2 h-4 w-4" /> Nouveau Programme
                 </Button>
                 <Button onClick={exportToPDF}>
                     <Download className="mr-2 h-4 w-4" /> Exporter en PDF
-                </Button>
-                 <Button variant="secondary" onClick={handleShare}> {/* Added Share Button */}
-                    <Share2 className="mr-2 h-4 w-4" /> Partager
                 </Button>
             </div>
         </CardHeader>
@@ -122,8 +169,9 @@ const WorkoutProgram: React.FC<WorkoutProgramProps> = ({ program, onReset, formD
          {/* PDF Header - Hidden on screen */}
          <div className="hidden pdf-only mb-6">
              <h1 className="text-3xl font-bold mb-2">Smoothie Banane Fraise 🍌🍓</h1>
-             <h2 className="text-xl font-semibold mb-1">{program.title}</h2>
-             <p className="text-sm text-gray-600 mb-4">{program.description}</p>
+             {/* Title and Description will be updated by html2canvas onclone */}
+             <h2 className="text-xl font-semibold mb-1"></h2>
+             <p className="text-sm text-gray-600 mb-4"></p>
              <hr className="my-4"/>
          </div>
 
@@ -147,7 +195,8 @@ const WorkoutProgram: React.FC<WorkoutProgramProps> = ({ program, onReset, formD
                     <TableCell>{exercise.sets}</TableCell>
                     <TableCell>{exercise.reps}</TableCell>
                     <TableCell>{exercise.rpe ?? '-'}</TableCell>
-                    <TableCell>{exercise.rest ?? 'Comme nécessaire'}</TableCell>
+                    {/* Use the formatRestTime helper for display */}
+                    <TableCell>{formatRestTime(exercise.rest ?? 'Comme nécessaire')}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
