@@ -37,6 +37,7 @@ const Index = () => {
       } catch (error) {
         console.error("Error generating program:", error);
         // Optionally show an error toast to the user
+        // showError("Une erreur est survenue lors de la génération."); // Example
       } finally {
         setIsLoading(false);
       }
@@ -52,33 +53,53 @@ const Index = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12">
-      {!generatedProgram && !isLoading && (
-        <ProgramForm onGenerate={handleGenerate} isLoading={isLoading} />
-      )}
+    <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col min-h-screen">
+      {/* Header Section */}
+      <header className="text-center mb-10 md:mb-12">
+        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
+          Smoothie Banane Fraise 🍌🍓
+        </h1>
+        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+          Créez votre programme de musculation personnalisé en quelques clics. Simple, rapide et basé sur vos objectifs.
+        </p>
+      </header>
 
-      {isLoading && (
-        // Simple Skeleton Loading State
-        <div className="w-full max-w-2xl mx-auto space-y-6">
-           <Skeleton className="h-16 w-full" />
-           <Skeleton className="h-10 w-3/4" />
-           <Skeleton className="h-10 w-full" />
-           <Skeleton className="h-10 w-full" />
-           <Skeleton className="h-20 w-full" />
-           <Skeleton className="h-10 w-1/2" />
-           <Skeleton className="h-10 w-1/2" />
-           <Skeleton className="h-24 w-full" />
-           <Skeleton className="h-12 w-full" />
-        </div>
-      )}
+      {/* Main Content Area */}
+      <main className="flex-grow flex items-center justify-center">
+        {!generatedProgram && !isLoading && (
+          <ProgramForm onGenerate={handleGenerate} isLoading={isLoading} />
+        )}
 
-      {generatedProgram && !isLoading && (
-        <WorkoutProgram
-            program={generatedProgram}
-            onReset={handleReset}
-            formData={formData} // Pass form data for potential use in WorkoutProgram
-        />
-      )}
+        {isLoading && (
+          // Simple Skeleton Loading State
+          <div className="w-full max-w-2xl mx-auto space-y-6">
+             <Skeleton className="h-16 w-full" />
+             <Skeleton className="h-10 w-3/4" />
+             <Skeleton className="h-10 w-full" />
+             <Skeleton className="h-10 w-full" />
+             <Skeleton className="h-20 w-full" />
+             <Skeleton className="h-10 w-1/2" />
+             <Skeleton className="h-10 w-1/2" />
+             <Skeleton className="h-24 w-full" />
+             <Skeleton className="h-12 w-full" />
+          </div>
+        )}
+
+        {generatedProgram && !isLoading && (
+          <WorkoutProgram
+              program={generatedProgram}
+              onReset={handleReset}
+              formData={formData} // Pass form data for potential use in WorkoutProgram
+          />
+        )}
+      </main>
+
+      {/* Footer Section */}
+      <footer className="text-center mt-12 py-4 border-t">
+        <p className="text-sm text-muted-foreground">
+          © {new Date().getFullYear()} Smoothie Banane Fraise - Générateur de programme simple.
+        </p>
+      </footer>
     </div>
   );
 };
