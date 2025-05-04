@@ -66,7 +66,7 @@ const exerciseDB = {
             { name: "Skullcrushers", target: ["triceps"] },
         ],
         dumbbell: [
-            { name: "Bicep Curl (Dumbbell)", target: ["biceps"] },
+            { name: "Biceb Curl (Dumbbell)", target: ["biceps"] }, // Typo fixed: Biceb -> Bicep
             { name: "Triceps Extension (Dumbbell)", target: ["triceps"] },
             { name: "Lateral Raise", target: ["shoulders"] },
             { name: "Hammer Curl", target: ["biceps", "forearms"] },
@@ -92,7 +92,6 @@ const exerciseDB = {
          elastiques: [
             { name: "Banded Pull-Apart", target: ["upper back", "shoulders"] },
             { name: "Banded Triceps Extension", target: ["triceps"] },
-            // Changed Banded Bicep Curl to Banded Reverse Curl
             { name: "Banded Reverse Curl", target: ["biceps", "forearms"] },
             { name: "Banded Lateral Walk", target: ["glutes", "hips"] },
             { name: "Banded Glute Bridge", target: ["glutes"] },
@@ -303,8 +302,8 @@ function selectExercisesForDay(
     const dayCompounds = shuffleArray(availableCompound.filter(ex => ex.target.some(t => dayTargets.includes(t))));
     const dayIsolations = shuffleArray(availableIsolation.filter(ex => ex.target.some(t => dayTargets.includes(t))));
 
-    // --- Powerlifting (Force) Specific Prioritization ---
-    if (goal === 'force') {
+    // --- Powerlifting (Force) & Powerbuilding Specific Prioritization ---
+    if (goal === 'force' || goal === 'powerbuilding') { // Extended condition
         const coreLifts: { name: string, dayTypes: typeof dayType[] }[] = [
             { name: "Squat", dayTypes: ['legs', 'full_body'] },
             { name: "Bench Press", dayTypes: ['push', 'upper', 'full_body'] },
@@ -322,15 +321,15 @@ function selectExercisesForDay(
                          addedCoreLifts.add(lift.name); // Mark as added for the week
                     }
                 } else {
-                    console.warn(`Powerlifting goal selected, but required lift "${lift.name}" is not available with selected equipment for day type "${dayType}".`);
+                    console.warn(`${goal === 'force' ? 'Powerlifting' : 'Powerbuilding'} goal selected, but required lift "${lift.name}" is not available with selected equipment for day type "${dayType}".`);
                 }
             }
         }
     }
-    // --- End Powerlifting Prioritization ---
+    // --- End Prioritization ---
 
 
-    // Prioritize compound exercises (after potential core lifts for force)
+    // Prioritize compound exercises (after potential core lifts for force/powerbuilding)
     let compoundCount = selectedExercises.length; // Count already added core lifts
     const targetCompoundCount = dayType === 'full_body' ? Math.max(1, Math.min(3, Math.floor(maxExercises * 0.5)))
                              : Math.max(1, Math.floor(maxExercises * (goal === 'force' || goal === 'powerbuilding' ? 0.6 : 0.5)));
@@ -420,25 +419,25 @@ export class ProgramGenerator {
             else if (days === 5) effectiveSplit = 'ppl'; // PPL variation (PPLPP, PPLUL etc.) - simplified to PPL cycle
             else effectiveSplit = 'ppl'; // PPL variation for 6 days (PPLPPL) - simplified
              console.log(`Adjusted split to ${effectiveSplit}`);
-        } else if (goal === 'force' && effectiveSplit !== 'ppl' && days >= 3) {
-             // For Powerlifting, PPL is often preferred if enough days
-             console.log(`Adjusting split to PPL for Powerlifting goal with ${days} days.`);
+        } else if ((goal === 'force' || goal === 'powerbuilding') && effectiveSplit !== 'ppl' && days >= 3) { // Extended condition
+             // For Powerlifting/Powerbuilding, PPL is often preferred if enough days
+             console.log(`Adjusting split to PPL for ${goal} goal with ${days} days.`);
              effectiveSplit = 'ppl';
         }
 
-        // If Powerlifting is selected but no barbell/dumbbells, throw an error early
+        // If Powerlifting or Powerbuilding is selected but no barbell/dumbbells, throw an error early
         // Check for specific lifts availability instead of just equipment type
         const availableCompound = getAvailableExercises(equipment, 'compound');
         const hasSquat = availableCompound.some(ex => ex.name === 'Squat');
         const hasBench = availableCompound.some(ex => ex.name === 'Bench Press');
         const hasDeadlift = availableCompound.some(ex => ex.name === 'Deadlift');
 
-        if (goal === 'force' && (!hasSquat || !hasBench || !hasDeadlift)) {
+        if ((goal === 'force' || goal === 'powerbuilding') && (!hasSquat || !hasBench || !hasDeadlift)) { // Extended condition
              let missing = [];
              if (!hasSquat) missing.push('Squat');
              if (!hasBench) missing.push('Bench Press');
              if (!hasDeadlift) missing.push('Deadlift');
-             throw new Error(`Pour un objectif Powerlifting, vous devez avoir l'équipement nécessaire pour le ${missing.join(', la ')} et le Deadlift.`);
+             throw new Error(`Pour un objectif ${goal === 'force' ? 'Powerlifting' : 'Powerbuilding'}, vous devez avoir l'équipement nécessaire pour le ${missing.join(', la ')} et le Deadlift.`); // Updated error message
         }
 
 
