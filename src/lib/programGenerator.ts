@@ -44,7 +44,7 @@ const exerciseDB = {
             { name: "Pull-ups / Chin-ups", target: ["back", "biceps"] },
             { name: "Dips", target: ["chest", "shoulders", "triceps"] },
             { name: "Push-ups", target: ["chest", "shoulders", "triceps"] },
-            { name: "Bodyweight Squat", target: ["legs", "glutes", "quads"] },
+            // Removed Bodyweight Squat
             { name: "Lunges", target: ["legs", "glutes", "quads", "hamstrings"] },
             { name: "Tractions Australiennes", target: ["back", "biceps"] },
         ],
@@ -54,8 +54,9 @@ const exerciseDB = {
             { name: "Chest Press Machine", target: ["chest", "shoulders", "triceps"] },
             { name: "Seated Cable Row", target: ["back", "biceps"] },
             { name: "Shoulder Press Machine", target: ["shoulders", "triceps"] },
+            { name: "Hack Squat", target: ["legs", "quads", "glutes"] }, // Added Hack Squat
         ],
-        elastiques: [ // Compound exercises with bands are less common, add if needed
+        elastiques: [
              { name: "Banded Squat", target: ["legs", "glutes", "quads"] },
         ],
     },
@@ -91,7 +92,8 @@ const exerciseDB = {
          elastiques: [
             { name: "Banded Pull-Apart", target: ["upper back", "shoulders"] },
             { name: "Banded Triceps Extension", target: ["triceps"] },
-            { name: "Banded Bicep Curl", target: ["biceps"] },
+            // Changed Banded Bicep Curl to Banded Reverse Curl
+            { name: "Banded Reverse Curl", target: ["biceps", "forearms"] },
             { name: "Banded Lateral Walk", target: ["glutes", "hips"] },
             { name: "Banded Glute Bridge", target: ["glutes"] },
         ],
@@ -200,32 +202,41 @@ function getSetsRepsRpe(exercise: { name: string, target: string[] }, goal: Form
          }
      }
 
-    // --- Enforce minimum 6 reps for Machine/Bodyweight/Elastiques ---
+    // --- Enforce minimum reps based on equipment type ---
     const equipmentType = getExerciseEquipmentType(exercise.name);
-    const minReps = 6;
+    let minReps = 1; // Default minimum
 
     if (equipmentType === 'machine' || equipmentType === 'bodyweight' || equipmentType === 'elastiques') {
-        let currentMinReps = 0;
-        if (typeof reps === 'number') {
-            currentMinReps = reps;
-        } else if (typeof reps === 'string' && reps.includes('-')) {
-            currentMinReps = parseInt(reps.split('-')[0]);
-        } else if (typeof reps === 'string' && !isNaN(parseInt(reps))) {
-             currentMinReps = parseInt(reps);
-        }
+        minReps = 6;
+    }
 
-        if (currentMinReps < minReps) {
-            // Adjust reps to be at least 6
-            if (typeof reps === 'number') {
-                 reps = minReps;
-            } else if (typeof reps === 'string' && reps.includes('-')) {
-                 const parts = reps.split('-').map(Number);
-                 reps = `${Math.max(minReps, parts[0])}-${Math.max(minReps, parts[1])}`;
-            } else { // Single number string or other format
-                 reps = `${minReps}-12`; // Default to a common range
-            }
-             console.log(`Adjusted reps for ${exercise.name} (${equipmentType}) to ${reps} (min ${minReps})`);
+    // Specific exercises requiring minimum 8 reps
+    const eightRepMinExercises = ["Dumbbell Bench Press", "Dumbbell Row", "Romanian Deadlift (RDL)", "Goblet Squat"];
+    if (eightRepMinExercises.includes(exercise.name)) {
+        minReps = Math.max(minReps, 8); // Ensure it's at least 8, but also respects the 6+ rule if applicable
+    }
+
+
+    let currentMinReps = 0;
+    if (typeof reps === 'number') {
+        currentMinReps = reps;
+    } else if (typeof reps === 'string' && reps.includes('-')) {
+        currentMinReps = parseInt(reps.split('-')[0]);
+    } else if (typeof reps === 'string' && !isNaN(parseInt(reps))) {
+         currentMinReps = parseInt(reps);
+    }
+
+    if (currentMinReps < minReps) {
+        // Adjust reps to be at least minReps
+        if (typeof reps === 'number') {
+             reps = minReps;
+        } else if (typeof reps === 'string' && reps.includes('-')) {
+             const parts = reps.split('-').map(Number);
+             reps = `${Math.max(minReps, parts[0])}-${Math.max(minReps, parts[1])}`;
+        } else { // Single number string or other format
+             reps = `${minReps}-${minReps + 4}`; // Default to a common range like 8-12 or 6-10
         }
+         console.log(`Adjusted reps for ${exercise.name} (${equipmentType}) to ${reps} (min ${minReps})`);
     }
 
 
