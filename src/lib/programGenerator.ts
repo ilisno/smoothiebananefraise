@@ -55,7 +55,6 @@ const exerciseDB = {
             { name: "Seated Cable Row", target: ["back", "biceps"] },
             { name: "Shoulder Press Machine", target: ["shoulders", "triceps"] },
         ],
-        // Removed kettlebell
         elastiques: [ // Compound exercises with bands are less common, add if needed
              { name: "Banded Squat", target: ["legs", "glutes", "quads"] },
         ],
@@ -89,10 +88,28 @@ const exerciseDB = {
             { name: "Lateral Raise Machine", target: ["shoulders"] },
             { name: "Calf Raise Machine", target: ["calves"] },
         ],
-         // Removed elastiques
-         // Removed kettlebell
+         elastiques: [
+            { name: "Banded Pull-Apart", target: ["upper back", "shoulders"] },
+            { name: "Banded Triceps Extension", target: ["triceps"] },
+            { name: "Banded Bicep Curl", target: ["biceps"] },
+            { name: "Banded Lateral Walk", target: ["glutes", "hips"] },
+            { name: "Banded Glute Bridge", target: ["glutes"] },
+        ],
     }
 };
+
+// Helper to find the equipment type for a given exercise name
+function getExerciseEquipmentType(exerciseName: string): string | undefined {
+    for (const type of Object.values(exerciseDB)) {
+        for (const [equipType, exercises] of Object.entries(type)) {
+            if (exercises.some(ex => ex.name === exerciseName)) {
+                return equipType;
+            }
+        }
+    }
+    return undefined;
+}
+
 
 // --- Helper Functions ---
 
@@ -103,11 +120,12 @@ function getAvailableExercises(equipment: FormData['equipment'], type: 'compound
     if (equipment.barre_halteres) {
         available = available.concat(db.barbell, db.dumbbell);
     }
-    // Removed kettlebells check
     if (equipment.machines_guidees) {
         available = available.concat(db.machine);
     }
-    // Removed elastiques check
+     if (equipment.elastiques) {
+        available = available.concat(db.elastiques);
+    }
     // Always include bodyweight if selected or as a fallback foundation
     if (equipment.poids_corp || available.length === 0) {
          available = available.concat(db.bodyweight);
@@ -119,7 +137,8 @@ function getAvailableExercises(equipment: FormData['equipment'], type: 'compound
     return uniqueAvailable;
 }
 
-function getSetsRepsRpe(goal: FormData['goal'], level: FormData['level'], type: 'compound' | 'isolation'): Pick<Exercise, 'sets' | 'reps' | 'rpe' | 'rest'> {
+// Modified to accept the exercise object
+function getSetsRepsRpe(exercise: { name: string, target: string[] }, goal: FormData['goal'], level: FormData['level'], type: 'compound' | 'isolation'): Pick<Exercise, 'sets' | 'reps' | 'rpe' | 'rest'> {
     let sets: number | string = 3;
     let reps: number | string = "8-12";
     let rpe: number | string = "8-9";
@@ -181,6 +200,34 @@ function getSetsRepsRpe(goal: FormData['goal'], level: FormData['level'], type: 
          }
      }
 
+    // --- Enforce minimum 6 reps for Machine/Bodyweight/Elastiques ---
+    const equipmentType = getExerciseEquipmentType(exercise.name);
+    const minReps = 6;
+
+    if (equipmentType === 'machine' || equipmentType === 'bodyweight' || equipmentType === 'elastiques') {
+        let currentMinReps = 0;
+        if (typeof reps === 'number') {
+            currentMinReps = reps;
+        } else if (typeof reps === 'string' && reps.includes('-')) {
+            currentMinReps = parseInt(reps.split('-')[0]);
+        } else if (typeof reps === 'string' && !isNaN(parseInt(reps))) {
+             currentMinReps = parseInt(reps);
+        }
+
+        if (currentMinReps < minReps) {
+            // Adjust reps to be at least 6
+            if (typeof reps === 'number') {
+                 reps = minReps;
+            } else if (typeof reps === 'string' && reps.includes('-')) {
+                 const parts = reps.split('-').map(Number);
+                 reps = `${Math.max(minReps, parts[0])}-${Math.max(minReps, parts[1])}`;
+            } else { // Single number string or other format
+                 reps = `${minReps}-12`; // Default to a common range
+            }
+             console.log(`Adjusted reps for ${exercise.name} (${equipmentType}) to ${reps} (min ${minReps})`);
+        }
+    }
+
 
     return { sets, reps, rpe, rest };
 }
@@ -194,16 +241,16 @@ function shuffleArray<T>(array: T[]): T[] {
     return array;
 }
 
-// Function to get exercise details (targets) from the DB
-function getExerciseDetails(name: string): { name: string, target: string[] } | undefined {
-    for (const type of Object.values(exerciseDB)) {
-        for (const equip of Object.values(type)) {
-            const exercise = equip.find(ex => ex.name === name);
-            if (exercise) return exercise;
-        }
-    }
-    return undefined;
-}
+// Function to get exercise details (targets) from the DB - Kept for potential future use but not strictly needed for getSetsRepsRpe anymore
+// function getExerciseDetails(name: string): { name: string, target: string[] } | undefined {
+//     for (const type of Object.values(exerciseDB)) {
+//         for (const equip of Object.values(type)) {
+//             const exercise = equip.find(ex => ex.name === name);
+//             if (exercise) return exercise;
+//         }
+//     }
+//     return undefined;
+// }
 
 
 function selectExercisesForDay(
@@ -218,9 +265,10 @@ function selectExercisesForDay(
     let selectedExercises: Exercise[] = [];
     const addedNames = new Set<string>();
 
+    // Modified to pass the full exercise object to getSetsRepsRpe
     const addExercise = (exercise: { name: string, target: string[] }, type: 'compound' | 'isolation') => {
         if (selectedExercises.length < maxExercises && !addedNames.has(exercise.name)) {
-            const params = getSetsRepsRpe(goal, level, type);
+            const params = getSetsRepsRpe(exercise, goal, level, type); // Pass exercise object
             selectedExercises.push({ name: exercise.name, ...params });
             addedNames.add(exercise.name);
             return true; // Indicate success
@@ -325,8 +373,9 @@ function selectExercisesForDay(
     if (!hasCoreWork && level !== 'debutant' && selectedExercises.length < maxExercises) {
          const coreEx = availableIsolation.find(ex => ex.target.includes('core'));
          if (coreEx && !selectedExercises.some(e => e.name === coreEx.name)) { // Check if not already added
-             const coreParams = getSetsRepsRpe(goal, level, 'isolation');
-             addExercise({ name: coreEx.name, target: ['core'] }, 'isolation'); // Use addExercise helper
+             // Need to get params using the coreEx object
+             const coreParams = getSetsRepsRpe(coreEx, goal, level, 'isolation'); // Pass coreEx object
+             addExercise(coreEx, 'isolation'); // Use addExercise helper
          }
     }
 
