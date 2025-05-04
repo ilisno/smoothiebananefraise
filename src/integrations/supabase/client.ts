@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 
 // Lire les variables d'environnement fournies par Vite
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+// Correction: import.meta.meta.env -> import.meta.env
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Vérifier si les variables sont définies
