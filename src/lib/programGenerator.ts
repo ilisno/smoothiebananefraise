@@ -22,37 +22,36 @@ export type Program = {
     schedule: WorkoutDay[];
 };
 
-// --- Exercise Database (Simplified Example) ---
-// In a real app, this would be much larger and more structured
+// --- Exercise Database (French Names) ---
 const exerciseDB = {
     compound: {
         barbell: [
             { name: "Squat", target: ["legs", "glutes", "quads"] },
-            { name: "Bench Press", target: ["chest", "shoulders", "triceps"] },
-            { name: "Deadlift", target: ["back", "legs", "glutes", "hamstrings"] },
-            { name: "Overhead Press (OHP)", target: ["shoulders", "triceps"] },
-            { name: "Barbell Row", target: ["back", "biceps"] },
+            { name: "Bench Press (Développé Couché)", target: ["chest", "shoulders", "triceps"] },
+            { name: "Deadlift (Soulevé de Terre)", target: ["back", "legs", "glutes", "hamstrings"] },
+            { name: "Overhead Press (Développé Militaire)", target: ["shoulders", "triceps"] },
+            { name: "Barbell Row (Row Barre)", target: ["back", "biceps"] },
         ],
         dumbbell: [
-            { name: "Dumbbell Bench Press", target: ["chest", "shoulders", "triceps"] },
-            { name: "Dumbbell Row", target: ["back", "biceps"] },
+            { name: "Développé Couché Haltères", target: ["chest", "shoulders", "triceps"] },
+            { name: "Row Haltère", target: ["back", "biceps"] },
             { name: "Goblet Squat", target: ["legs", "glutes", "quads"] },
-            { name: "Romanian Deadlift (RDL)", target: ["hamstrings", "glutes", "back"] },
-            { name: "Dumbbell Shoulder Press", target: ["shoulders", "triceps"] },
+            { name: "Romanian Deadlift (RDL) Haltères", target: ["hamstrings", "glutes", "back"] },
+            { name: "Développé Épaules Haltères", target: ["shoulders", "triceps"] },
         ],
         bodyweight: [
-            { name: "Pull-ups / Chin-ups", target: ["back", "biceps"] },
+            { name: "Tractions (Pull-ups / Chin-ups)", target: ["back", "biceps"] },
             { name: "Dips", target: ["chest", "shoulders", "triceps"] },
-            { name: "Push-ups", target: ["chest", "shoulders", "triceps"] },
-            { name: "Bodyweight Squat", target: ["legs", "glutes", "quads"] },
-            { name: "Lunges", target: ["legs", "glutes", "quads", "hamstrings"] },
+            { name: "Pompes (Push-ups)", target: ["chest", "shoulders", "triceps"] },
+            { name: "Squat Poids du Corps", target: ["legs", "glutes", "quads"] },
+            { name: "Fentes (Lunges)", target: ["legs", "glutes", "quads", "hamstrings"] },
         ],
         machine: [
-            { name: "Leg Press", target: ["legs", "glutes", "quads"] },
-            { name: "Lat Pulldown", target: ["back", "biceps"] },
-            { name: "Chest Press Machine", target: ["chest", "shoulders", "triceps"] },
-            { name: "Seated Cable Row", target: ["back", "biceps"] },
-            { name: "Shoulder Press Machine", target: ["shoulders", "triceps"] },
+            { name: "Presse à Cuisses (Leg Press)", target: ["legs", "glutes", "quads"] },
+            { name: "Tirage Vertical (Lat Pulldown)", target: ["back", "biceps"] },
+            { name: "Développé Pectoraux Machine", target: ["chest", "shoulders", "triceps"] },
+            { name: "Rowing Assis Machine/Câble", target: ["back", "biceps"] },
+            { name: "Développé Épaules Machine", target: ["shoulders", "triceps"] },
         ],
         kettlebell: [
              { name: "Kettlebell Swing", target: ["hamstrings", "glutes", "back", "conditioning"] },
@@ -64,42 +63,42 @@ const exerciseDB = {
     },
     isolation: {
         barbell: [
-            { name: "Bicep Curl (Barbell)", target: ["biceps"] },
-            { name: "Skullcrushers", target: ["triceps"] },
+            { name: "Curl Barre", target: ["biceps"] },
+            { name: "Barre au Front (Skullcrushers)", target: ["triceps"] },
         ],
         dumbbell: [
-            { name: "Bicep Curl (Dumbbell)", target: ["biceps"] },
-            { name: "Triceps Extension (Dumbbell)", target: ["triceps"] },
-            { name: "Lateral Raise", target: ["shoulders"] },
-            { name: "Hammer Curl", target: ["biceps", "forearms"] },
-            { name: "Front Raise", target: ["shoulders"] },
-            { name: "Rear Delt Fly", target: ["shoulders", "upper back"] },
+            { name: "Curl Haltères", target: ["biceps"] },
+            { name: "Extension Triceps Haltère", target: ["triceps"] },
+            { name: "Élévations Latérales", target: ["shoulders"] },
+            { name: "Curl Marteau", target: ["biceps", "forearms"] },
+            { name: "Élévations Frontales", target: ["shoulders"] },
+            { name: "Oiseau (Rear Delt Fly)", target: ["shoulders", "upper back"] },
         ],
         bodyweight: [
-             { name: "Calf Raises", target: ["calves"] },
-             { name: "Glute Bridge", target: ["glutes"] },
-             { name: "Plank", target: ["core"] },
-             { name: "Crunches", target: ["core"] },
+             { name: "Mollets Poids du Corps", target: ["calves"] },
+             { name: "Pont Fessier (Glute Bridge)", target: ["glutes"] },
+             { name: "Gainage Planche (Plank)", target: ["core"] },
+             { name: "Crunchs", target: ["core"] },
         ],
         machine: [
             { name: "Leg Extension", target: ["quads"] },
             { name: "Leg Curl", target: ["hamstrings"] },
-            { name: "Triceps Pushdown", target: ["triceps"] },
-            { name: "Bicep Curl Machine", target: ["biceps"] },
-            { name: "Pec Deck Fly / Cable Fly", target: ["chest"] },
-            { name: "Lateral Raise Machine", target: ["shoulders"] },
-            { name: "Calf Raise Machine", target: ["calves"] },
+            { name: "Extension Triceps Poulie", target: ["triceps"] },
+            { name: "Curl Biceps Machine", target: ["biceps"] },
+            { name: "Écartés Pectoraux Machine/Poulie", target: ["chest"] },
+            { name: "Élévations Latérales Machine", target: ["shoulders"] },
+            { name: "Mollets Machine", target: ["calves"] },
         ],
          elastiques: [
-            { name: "Banded Pull-Apart", target: ["upper back", "shoulders"] },
-            { name: "Banded Triceps Extension", target: ["triceps"] },
-            { name: "Banded Bicep Curl", target: ["biceps"] },
-            { name: "Banded Lateral Walk", target: ["glutes", "hips"] },
-            { name: "Banded Glute Bridge", target: ["glutes"] },
+            { name: "Tirage Élastique Arrière (Pull-Apart)", target: ["upper back", "shoulders"] },
+            { name: "Extension Triceps Élastique", target: ["triceps"] },
+            { name: "Curl Biceps Élastique", target: ["biceps"] },
+            { name: "Marche Latérale Élastique", target: ["glutes", "hips"] },
+            { name: "Pont Fessier Élastique", target: ["glutes"] },
         ],
          kettlebell: [
              { name: "Kettlebell Halo", target: ["shoulders", "core"] },
-             { name: "Kettlebell Windmill", target: ["core", "shoulders", "hamstrings"] },
+             // { name: "Kettlebell Windmill", target: ["core", "shoulders", "hamstrings"] }, // Peut-être un peu complexe pour un générateur auto
          ],
     }
 };
@@ -129,7 +128,7 @@ function getAvailableExercises(equipment: FormData['equipment'], type: 'compound
 
     // Remove duplicates by name
     const uniqueAvailable = available.filter((v, i, a) => a.findIndex(t => (t.name === v.name)) === i);
-    console.log(`Available ${type} exercises:`, uniqueAvailable.map(e => e.name));
+    // console.log(`Available ${type} exercises:`, uniqueAvailable.map(e => e.name)); // Keep for debugging if needed
     return uniqueAvailable;
 }
 
@@ -293,7 +292,7 @@ function selectExercisesForDay(
      }
 
 
-    console.log(`Selected exercises for ${dayType}:`, selectedExercises.map(e => e.name));
+    // console.log(`Selected exercises for ${dayType}:`, selectedExercises.map(e => e.name)); // Keep for debugging
     return selectedExercises;
 }
 
@@ -314,14 +313,14 @@ export class ProgramGenerator {
         // 1. Determine effective split and day types
         let effectiveSplit = split;
         if (split === 'autre' || (split === 'full_body' && days > 4) || (split === 'half_body' && days > 5) || (split === 'ppl' && days < 3)) {
-             console.log(`Adjusting split from ${split} for ${days} days...`);
+             // console.log(`Adjusting split from ${split} for ${days} days...`); // Keep for debugging
             // Basic heuristic adjustment if 'autre' or incompatible days/split
             if (days <= 2) effectiveSplit = 'full_body';
             else if (days === 3) effectiveSplit = level === 'debutant' ? 'full_body' : 'ppl'; // PPL often better for 3 days intermediate+
             else if (days === 4) effectiveSplit = 'half_body'; // Common 4-day split
             else if (days === 5) effectiveSplit = 'ppl'; // PPL variation (PPLPP, PPLUL etc.) - simplified to PPL cycle
             else effectiveSplit = 'ppl'; // PPL variation for 6 days (PPLPPL) - simplified
-             console.log(`Adjusted split to ${effectiveSplit}`);
+             // console.log(`Adjusted split to ${effectiveSplit}`); // Keep for debugging
         }
 
 
@@ -340,7 +339,7 @@ export class ProgramGenerator {
         // Rough estimate: 7-12 mins per exercise (warmup sets, work sets, rest)
         const avgTimePerExercise = level === 'debutant' ? 12 : (level === 'intermediaire' ? 9 : 7);
         const maxExercises = Math.max(3, Math.min(8, Math.floor(duration / avgTimePerExercise))); // 3-8 exercises typical range
-        console.log(`Estimated max exercises per session: ${maxExercises} (duration: ${duration}, level: ${level})`);
+        // console.log(`Estimated max exercises per session: ${maxExercises} (duration: ${duration}, level: ${level})`); // Keep for debugging
 
         // 3. Get available exercises based on equipment
         const availableCompound = getAvailableExercises(equipment, 'compound');
@@ -401,7 +400,7 @@ export class ProgramGenerator {
             // Basic reset for next week simulation if days > cycleLength (simplistic)
             // Reset if we completed a full cycle (e.g., PPL, UL, or FB A/B)
             if ((i + 1) % cycleLength === 0 && days > cycleLength) {
-                 console.log(`Resetting used exercises after day ${i+1} (cycle length ${cycleLength})`);
+                 // console.log(`Resetting used exercises after day ${i+1} (cycle length ${cycleLength})`); // Keep for debugging
                  usedExerciseNamesThisWeek.clear();
             }
 
