@@ -3,10 +3,10 @@ import { FormData } from '@/components/ProgramForm'; // Assuming FormData type i
 // --- Types ---
 export type Exercise = {
     name: string;
-    sets: number | string; // Can be "3" or "2-3"
+    sets: number | string; // Can be "3" or "3-4"
     reps: number | string; // Can be "5", "8-12", "AMRAP"
-    rpe?: number | string; // Optional RPE, e.g., 8 or 9
-    rest?: string; // e.g., "2-3 min", "1 min"
+    rpe?: number | string; // Optional RPE, e.g., 8 or "7-8"
+    rest?: string; // e.g., "60-90s"
     notes?: string; // e.g., "Focus on form"
 };
 
@@ -22,83 +22,75 @@ export type Program = {
     schedule: WorkoutDay[];
 };
 
-// --- Exercise Database (French Names, Bodyweight Squat Moved) ---
+// --- Exercise Database (Simplified Example) ---
+// In a real app, this would be much larger and more structured
 const exerciseDB = {
     compound: {
         barbell: [
             { name: "Squat", target: ["legs", "glutes", "quads"] },
-            { name: "Bench Press (Développé Couché)", target: ["chest", "shoulders", "triceps"] },
-            { name: "Deadlift (Soulevé de Terre)", target: ["back", "legs", "glutes", "hamstrings"] },
-            { name: "Overhead Press (Développé Militaire)", target: ["shoulders", "triceps"] },
-            { name: "Barbell Row (Row Barre)", target: ["back", "biceps"] },
+            { name: "Bench Press", target: ["chest", "shoulders", "triceps"] },
+            { name: "Deadlift", target: ["back", "legs", "glutes", "hamstrings"] },
+            { name: "Overhead Press (OHP)", target: ["shoulders", "triceps"] },
+            { name: "Barbell Row", target: ["back", "biceps"] },
         ],
         dumbbell: [
-            { name: "Développé Couché Haltères", target: ["chest", "shoulders", "triceps"] },
-            { name: "Row Haltère", target: ["back", "biceps"] },
+            { name: "Dumbbell Bench Press", target: ["chest", "shoulders", "triceps"] },
+            { name: "Dumbbell Row", target: ["back", "biceps"] },
             { name: "Goblet Squat", target: ["legs", "glutes", "quads"] },
-            { name: "Romanian Deadlift (RDL) Haltères", target: ["hamstrings", "glutes", "back"] },
-            { name: "Développé Épaules Haltères", target: ["shoulders", "triceps"] },
+            { name: "Romanian Deadlift (RDL)", target: ["hamstrings", "glutes", "back"] },
+            { name: "Dumbbell Shoulder Press", target: ["shoulders", "triceps"] },
         ],
-        bodyweight: [ // Bodyweight Squat removed from here
-            { name: "Tractions (Pull-ups / Chin-ups)", target: ["back", "biceps"] },
+        bodyweight: [
+            { name: "Pull-ups / Chin-ups", target: ["back", "biceps"] },
             { name: "Dips", target: ["chest", "shoulders", "triceps"] },
-            { name: "Pompes (Push-ups)", target: ["chest", "shoulders", "triceps"] },
-            { name: "Fentes (Lunges)", target: ["legs", "glutes", "quads", "hamstrings"] },
+            { name: "Push-ups", target: ["chest", "shoulders", "triceps"] },
+            { name: "Bodyweight Squat", target: ["legs", "glutes", "quads"] },
+            { name: "Lunges", target: ["legs", "glutes", "quads", "hamstrings"] },
+            { name: "Tractions Australiennes", target: ["back", "biceps"] },
         ],
         machine: [
-            { name: "Presse à Cuisses (Leg Press)", target: ["legs", "glutes", "quads"] },
-            { name: "Tirage Vertical (Lat Pulldown)", target: ["back", "biceps"] },
-            { name: "Développé Pectoraux Machine", target: ["chest", "shoulders", "triceps"] },
-            { name: "Rowing Assis Machine/Câble", target: ["back", "biceps"] },
-            { name: "Développé Épaules Machine", target: ["shoulders", "triceps"] },
+            { name: "Leg Press", target: ["legs", "glutes", "quads"] },
+            { name: "Lat Pulldown", target: ["back", "biceps"] },
+            { name: "Chest Press Machine", target: ["chest", "shoulders", "triceps"] },
+            { name: "Seated Cable Row", target: ["back", "biceps"] },
+            { name: "Shoulder Press Machine", target: ["shoulders", "triceps"] },
         ],
-        kettlebell: [
-             { name: "Kettlebell Swing", target: ["hamstrings", "glutes", "back", "conditioning"] },
-             { name: "Kettlebell Goblet Squat", target: ["legs", "glutes", "quads"] },
-             { name: "Kettlebell Press", target: ["shoulders", "triceps"] },
-             { name: "Kettlebell Row", target: ["back", "biceps"] },
+        // Removed kettlebell
+        elastiques: [ // Compound exercises with bands are less common, add if needed
+             { name: "Banded Squat", target: ["legs", "glutes", "quads"] },
         ],
-        elastiques: [],
     },
     isolation: {
         barbell: [
-            { name: "Curl Barre", target: ["biceps"] },
-            { name: "Barre au Front (Skullcrushers)", target: ["triceps"] },
+            { name: "Bicep Curl (Barbell)", target: ["biceps"] },
+            { name: "Skullcrushers", target: ["triceps"] },
         ],
         dumbbell: [
-            { name: "Curl Haltères", target: ["biceps"] },
-            { name: "Extension Triceps Haltère", target: ["triceps"] },
-            { name: "Élévations Latérales", target: ["shoulders"] },
-            { name: "Curl Marteau", target: ["biceps", "forearms"] },
-            { name: "Élévations Frontales", target: ["shoulders"] },
-            { name: "Oiseau (Rear Delt Fly)", target: ["shoulders", "upper back"] },
+            { name: "Bicep Curl (Dumbbell)", target: ["biceps"] },
+            { name: "Triceps Extension (Dumbbell)", target: ["triceps"] },
+            { name: "Lateral Raise", target: ["shoulders"] },
+            { name: "Hammer Curl", target: ["biceps", "forearms"] },
+            { name: "Front Raise", target: ["shoulders"] },
+            { name: "Rear Delt Fly", target: ["shoulders", "upper back"] },
         ],
         bodyweight: [
-             { name: "Mollets Poids du Corps", target: ["calves"] },
-             { name: "Pont Fessier (Glute Bridge)", target: ["glutes"] },
-             { name: "Gainage Planche (Plank)", target: ["core"] },
+             { name: "Calf Raises", target: ["calves"] },
+             { name: "Glute Bridge", target: ["glutes"] },
+             { name: "Plank", target: ["core"] },
              { name: "Crunchs", target: ["core"] },
-             { name: "Squat Poids du Corps", target: ["legs", "glutes", "quads"] }, // Added here as isolation/fallback/warmup
+             { name: "Relevés de Jambes", target: ["core"] },
         ],
         machine: [
             { name: "Leg Extension", target: ["quads"] },
             { name: "Leg Curl", target: ["hamstrings"] },
-            { name: "Extension Triceps Poulie", target: ["triceps"] },
-            { name: "Curl Biceps Machine", target: ["biceps"] },
-            { name: "Écartés Pectoraux Machine/Poulie", target: ["chest"] },
-            { name: "Élévations Latérales Machine", target: ["shoulders"] },
-            { name: "Mollets Machine", target: ["calves"] },
+            { name: "Triceps Pushdown", target: ["triceps"] },
+            { name: "Bicep Curl Machine", target: ["biceps"] },
+            { name: "Pec Deck Fly / Cable Fly", target: ["chest"] },
+            { name: "Lateral Raise Machine", target: ["shoulders"] },
+            { name: "Calf Raise Machine", target: ["calves"] },
         ],
-         elastiques: [
-            { name: "Tirage Élastique Arrière (Pull-Apart)", target: ["upper back", "shoulders"] },
-            { name: "Extension Triceps Élastique", target: ["triceps"] },
-            { name: "Curl Biceps Élastique", target: ["biceps"] },
-            { name: "Marche Latérale Élastique", target: ["glutes", "hips"] },
-            { name: "Pont Fessier Élastique", target: ["glutes"] },
-        ],
-         kettlebell: [
-             { name: "Kettlebell Halo", target: ["shoulders", "core"] },
-         ],
+         // Removed elastiques
+         // Removed kettlebell
     }
 };
 
@@ -111,79 +103,82 @@ function getAvailableExercises(equipment: FormData['equipment'], type: 'compound
     if (equipment.barre_halteres) {
         available = available.concat(db.barbell, db.dumbbell);
     }
-    if (equipment.kettlebells) {
-         available = available.concat(db.kettlebell);
-    }
+    // Removed kettlebells check
     if (equipment.machines_guidees) {
         available = available.concat(db.machine);
     }
-     if (equipment.elastiques) {
-        available = available.concat(db.elastiques);
-    }
-    // Add bodyweight isolation/core always if selected
-    if (equipment.poids_corp && type === 'isolation') {
+    // Removed elastiques check
+    // Always include bodyweight if selected or as a fallback foundation
+    if (equipment.poids_corp || available.length === 0) {
          available = available.concat(db.bodyweight);
     }
-     // Add bodyweight compound only if NO other compound equipment is available AND bodyweight is selected
-     if (equipment.poids_corp && type === 'compound' && !equipment.barre_halteres && !equipment.kettlebells && !equipment.machines_guidees) {
-         available = available.concat(db.bodyweight);
-     }
-
 
     // Remove duplicates by name
     const uniqueAvailable = available.filter((v, i, a) => a.findIndex(t => (t.name === v.name)) === i);
+    console.log(`Available ${type} exercises:`, uniqueAvailable.map(e => e.name));
     return uniqueAvailable;
 }
 
 function getSetsRepsRpe(goal: FormData['goal'], level: FormData['level'], type: 'compound' | 'isolation'): Pick<Exercise, 'sets' | 'reps' | 'rpe' | 'rest'> {
     let sets: number | string = 3;
     let reps: number | string = "8-12";
-    let rpe: number | string = 9; // Default RPE to 9 (high intensity)
-    let rest = "1-1.5 min"; // Default rest
+    let rpe: number | string = "8-9";
+    let rest = "60-90s";
 
     // --- Adjust based on Goal ---
-    if (goal === 'force') {
+    if (goal === 'force') { // Note: 'force' is the internal value for Powerlifting
         if (type === 'compound') {
-            sets = 3; // Keep sets at 3 max
-            reps = level === 'debutant' ? 5 : '3-5'; // Lower reps for strength
-            rpe = level === 'debutant' ? 7 : 8; // Lower RPE for strength focus, less failure
-            rest = "2-3 min"; // Longer rest for strength
-        } else { // Isolation for force goal
+            sets = level === 'debutant' ? 3 : (level === 'intermediaire' ? '3-4' : 5);
+            reps = level === 'debutant' ? 5 : (level === 'intermediaire' ? '3-5' : '1-5');
+            rpe = level === 'debutant' ? "6-7" : (level === 'intermediaire' ? '7-8' : '8-9');
+            rest = "120-180s";
+        } else { // Isolation for force goal (less emphasis, injury prevention)
             sets = 2;
             reps = "8-12";
             rpe = 8;
-            rest = "1 min";
+            rest = "60s";
         }
     } else if (goal === 'prise_masse' || goal === 'seche') {
         // Hypertrophy focus
-        sets = 3; // Max 3 sets
-        reps = type === 'compound' ? "6-12" : "10-15";
-        rpe = level === 'debutant' ? 8 : 9; // High RPE for hypertrophy
-        rest = type === 'compound' ? "1.5-2 min" : "1 min";
+        sets = level === 'debutant' ? 3 : (level === 'intermediaire' ? '3-4' : 4);
+        reps = type === 'compound' ? "6-12" : "10-15"; // Higher reps for isolation
+        rpe = level === 'debutant' ? "7-8" : (level === 'intermediaire' ? '8-9' : '9-10'); // Push closer to failure
+        rest = type === 'compound' ? "90-120s" : "45-75s"; // Shorter rest for isolation/metabolic stress
 
         if (goal === 'seche' && level !== 'debutant') {
-             reps = type === 'compound' ? "8-15" : "12-20"; // Slightly higher reps for cutting potentially
-             rpe = 9; // Keep intensity high
-             rest = type === 'compound' ? "1-1.5 min" : "30-60 sec"; // Shorter rest for cutting
+             // Maintain intensity, maybe slightly higher reps/shorter rest if tolerated
+             reps = type === 'compound' ? "8-15" : "12-20";
+             rpe = '8-10'; // Keep intensity high to preserve muscle
+             rest = type === 'compound' ? "75-100s" : "30-60s";
         }
     } else if (goal === 'powerbuilding') {
         // Mix of strength and hypertrophy
         if (type === 'compound') {
-            sets = 3;
-            reps = level === 'debutant' ? 5 : '3-6'; // Strength focus reps
-            rpe = level === 'debutant' ? 7 : 8;
-            rest = "2-3 min";
+            // Could alternate days or have top set + backoff sets. Simplified: Strength focus first.
+            sets = level === 'debutant' ? 3 : (level === 'intermediaire' ? '3-4' : 4);
+            reps = level === 'debutant' ? 5 : (level === 'intermediaire' ? '3-6' : 'Top 1-5 + Backoff 6-10'); // Simplified representation
+            rpe = level === 'debutant' ? "7" : (level === 'intermediaire' ? '7-8' : '8-9');
+            rest = "120-180s";
         } else { // Hypertrophy focus for isolation
-            sets = 3; // Allow 3 sets for isolation in powerbuilding
+            sets = level === 'debutant' ? 2 : 3;
             reps = "10-15";
-            rpe = 9;
-            rest = "1 min";
+            rpe = '9-10';
+            rest = "60-90s";
         }
     }
 
-     // Final check for beginners - maybe reduce sets on isolation
-     if (level === 'debutant' && type === 'isolation') {
-         sets = 2;
+    // --- Adjust based on Level (General Volume) ---
+     if (level === 'debutant') {
+         sets = Math.min(typeof sets === 'number' ? sets : parseInt(String(sets).split('-')[0]), 3); // Max 3 sets for beginners usually
+     } else if (level === 'avance') {
+         // Advanced might handle slightly more sets
+         if (typeof sets === 'number' && sets < 5) sets++;
+         else if (typeof sets === 'string' && sets.includes('-')) {
+             const parts = sets.split('-').map(Number);
+             sets = `${parts[0]}-${parts[1]+1}`;
+         } else if (typeof sets === 'string' && !sets.includes('-')) {
+             sets = `${sets}-${parseInt(sets)+1}`;
+         }
      }
 
 
@@ -198,7 +193,6 @@ function shuffleArray<T>(array: T[]): T[] {
     }
     return array;
 }
-
 
 // Function to get exercise details (targets) from the DB
 function getExerciseDetails(name: string): { name: string, target: string[] } | undefined {
@@ -218,7 +212,8 @@ function selectExercisesForDay(
     availableIsolation: { name: string, target: string[] }[],
     maxExercises: number,
     goal: FormData['goal'],
-    level: FormData['level']
+    level: FormData['level'],
+    addedCoreLifts: Set<string> // Pass the set of core lifts already added this week
 ): Exercise[] {
     let selectedExercises: Exercise[] = [];
     const addedNames = new Set<string>();
@@ -228,66 +223,115 @@ function selectExercisesForDay(
             const params = getSetsRepsRpe(goal, level, type);
             selectedExercises.push({ name: exercise.name, ...params });
             addedNames.add(exercise.name);
+            return true; // Indicate success
         }
+        return false; // Indicate failure (max exercises reached or already added)
     };
 
+    // Define target muscles for each day type
     const targets: Record<typeof dayType, string[]> = {
         push: ['chest', 'shoulders', 'triceps'],
         pull: ['back', 'biceps', 'forearms'],
         legs: ['quads', 'hamstrings', 'glutes', 'calves', 'legs'],
         upper: ['chest', 'shoulders', 'triceps', 'back', 'biceps', 'forearms'],
         lower: ['quads', 'hamstrings', 'glutes', 'calves', 'legs'],
-        full_body: ['chest', 'shoulders', 'triceps', 'back', 'biceps', 'quads', 'hamstrings', 'glutes', 'legs']
+        full_body: ['chest', 'shoulders', 'triceps', 'back', 'biceps', 'quads', 'hamstrings', 'glutes', 'legs'] // Broad
     };
 
     const dayTargets = targets[dayType];
+
+    // Filter available exercises for the current day type
     const dayCompounds = shuffleArray(availableCompound.filter(ex => ex.target.some(t => dayTargets.includes(t))));
     const dayIsolations = shuffleArray(availableIsolation.filter(ex => ex.target.some(t => dayTargets.includes(t))));
 
-    let compoundCount = 0;
-    // Slightly adjusted compound target: less for full body, maybe 1-2, more balanced otherwise
-    const targetCompoundCount = dayType === 'full_body' ? Math.max(1, Math.min(2, Math.floor(maxExercises * 0.4)))
-                             : Math.max(1, Math.floor(maxExercises * (goal === 'force' || goal === 'powerbuilding' ? 0.5 : 0.4)));
+    // --- Powerlifting (Force) Specific Prioritization ---
+    if (goal === 'force') {
+        const coreLifts: { name: string, dayTypes: typeof dayType[] }[] = [
+            { name: "Squat", dayTypes: ['legs', 'full_body'] },
+            { name: "Bench Press", dayTypes: ['push', 'upper', 'full_body'] },
+            { name: "Deadlift", dayTypes: ['legs', 'pull', 'full_body'] }, // Deadlift can be on Legs or Pull day
+        ];
 
+        for (const lift of coreLifts) {
+            // Check if the lift is appropriate for this day type AND hasn't been added this week yet
+            if (lift.dayTypes.includes(dayType) && !addedCoreLifts.has(lift.name)) {
+                const compoundExercise = availableCompound.find(ex => ex.name === lift.name);
+                // Check if the exercise is available with the selected equipment
+                if (compoundExercise) {
+                    // Attempt to add the core lift
+                    if (addExercise(compoundExercise, 'compound')) {
+                         addedCoreLifts.add(lift.name); // Mark as added for the week
+                    }
+                } else {
+                    console.warn(`Powerlifting goal selected, but required lift "${lift.name}" is not available with selected equipment for day type "${dayType}".`);
+                }
+            }
+        }
+    }
+    // --- End Powerlifting Prioritization ---
+
+
+    // Prioritize compound exercises (after potential core lifts for force)
+    let compoundCount = selectedExercises.length; // Count already added core lifts
+    const targetCompoundCount = dayType === 'full_body' ? Math.max(1, Math.min(3, Math.floor(maxExercises * 0.5)))
+                             : Math.max(1, Math.floor(maxExercises * (goal === 'force' || goal === 'powerbuilding' ? 0.6 : 0.5)));
+
+    // Add more compounds if needed, excluding those already added (like core lifts)
     for (const ex of dayCompounds) {
-        if (compoundCount < targetCompoundCount) {
+        if (compoundCount < targetCompoundCount && !addedNames.has(ex.name)) {
             addExercise(ex, 'compound');
             compoundCount++;
         }
     }
 
-    const currentTargets = new Set(selectedExercises.flatMap(ex => getExerciseDetails(ex.name)?.target ?? []));
+    // Fill remaining slots with isolation exercises
+    // Try to hit muscles not already targeted by compounds, or add volume
+    const currentTargets = new Set(selectedExercises.flatMap(ex =>
+        availableCompound.find(c => c.name === ex.name)?.target ??
+        availableIsolation.find(i => i.name === ex.name)?.target ?? []
+    ));
 
     for (const ex of dayIsolations) {
+         // Add if space available AND (targets new muscle OR adds volume to existing)
         if (selectedExercises.length < maxExercises) {
-             const exerciseData = getExerciseDetails(ex.name);
-             if (exerciseData) {
-                 const targetsNewMuscle = !exerciseData.target.every(t => currentTargets.has(t));
-                 // Prioritize exercises hitting new muscles, or fill up remaining slots
-                 if (targetsNewMuscle || selectedExercises.length < maxExercises -1) {
-                     addExercise(ex, 'isolation');
-                     exerciseData.target.forEach(t => currentTargets.add(t));
-                 }
+             const targetsNewMuscle = !ex.target.every(t => currentTargets.has(t));
+             // Simple logic: add if space, prioritize new muscles slightly
+             if (targetsNewMuscle || selectedExercises.length < maxExercises -1) { // Leave maybe one slot for variety
+                 addExercise(ex, 'isolation');
+                 ex.target.forEach(t => currentTargets.add(t));
              }
         }
     }
 
-     // Fill remaining slots if needed (less priority now)
+     // If still space (e.g., few compounds available), add more relevant compounds if possible
      if (selectedExercises.length < maxExercises) {
-         for (const ex of dayCompounds) { // Try adding more compounds if space
+         for (const ex of dayCompounds) {
              if (selectedExercises.length < maxExercises && !addedNames.has(ex.name)) {
                  addExercise(ex, 'compound');
              }
          }
      }
+      // If still space, add more relevant isolations
      if (selectedExercises.length < maxExercises) {
-         for (const ex of dayIsolations) { // Then more isolations
+         for (const ex of dayIsolations) {
              if (selectedExercises.length < maxExercises && !addedNames.has(ex.name)) {
                  addExercise(ex, 'isolation');
              }
          }
      }
 
+    // Add Core work suggestion if not explicitly included often
+    const hasCoreWork = selectedExercises.some(ex => ex.name.toLowerCase().includes('plank') || ex.name.toLowerCase().includes('crunch') || ex.name.toLowerCase().includes('core') || ex.name.toLowerCase().includes('jambes')); // Added jambes for relevés de jambes
+    if (!hasCoreWork && level !== 'debutant' && selectedExercises.length < maxExercises) {
+         const coreEx = availableIsolation.find(ex => ex.target.includes('core'));
+         if (coreEx && !selectedExercises.some(e => e.name === coreEx.name)) { // Check if not already added
+             const coreParams = getSetsRepsRpe(goal, level, 'isolation');
+             addExercise({ name: coreEx.name, target: ['core'] }, 'isolation'); // Use addExercise helper
+         }
+    }
+
+
+    console.log(`Selected exercises for ${dayType}:`, selectedExercises.map(e => e.name));
     return selectedExercises;
 }
 
@@ -305,113 +349,109 @@ export class ProgramGenerator {
     generate(): Program {
         const { goal, level, split, days, duration, equipment } = this.formData;
 
+        // 1. Determine effective split and day types
         let effectiveSplit = split;
+        // Adjust split if 'autre' or incompatible days/split
         if (split === 'autre' || (split === 'full_body' && days > 4) || (split === 'half_body' && days > 5) || (split === 'ppl' && days < 3)) {
+             console.log(`Adjusting split from ${split} for ${days} days...`);
             if (days <= 2) effectiveSplit = 'full_body';
-            else if (days === 3) effectiveSplit = level === 'debutant' ? 'full_body' : 'ppl';
-            else if (days === 4) effectiveSplit = 'half_body';
-            else if (days === 5) effectiveSplit = 'ppl';
-            else effectiveSplit = 'ppl';
+            else if (days === 3) effectiveSplit = level === 'debutant' ? 'full_body' : 'ppl'; // PPL often better for 3 days intermediate+
+            else if (days === 4) effectiveSplit = 'half_body'; // Common 4-day split
+            else if (days === 5) effectiveSplit = 'ppl'; // PPL variation (PPLPP, PPLUL etc.) - simplified to PPL cycle
+            else effectiveSplit = 'ppl'; // PPL variation for 6 days (PPLPPL) - simplified
+             console.log(`Adjusted split to ${effectiveSplit}`);
+        } else if (goal === 'force' && effectiveSplit !== 'ppl' && days >= 3) {
+             // For Powerlifting, PPL is often preferred if enough days
+             console.log(`Adjusting split to PPL for Powerlifting goal with ${days} days.`);
+             effectiveSplit = 'ppl';
         }
+
+        // If Powerlifting is selected but no barbell/dumbbells, throw an error early
+        // Check for specific lifts availability instead of just equipment type
+        const availableCompound = getAvailableExercises(equipment, 'compound');
+        const hasSquat = availableCompound.some(ex => ex.name === 'Squat');
+        const hasBench = availableCompound.some(ex => ex.name === 'Bench Press');
+        const hasDeadlift = availableCompound.some(ex => ex.name === 'Deadlift');
+
+        if (goal === 'force' && (!hasSquat || !hasBench || !hasDeadlift)) {
+             let missing = [];
+             if (!hasSquat) missing.push('Squat');
+             if (!hasBench) missing.push('Bench Press');
+             if (!hasDeadlift) missing.push('Deadlift');
+             throw new Error(`Pour un objectif Powerlifting, vous devez avoir l'équipement nécessaire pour le ${missing.join(', la ')} et le Deadlift.`);
+        }
+
 
         const dayTypes: ('push' | 'pull' | 'legs' | 'upper' | 'lower' | 'full_body')[] = [];
         if (effectiveSplit === 'full_body') {
             for (let i = 0; i < days; i++) dayTypes.push('full_body');
         } else if (effectiveSplit === 'half_body') {
+            // Alternate Upper/Lower, trying to start with Upper
             for (let i = 0; i < days; i++) dayTypes.push(i % 2 === 0 ? 'upper' : 'lower');
         } else if (effectiveSplit === 'ppl') {
             const pplCycle: ('push' | 'pull' | 'legs')[] = ['push', 'pull', 'legs'];
             for (let i = 0; i < days; i++) dayTypes.push(pplCycle[i % 3]);
         }
 
-        const avgTimePerExercise = level === 'debutant' ? 12 : (level === 'intermediaire' ? 10 : 8);
-        const maxExercises = Math.max(4, Math.min(7, Math.floor(duration / avgTimePerExercise)));
+        // 2. Estimate max exercises per session
+        // Rough estimate: 7-12 mins per exercise (warmup sets, work sets, rest)
+        const avgTimePerExercise = level === 'debutant' ? 12 : (level === 'intermediaire' ? 9 : 7);
+        const maxExercises = Math.max(3, Math.min(8, Math.floor(duration / avgTimePerExercise))); // 3-8 exercises typical range
+        console.log(`Estimated max exercises per session: ${maxExercises} (duration: ${duration}, level: ${level})`);
 
-        const availableCompound = getAvailableExercises(equipment, 'compound');
+        // 3. Get available exercises based on equipment (already done above for the check)
         const availableIsolation = getAvailableExercises(equipment, 'isolation');
 
-        if (availableCompound.length === 0 && availableIsolation.length === 0) {
-             if (equipment.poids_corp) {
-                 availableCompound.push(...exerciseDB.compound.bodyweight); // Add bodyweight compounds as last resort
-                 availableIsolation.push(...exerciseDB.isolation.bodyweight);
-                 console.warn("No specific equipment exercises found, falling back to bodyweight.");
-             } else {
-                throw new Error("Aucun exercice disponible avec l'équipement sélectionné. Veuillez sélectionner au moins 'Poids du Corps'.");
-             }
-        }
-         if (availableCompound.length === 0 && availableIsolation.length > 0) {
-             console.warn("Aucun exercice composé disponible avec cet équipement. Le programme sera basé sur l'isolation.");
-         }
 
+        // 4. Build schedule day by day
         const schedule: WorkoutDay[] = [];
-        const usedExerciseNamesThisWeek = new Set<string>();
-        const addedNames = new Set<string>(); // Keep track of names added within a single day selection call
+        const addedCoreLiftsThisWeek = new Set<string>(); // Track core lifts added this week
 
         for (let i = 0; i < days; i++) {
             const dayType = dayTypes[i];
             let dayTitle = "";
-            const cycleLength = effectiveSplit === 'ppl' ? 3 : (effectiveSplit === 'half_body' ? 2 : (days > 1 ? 2 : 1));
-            const dayLetter = String.fromCharCode(65 + (i % cycleLength));
+            // Simple A/B/C or 1/2/3 suffix logic
+            const cycleLength = effectiveSplit === 'ppl' ? 3 : (effectiveSplit === 'half_body' ? 2 : (days > 1 ? 2 : 1)); // Assume A/B for FB unless 1 day
+            const dayLetter = String.fromCharCode(65 + (i % cycleLength)); // A, B, C...
 
             if (effectiveSplit === 'full_body') dayTitle = `Full Body ${dayLetter}`;
-            else if (effectiveSplit === 'half_body') dayTitle = dayType === 'upper' ? `Haut du Corps ${dayLetter}` : `Bas du Corps ${dayLetter}`;
-            else if (effectiveSplit === 'ppl') dayTitle = `${dayType.charAt(0).toUpperCase() + dayType.slice(1)} ${dayLetter}`;
+            else if (effectiveSplit === 'half_body') dayTitle = dayType === 'upper' ? `Haut du Corps ${Math.ceil((i+1)/2)}` : `Bas du Corps ${Math.ceil((i+1)/2)}`; // Use number for half body
+            else if (effectiveSplit === 'ppl') dayTitle = `${dayType.charAt(0).toUpperCase() + dayType.slice(1)} ${Math.ceil((i+1)/3)}`; // Use number for ppl
+
 
             // Filter out exercises used recently if possible, to add variety
-            const filteredCompounds = availableCompound.filter(ex => !usedExerciseNamesThisWeek.has(ex.name));
-            const filteredIsolations = availableIsolation.filter(ex => !usedExerciseNamesThisWeek.has(ex.name));
-
-            // Determine target compound count for the day
-            const targetCompoundCount = dayType === 'full_body' ? Math.max(1, Math.min(2, Math.floor(maxExercises * 0.4)))
-                                     : Math.max(1, Math.floor(maxExercises * (goal === 'force' || goal === 'powerbuilding' ? 0.5 : 0.4)));
-
-            // Use filtered lists if they have enough variety, otherwise use the full available lists
-            const compoundsToSelectFrom = filteredCompounds.length >= targetCompoundCount ? filteredCompounds : availableCompound;
-            const isolationsToSelectFrom = filteredIsolations.length >= (maxExercises - targetCompoundCount) ? filteredIsolations : availableIsolation;
+            // Note: This filtering might conflict with core lift prioritization if not careful.
+            // Let's pass the full available lists to selectExercisesForDay and let it handle filtering/prioritization.
 
 
             let selectedExercises = selectExercisesForDay(
                 dayType,
-                compoundsToSelectFrom,
-                isolationsToSelectFrom,
+                availableCompound, // Pass full list
+                availableIsolation, // Pass full list
                 maxExercises,
                 goal,
-                level
+                level,
+                addedCoreLiftsThisWeek // Pass the set to track core lifts
             );
 
-            // Add selected exercises to the tracking set for the week
-            selectedExercises.forEach(ex => usedExerciseNamesThisWeek.add(ex.name));
-
             // Basic reset for next week simulation if days > cycleLength (simplistic)
-            if ((i + 1) % cycleLength === 0 && days > cycleLength) {
-                 usedExerciseNamesThisWeek.clear();
+            if ((i + 1) % cycleLength === 0) {
+                 addedCoreLiftsThisWeek.clear(); // Reset core lifts tracking at the start of a new cycle
             }
 
-            // Add Core work suggestion if not explicitly included often
-            const hasCoreWork = selectedExercises.some(ex => getExerciseDetails(ex.name)?.target.includes('core'));
-            if (!hasCoreWork && level !== 'debutant' && selectedExercises.length < maxExercises) {
-                 const coreEx = availableIsolation.find(ex => getExerciseDetails(ex.name)?.target.includes('core'));
-                 if (coreEx && !addedNames.has(coreEx.name) && !selectedExercises.some(e => e.name === coreEx.name)) { // Check addedNames for the day too
-                     const coreParams = getSetsRepsRpe(goal, level, 'isolation');
-                     selectedExercises.push({ name: coreEx.name, sets: 2, reps: "10-15", rpe: 8, rest: "30-60 sec" }); // Standard core params
-                     addedNames.add(coreEx.name); // Add to day's set
-                     usedExerciseNamesThisWeek.add(coreEx.name); // Add to week's set
-                 }
-            }
 
             schedule.push({
                 day: i + 1,
                 title: dayTitle,
                 exercises: selectedExercises,
             });
-            addedNames.clear(); // Clear daily added names for the next day
         }
 
         // 5. Finalize Program Details
         const goalMap: Record<FormData['goal'], string> = {
             prise_masse: "Prise de Masse",
             seche: "Sèche / Perte de Gras",
-            force: "Force",
+            force: "Powerlifting", // Changed label here for description
             powerbuilding: "Powerbuilding"
         };
         const levelMap: Record<FormData['level'], string> = {
@@ -423,7 +463,7 @@ export class ProgramGenerator {
             full_body: "Full Body",
             half_body: "Half Body (Haut/Bas)",
             ppl: "Push Pull Legs",
-            autre: "Adapté"
+            autre: "Adapté" // Should not happen due to adjustment logic
         };
 
 
