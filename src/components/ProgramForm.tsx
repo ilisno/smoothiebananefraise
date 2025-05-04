@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -23,7 +23,8 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { showError, showSuccess } from '@/utils/toast'; // Assuming you have toast utilities
+import { showError, showSuccess } from '@/utils/toast';
+import { cn } from '@/lib/utils'; // Import cn utility
 
 // Define the schema for form validation using Zod
 const formSchema = z.object({
@@ -45,13 +46,15 @@ const formSchema = z.object({
   }),
 });
 
+export type FormData = z.infer<typeof formSchema>; // Export the type
+
 type ProgramFormProps = {
-  onGenerate: (data: z.infer<typeof formSchema>) => void;
+  onGenerate: (data: FormData) => void;
   isLoading: boolean;
 };
 
 const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
@@ -67,9 +70,8 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: FormData) {
     console.log("Form submitted:", values);
-    // TODO: Implement email sending logic here (e.g., via Supabase function or API)
     showSuccess("Formulaire soumis ! Génération du programme...");
     onGenerate(values);
   }
@@ -80,15 +82,15 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
     { id: "poids_corp", label: "Poids du Corps" },
     { id: "elastiques", label: "Élastiques" },
     { id: "kettlebells", label: "Kettlebells" },
-  ] as const; // Use 'as const' for type safety in FieldName
+  ] as const;
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
+    <Card className="w-full max-w-2xl mx-auto animate-in fade-in duration-500">
+      <CardHeader className="animate-in fade-in delay-100 duration-500">
         <CardTitle className="text-2xl font-bold text-center">Smoothie Banane Fraise 🍌🍓</CardTitle>
         <CardDescription className="text-center">Générez votre programme d'entraînement personnalisé</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="animate-in fade-in delay-200 duration-500">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Email */}
@@ -96,7 +98,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-300 duration-500">
                   <FormLabel>Votre Email</FormLabel>
                   <FormControl>
                     <Input placeholder="vous@email.com" {...field} />
@@ -114,7 +116,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="goal"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-350 duration-500">
                   <FormLabel>Objectif Principal</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
@@ -139,7 +141,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="level"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-400 duration-500">
                   <FormLabel>Niveau d'Expérience</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
@@ -163,7 +165,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="split"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem className="space-y-3 animate-in fade-in slide-in-from-bottom-2 delay-450 duration-500">
                   <FormLabel>Type de Split Préféré</FormLabel>
                   <FormControl>
                     <RadioGroup
@@ -207,7 +209,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="days"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-500 duration-500">
                   <FormLabel>Jours d'entraînement / semaine</FormLabel>
                   <FormControl>
                     <Input type="number" min="1" max="7" {...field} />
@@ -222,7 +224,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="duration"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-550 duration-500">
                   <FormLabel>Durée max par séance (minutes)</FormLabel>
                   <FormControl>
                     <Input type="number" min="30" max="180" step="15" {...field} />
@@ -237,7 +239,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               control={form.control}
               name="equipment"
               render={() => (
-                <FormItem>
+                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-600 duration-500">
                   <div className="mb-4">
                     <FormLabel className="text-base">Matériel Disponible</FormLabel>
                     <FormDescription>
@@ -252,7 +254,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
                       render={({ field }) => (
                         <FormItem
                           key={item.id}
-                          className="flex flex-row items-start space-x-3 space-y-0"
+                          className="flex flex-row items-start space-x-3 space-y-0 mb-2" // Added margin-bottom
                         >
                           <FormControl>
                             <Checkbox
@@ -268,13 +270,20 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
                     />
                   ))}
                   {/* Display the specific error for the equipment group */}
-                  <FormMessage>{form.formState.errors.equipment?.message}</FormMessage>
+                  <FormMessage>{form.formState.errors.equipment?.root?.message}</FormMessage>
                 </FormItem>
               )}
             />
 
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button
+              type="submit"
+              className={cn(
+                "w-full animate-in fade-in slide-in-from-bottom-2 delay-650 duration-500",
+                isLoading && "animate-pulse-subtle" // Apply subtle pulse when loading
+              )}
+              disabled={isLoading}
+            >
               {isLoading ? "Génération en cours..." : "Générer mon Programme"}
             </Button>
           </form>
