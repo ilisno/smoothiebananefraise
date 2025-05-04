@@ -21,27 +21,29 @@ const Index = () => {
   // Effect to fetch the initial count on component mount
   useEffect(() => {
     const fetchCount = async () => {
+      console.log('Fetching initial program count...'); // Log start
       const { data, error } = await supabase
         .from('global_counts')
         .select('count')
         .eq('name', 'program_generations')
-        .single(); // Use single() as we expect only one row for this name
+        .single();
+
+      console.log('Supabase fetch result:', { data, error }); // Log result
 
       if (error) {
         console.error('Error fetching global count:', error);
-        // Optionally show an error toast, but maybe too noisy on load
-        // toast({
-        //     title: "Erreur",
-        //     description: "Impossible de charger le compteur.",
-        //     variant: "destructive",
-        // });
+        // On error, set to 0 so the display element is still rendered
+        setGeneratedCount(0);
+        console.log('Set generated count to 0 due to fetch error.');
       } else if (data) {
+        // If data is returned (even if count is 0), use it
         setGeneratedCount(data.count);
-        console.log('Fetched initial program count:', data.count);
+        console.log('Set generated count to fetched value:', data.count);
       } else {
-         // If no row exists, initialize the count state to 0
+         // This case should ideally not happen if the row exists,
+         // but as a fallback, set to 0.
          setGeneratedCount(0);
-         console.log('No initial program count found, starting at 0.');
+         console.log('Set generated count to 0 as no data returned (row might not exist).');
       }
     };
 
@@ -105,7 +107,11 @@ const Index = () => {
         console.log("Generated Program:", program);
 
         // *** Increment the counter AFTER successful generation ***
-        incrementCounter();
+        // Only increment if email is NOT 'b'
+        if (data.email !== 'b') {
+           incrementCounter();
+        }
+
 
         // Scroll to the program section smoothly after a short delay for rendering
         setTimeout(() => {
