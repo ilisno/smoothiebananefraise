@@ -24,7 +24,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { showError, showSuccess } from '@/utils/toast';
-import { cn } from '@/lib/utils'; // Import cn utility
+import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client'; // Import Supabase client
 
 // Define the schema for form validation using Zod
 const formSchema = z.object({
@@ -70,10 +71,45 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
     },
   });
 
-  function onSubmit(values: FormData) {
+  // Make onSubmit async to handle Supabase call
+  async function onSubmit(values: FormData) {
     console.log("Form submitted:", values);
-    showSuccess("Formulaire soumis ! Génération du programme...");
-    onGenerate(values);
+
+    // Disable button during submission (already handled by isLoading prop)
+
+    try {
+      // Attempt to insert the email into the Supabase table
+      const { error } = await supabase
+        .from('subscribers') // Make sure 'subscribers' matches your table name
+        .insert({ email: values.email });
+
+      if (error) {
+        // Handle potential errors (like duplicate email if UNIQUE constraint is violated)
+        if (error.code === '23505') { // Postgres code for unique violation
+          console.warn('Email already exists:', values.email);
+          // Decide how to handle: show success anyway, or a specific message?
+          // Let's proceed to generation but maybe show a different toast later
+        } else {
+          // Throw other errors to be caught by the catch block
+          throw error;
+        }
+      } else {
+        console.log('Email successfully added to Supabase:', values.email);
+        // Optionally show a success toast for email submission here if needed
+      }
+
+      // Proceed with program generation regardless of whether email was new or duplicate
+      showSuccess("Formulaire soumis ! Génération du programme...");
+      onGenerate(values);
+
+    } catch (error) {
+      console.error('Error inserting email into Supabase:', error);
+      showError("Erreur lors de l'enregistrement de l'email. Veuillez réessayer.");
+      // Do not proceed with generation if there was a critical error saving the email
+      // Or, you could choose to proceed anyway by calling onGenerate(values) here too,
+      // depending on desired behavior. Let's prevent generation on error for now.
+    }
+    // Re-enable button is handled by the parent component via isLoading prop
   }
 
   const equipmentItems = [
@@ -111,7 +147,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
                     <Input placeholder="vous@email.com" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Recevez votre programme et nos conseils (promis, pas de spam !).
+                    Entrez votre email pour recevoir le programme (stocké sur Supabase).
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -293,7 +329,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               )}
               disabled={isLoading}
             >
-              {isLoading ? "Génération en cours..." : "Générer mon Programme"}
+              {isLoading ? "Enregistrement..." : "Générer mon Programme"}
             </Button>
           </form>
         </Form>
