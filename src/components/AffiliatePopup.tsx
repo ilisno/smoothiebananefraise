@@ -45,13 +45,14 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
     // Removed onOpenChange prop to disable closing on outside click/escape
     <Dialog open={isOpen}>
       {/* Adjusted max width to sm:max-w-[350px] */}
-      <DialogContent className="sm:max-w-[350px] md:max-w-[400px]"> {/* Adjust max width as needed */}
+      {/* Added hide-dialog-close class */}
+      <DialogContent className="sm:max-w-[350px] md:max-w-[400px] hide-dialog-close"> {/* Adjust max width as needed */}
         <DialogHeader>
           {/* Use the title prop for the DialogTitle */}
           <DialogTitle>{title || "Offre Spéciale !"}</DialogTitle>
           {/* Use the description prop for the DialogDescription */}
-          {/* Added mt-2 for spacing */}
-          {description && <DialogDescription className="mt-2 whitespace-pre-wrap">{description}</DialogDescription>} {/* Added whitespace-pre-wrap to respect \n */}
+          {/* Increased mt-4 for more spacing and added whitespace-pre-wrap */}
+          {description && <DialogDescription className="mt-4 whitespace-pre-wrap">{description}</DialogDescription>}
         </DialogHeader>
         <div className="my-4 flex justify-center"> {/* Center the image container */}
           {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -16,21 +16,21 @@ const popupData = [
     link: 'https://nmsquad.link/03olk',
     buttonText: 'Découvrir la whey de qualité',
     title: 'Nutrimuscle — Construis du muscle', // Removed quotes
-    description: 'Que du propre, du traçable et du performant.\nLa whey Nutrimuscle, c’est du sérieux pour des vrais résultats.\nFormulations haut de gamme, sans compromis.', // Added description
+    description: '<b>Que du propre, du traçable et du performant.</b>\nLa whey Nutrimuscle, c’est du sérieux pour <b>des vrais résultats.</b>\n<b>Formulations haut de gamme, sans compromis.</b>', // Added description with bold tags
   },
   {
     image: '/popup-placeholder-2.jpg',
     link: 'https://go.nordvpn.net/aff_c?offer_id=15&aff_id=122852&url_id=1172',
     buttonText: 'Sécuriser ma connexion',
     title: 'NordVPN — Ton chien protège ta maison… Qui protège ton Wi-Fi ?', // Removed quotes
-    description: 'Aujourd’hui, protéger sa connexion, c’est comme fermer sa porte à clé.\nNordVPN, c’est le chien de garde numérique de +15 millions d’utilisateurs.\nJusqu’à -73 % de réduction + 4 mois offerts maintenant.', // Added description
+    description: '<b>Aujourd’hui, protéger sa connexion, c’est comme fermer sa porte à clé.</b>\nNordVPN, c’est le chien de garde numérique de <b>+15 millions d’utilisateurs.</b>\n<b>Jusqu’à -73 % de réduction + 4 mois offerts maintenant.</b>', // Added description with bold tags
   },
   {
     image: '/popup-placeholder-3.jpg',
     link: 'https://ericflag.com/?ref=ebdudilx',
     buttonText: 'M’équiper pour progresser',
     title: 'Boutique Éric Flag — Transforme ton salon en salle de sport', // Removed quotes
-    description: 'Bandes élastiques, barres de traction, anneaux…\nTout ce qu’il faut pour t’entraîner chez toi ou dehors.\nDu matériel minimaliste, solide, et stylé.', // Added description
+    description: '<b>Bandes élastiques, barres de traction, anneaux…</b>\n<b>Tout ce qu’il faut pour t’entraîner chez toi ou dehors.</b>\n<b>Du matériel minimaliste, solide, et stylé.</b>', // Added description with bold tags
   },
 ];
 
@@ -190,8 +190,8 @@ const Index = () => {
           <ProgramForm onGenerate={handleGenerate} isLoading={isLoading} />
         )}
 
-        {/* Show Loading Skeleton */}
         {isLoading && (
+          // Simple Skeleton Loading State
           <div className="w-full max-w-2xl mx-auto space-y-6">
              <Skeleton className="h-16 w-full" />
              <Skeleton className="h-10 w-3/4" />

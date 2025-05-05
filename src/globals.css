@@ -124,4 +124,11 @@
       transform: translateY(-5px); /* Adjust bounce height */
     }
   }
+
+  /* Hide the close button in shadcn DialogContent */
+  /* Target the button which is usually the last child or has specific attributes */
+  /* This is a bit fragile, but often works for default shadcn components */
+  .hide-dialog-close > button:last-child {
+      display: none !important;
+  }
 }
