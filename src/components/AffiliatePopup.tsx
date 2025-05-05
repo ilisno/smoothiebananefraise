@@ -44,9 +44,9 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
   return (
     // Removed onOpenChange prop to disable closing on outside click/escape
     <Dialog open={isOpen}>
-      {/* Adjusted max width to sm:max-w-[350px] */}
+      {/* Adjusted max width to sm:max-w-[400px] md:max-w-[450px] */}
       {/* Added hide-dialog-close class */}
-      <DialogContent className="sm:max-w-[350px] md:max-w-[400px] hide-dialog-close"> {/* Adjust max width as needed */}
+      <DialogContent className="sm:max-w-[400px] md:max-w-[450px] hide-dialog-close"> {/* Adjust max width as needed */}
         <DialogHeader>
           {/* Use the title prop for the DialogTitle */}
           <DialogTitle>{title || "Offre Spéciale !"}</DialogTitle>
