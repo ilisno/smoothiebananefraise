@@ -14,7 +14,8 @@ type AffiliatePopupProps = {
   onClose: () => void; // Function to close the dialog
   onProceed: () => void; // Function to proceed after closing
   imageSrc: string;
-  affiliateLink?: string; // Optional for now
+  affiliateLink?: string;
+  buttonText?: string; // Add buttonText prop
 };
 
 const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
@@ -23,6 +24,7 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
   onProceed,
   imageSrc,
   affiliateLink,
+  buttonText, // Receive buttonText prop
 }) => {
 
   // Log the image source when the component renders or updates
@@ -57,11 +59,11 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
            {affiliateLink ? (
              <Button asChild variant="default">
                <a href={affiliateLink} target="_blank" rel="noopener noreferrer">
-                 Découvrir l'offre
+                 {buttonText || "Découvrir l'offre"} {/* Use buttonText prop */}
                </a>
              </Button>
            ) : (
-             <Button disabled>Lien bientôt disponible</Button>
+             <Button disabled>{buttonText || "Lien bientôt disponible"}</Button>
            )}
            {/* Proceed Button */}
            <Button onClick={handleProceed} variant="outline">
