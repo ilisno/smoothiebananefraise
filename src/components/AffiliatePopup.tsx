@@ -73,16 +73,16 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
         <DialogFooter className="flex flex-col sm:flex-row sm:justify-between gap-2">
            {/* Affiliate Button */}
            {affiliateLink ? (
-             <Button asChild variant="default" className="sm:flex-1"> {/* Added sm:flex-1 */}
+             <Button asChild variant="default">
                <a href={affiliateLink} target="_blank" rel="noopener noreferrer">
-                 {buttonText || "Découvrir l'offre"}
+                 {buttonText || "Découvrir l'offre"} {/* Use buttonText prop */}
                </a>
              </Button>
            ) : (
-             <Button disabled className="sm:flex-1">{buttonText || "Lien bientôt disponible"}</Button> {/* Added sm:flex-1 */}
+             <Button disabled>{buttonText || "Lien bientôt disponible"}</Button>
            )}
            {/* Proceed Button */}
-           <Button onClick={handleProceed} variant="outline" className="sm:flex-1"> {/* Added sm:flex-1 */}
+           <Button onClick={handleProceed} variant="outline">
              Voir mon programme
            </Button>
         </DialogFooter>
