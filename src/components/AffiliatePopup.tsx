@@ -5,14 +5,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogClose, // Import DialogClose for the default close button
+  // Removed DialogClose import
+  // import DialogClose from "@/components/ui/dialog";
   DialogDescription, // Import DialogDescription
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 type AffiliatePopupProps = {
   isOpen: boolean;
-  onClose: () => void; // Function to close the dialog
+  onClose: () => void; // Function to close the dialog (still needed for the "Voir mon programme" button)
   onProceed: () => void; // Function to proceed after closing
   imageSrc: string;
   affiliateLink?: string;
@@ -41,14 +42,16 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    // Removed onOpenChange prop to disable closing on outside click/escape
+    <Dialog open={isOpen}>
       {/* Adjusted max width to sm:max-w-[350px] */}
       <DialogContent className="sm:max-w-[350px] md:max-w-[400px]"> {/* Adjust max width as needed */}
         <DialogHeader>
           {/* Use the title prop for the DialogTitle */}
           <DialogTitle>{title || "Offre Spéciale !"}</DialogTitle>
           {/* Use the description prop for the DialogDescription */}
-          {description && <DialogDescription>{description}</DialogDescription>}
+          {/* Added mt-2 for spacing */}
+          {description && <DialogDescription className="mt-2 whitespace-pre-wrap">{description}</DialogDescription>} {/* Added whitespace-pre-wrap to respect \n */}
         </DialogHeader>
         <div className="my-4 flex justify-center"> {/* Center the image container */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -56,7 +59,8 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
             src={imageSrc}
             alt="Offre affiliée"
             // Simplified styling: ensure it has width and height are auto
-            className="max-w-full h-auto rounded-md"
+            // Added animate-bounce-subtle class for animation
+            className="max-w-full h-auto rounded-md animate-bounce-subtle"
           />
         </div>
         <DialogFooter className="flex flex-col sm:flex-row sm:justify-between gap-2">
