@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogFooter,
   DialogClose, // Import DialogClose for the default close button
+  DialogDescription, // Import DialogDescription
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
@@ -17,6 +18,7 @@ type AffiliatePopupProps = {
   affiliateLink?: string;
   buttonText?: string; // Add buttonText prop
   title?: string; // Add title prop
+  description?: string; // Add description prop
 };
 
 const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
@@ -27,6 +29,7 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
   affiliateLink,
   buttonText, // Receive buttonText prop
   title, // Receive title prop
+  description, // Receive description prop
 }) => {
 
   // Log the image source when the component renders or updates
@@ -44,10 +47,8 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
         <DialogHeader>
           {/* Use the title prop for the DialogTitle */}
           <DialogTitle>{title || "Offre Spéciale !"}</DialogTitle>
-          {/* Optional description */}
-          {/* <DialogDescription>
-            Découvrez cette offre avant de voir votre programme.
-          </DialogDescription> */}
+          {/* Use the description prop for the DialogDescription */}
+          {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
         <div className="my-4 flex justify-center"> {/* Center the image container */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
