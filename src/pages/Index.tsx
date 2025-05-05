@@ -9,11 +9,11 @@ import { useToast } from "@/components/ui/use-toast";
 
 export type { Exercise, WorkoutDay, Program } from '@/lib/programGenerator';
 
-// Placeholder data for popups - REPLACE WITH ACTUAL PATHS AND LINKS
+// Updated popup data with affiliate links
 const popupData = [
-  { image: '/popup-placeholder-1.jpg', link: '#' }, // Replace # with actual link later
-  { image: '/popup-placeholder-2.jpg', link: '#' },
-  { image: '/popup-placeholder-3.jpg', link: '#' },
+  { image: '/popup-placeholder-1.jpg', link: 'https://nmsquad.link/03olk' }, // Link for image 1
+  { image: '/popup-placeholder-2.jpg', link: 'https://go.nordvpn.net/aff_c?offer_id=15&aff_id=122852&url_id=1172' }, // Link for image 2
+  { image: '/popup-placeholder-3.jpg', link: 'https://ericflag.com/?ref=ebdudilx' }, // Link for image 3
 ];
 
 const Index = () => {
