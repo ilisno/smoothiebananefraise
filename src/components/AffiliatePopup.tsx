@@ -42,7 +42,7 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
   };
 
   return (
-    {/* Corrected comment syntax */}
+    // Removed the misplaced comment
     <Dialog open={isOpen}>
       {/* Adjusted max width to sm:max-w-[350px] */}
       {/* Added hide-dialog-close class */}
