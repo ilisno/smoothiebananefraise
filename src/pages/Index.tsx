@@ -1,63 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import ProgramForm, { FormData } from '@/components/ProgramForm'; // Import FormData type
+import ProgramForm, { FormData } from '@/components/ProgramForm';
 import WorkoutProgram from '@/components/WorkoutProgram';
-import { ProgramGenerator, Program } from '@/lib/programGenerator'; // Import the generator logic
-import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton for loading state
-import { supabase } from '@/integrations/supabase/client'; // Import Supabase client
-import { useToast } from "@/components/ui/use-toast"; // Import useToast for notifications
+import AffiliatePopup from '@/components/AffiliatePopup'; // Import the new component
+import { ProgramGenerator, Program } from '@/lib/programGenerator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from "@/components/ui/use-toast";
 
-// Types for Exercise and WorkoutDay are now likely defined within ProgramGenerator or a shared types file
-// For clarity, let's assume they are exported from programGenerator or defined similarly
 export type { Exercise, WorkoutDay, Program } from '@/lib/programGenerator';
+
+// Placeholder data for popups - REPLACE WITH ACTUAL PATHS AND LINKS
+const popupData = [
+  { image: '/popup-placeholder-1.jpg', link: '#' }, // Replace # with actual link later
+  { image: '/popup-placeholder-2.jpg', link: '#' },
+  { image: '/popup-placeholder-3.jpg', link: '#' },
+];
 
 const Index = () => {
   const [formData, setFormData] = useState<FormData | null>(null);
   const [generatedProgram, setGeneratedProgram] = useState<Program | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [generatedCount, setGeneratedCount] = useState<number | null>(null); // State for the global counter
+  const [generatedCount, setGeneratedCount] = useState<number | null>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false); // State for popup visibility
+  const [selectedPopupIndex, setSelectedPopupIndex] = useState<number | null>(null); // State for selected popup
+  const [showProgram, setShowProgram] = useState(false); // State to control program visibility after popup
 
-  const { toast } = useToast(); // Initialize toast hook
+  const { toast } = useToast();
 
-  // Effect to fetch the initial count on component mount
   useEffect(() => {
     const fetchCount = async () => {
-      console.log('Fetching initial program count...'); // Log start
+      console.log('Fetching initial program count...');
       const { data, error } = await supabase
         .from('global_counts')
         .select('count')
         .eq('name', 'program_generations')
         .single();
 
-      console.log('Supabase fetch result:', { data, error }); // Log result
+      console.log('Supabase fetch result:', { data, error });
 
       if (error) {
         console.error('Error fetching global count:', error);
-        // On error, set to 0 so the display element is still rendered
         setGeneratedCount(0);
         console.log('Set generated count to 0 due to fetch error.');
       } else if (data) {
-        // If data is returned (even if count is 0), use it
         setGeneratedCount(data.count);
         console.log('Set generated count to fetched value:', data.count);
       } else {
-         // This case should ideally not happen if the row exists,
-         // but as a fallback, set to 0.
          setGeneratedCount(0);
          console.log('Set generated count to 0 as no data returned (row might not exist).');
       }
     };
 
     fetchCount();
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
-  // Function to increment the counter in Supabase
   const incrementCounter = async () => {
-      // Note: This client-side increment is simple but has race condition risks
-      // if many users click at the exact same millisecond.
-      // A more robust approach uses Supabase functions or database transactions.
-      // For demonstration, we'll do a simple read-then-update.
-
-      // First, get the current count
       const { data: currentData, error: fetchError } = await supabase
         .from('global_counts')
         .select('count')
@@ -66,14 +63,12 @@ const Index = () => {
 
       if (fetchError) {
           console.error('Error fetching count before increment:', fetchError);
-          // Don't stop generation, but log the error
           return;
       }
 
       const currentCount = currentData ? currentData.count : 0;
       const newCount = currentCount + 1;
 
-      // Then, update the count
       const { error: updateError } = await supabase
         .from('global_counts')
         .update({ count: newCount })
@@ -88,7 +83,7 @@ const Index = () => {
            });
       } else {
           console.log('Global program count incremented to:', newCount);
-          setGeneratedCount(newCount); // Update local state
+          setGeneratedCount(newCount);
       }
   };
 
@@ -97,50 +92,59 @@ const Index = () => {
     setIsLoading(true);
     setFormData(data);
     setGeneratedProgram(null); // Clear previous program
+    setShowProgram(false); // Hide program view
+    setIsPopupOpen(false); // Ensure popup is closed initially
 
-    // Simulate generation time - replace with actual async call if needed
+    // Simulate generation time
     setTimeout(() => {
       try {
         const generator = new ProgramGenerator(data);
         const program = generator.generate();
-        setGeneratedProgram(program);
+        setGeneratedProgram(program); // Store the generated program
         console.log("Generated Program:", program);
 
-        // *** Increment the counter AFTER successful generation ***
-        // Only increment if email is NOT 'b'
+        // Increment counter only if email is not 'b'
         if (data.email !== 'b') {
            incrementCounter();
         }
 
-
-        // Scroll to the program section smoothly after a short delay for rendering
-        setTimeout(() => {
-            const programElement = document.getElementById('workout-program');
-            if (programElement) {
-                programElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }, 100); // Small delay
+        // --- Popup Logic ---
+        const randomIndex = Math.floor(Math.random() * popupData.length);
+        setSelectedPopupIndex(randomIndex);
+        setIsPopupOpen(true); // Open the popup
+        // --- End Popup Logic ---
 
       } catch (error) {
         console.error("Error generating program:", error);
-        // Optionally show an error toast to the user
-        // showError("Une erreur est survenue lors de la génération."); // Example
         toast({
             title: "Erreur de génération",
             description: error instanceof Error ? error.message : "Une erreur inconnue est survenue lors de la génération.",
             variant: "destructive",
         });
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Stop loading indicator *before* showing popup
       }
-    }, 1500); // Simulate 1.5 seconds delay
+    }, 1500);
+  };
+
+  const handleProceedToProgram = () => {
+    setShowProgram(true); // Set flag to show the program
+    // Scroll to the program section smoothly
+    setTimeout(() => {
+        const programElement = document.getElementById('workout-program');
+        if (programElement) {
+            programElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 100); // Small delay for rendering
   };
 
   const handleReset = () => {
     setGeneratedProgram(null);
     setFormData(null);
-    setIsLoading(false); // Ensure loading is reset
-    // Scroll back to top smoothly
+    setIsLoading(false);
+    setIsPopupOpen(false);
+    setSelectedPopupIndex(null);
+    setShowProgram(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -154,9 +158,8 @@ const Index = () => {
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
           Créez votre programme de musculation personnalisé en quelques clics. Simple, rapide et basé sur vos objectifs.
         </p>
-         {/* Display the global counter */}
          {generatedCount !== null && (
-             <p className="mt-4 text-xl font-semibold text-primary animate-bounce-subtle"> {/* Use primary color and subtle bounce */}
+             <p className="mt-4 text-xl font-semibold text-primary animate-bounce-subtle">
                  {generatedCount} programmes générés !
              </p>
          )}
@@ -164,12 +167,13 @@ const Index = () => {
 
       {/* Main Content Area */}
       <main className="flex-grow flex items-center justify-center">
+        {/* Show Form if no program generated and not loading */}
         {!generatedProgram && !isLoading && (
           <ProgramForm onGenerate={handleGenerate} isLoading={isLoading} />
         )}
 
+        {/* Show Loading Skeleton */}
         {isLoading && (
-          // Simple Skeleton Loading State
           <div className="w-full max-w-2xl mx-auto space-y-6">
              <Skeleton className="h-16 w-full" />
              <Skeleton className="h-10 w-3/4" />
@@ -183,14 +187,27 @@ const Index = () => {
           </div>
         )}
 
-        {generatedProgram && !isLoading && (
+        {/* Show Program only if generated, not loading, popup closed, and proceed flag is true */}
+        {generatedProgram && !isLoading && !isPopupOpen && showProgram && (
           <WorkoutProgram
               program={generatedProgram}
               onReset={handleReset}
-              formData={formData} // Pass form data for potential use in WorkoutProgram
+              formData={formData!} // formData will be set if program is generated
           />
         )}
       </main>
+
+      {/* Affiliate Popup */}
+      {isPopupOpen && selectedPopupIndex !== null && generatedProgram && (
+          <AffiliatePopup
+            isOpen={isPopupOpen}
+            onClose={() => setIsPopupOpen(false)} // Close the dialog
+            onProceed={handleProceedToProgram} // Trigger showing the program
+            imageSrc={popupData[selectedPopupIndex].image}
+            affiliateLink={popupData[selectedPopupIndex].link}
+          />
+        )}
+
 
       {/* Footer Section */}
       <footer className="text-center mt-12 py-4 border-t">
