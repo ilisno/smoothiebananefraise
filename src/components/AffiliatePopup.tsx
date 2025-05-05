@@ -48,17 +48,20 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
       {/* Added hide-dialog-close class */}
       <DialogContent className="sm:max-w-[350px] md:max-w-[400px] hide-dialog-close"> {/* Adjust max width as needed */}
         <DialogHeader>
-          {/* Use the title prop for the DialogTitle */}
-          <DialogTitle>{title || "Offre Spéciale !"}</DialogTitle>
-          {/* Use the description prop for the DialogDescription */}
-          {/* Increased mt-2 for more spacing and added whitespace-pre-wrap */}
-          {/* Use dangerouslySetInnerHTML to render HTML tags like <b> */}
-          {description && (
-            <DialogDescription
-              className="mt-2 whitespace-pre-wrap" // Reverted mt-4 to mt-2
-              dangerouslySetInnerHTML={{ __html: description }}
-            />
-          )}
+          {/* Wrap children in a Fragment to potentially fix React.Children.only error */}
+          <>
+            {/* Use the title prop for the DialogTitle */}
+            <DialogTitle>{title || "Offre Spéciale !"}</DialogTitle>
+            {/* Use the description prop for the DialogDescription */}
+            {/* Increased mt-2 for more spacing and added whitespace-pre-wrap */}
+            {/* Use dangerouslySetInnerHTML to render HTML tags like <b> */}
+            {description && (
+              <DialogDescription
+                className="mt-2 whitespace-pre-wrap" // Reverted mt-4 to mt-2
+                dangerouslySetInnerHTML={{ __html: description }}
+              />
+            )}
+          </>
         </DialogHeader>
         <div className="my-4 flex justify-center"> {/* Center the image container */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
