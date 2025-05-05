@@ -37,7 +37,8 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[425px] md:max-w-[600px]"> {/* Adjust max width as needed */}
+      {/* Adjusted max width to sm:max-w-[350px] */}
+      <DialogContent className="sm:max-w-[350px] md:max-w-[400px]"> {/* Adjust max width as needed */}
         <DialogHeader>
           <DialogTitle>Offre Spéciale !</DialogTitle>
           {/* Optional description */}

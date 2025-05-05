@@ -178,25 +178,6 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
       <CardContent className="animate-in fade-in delay-200 duration-500">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Email */}
-            <FormField
-              key="email-field" // Added key
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-300 duration-500">
-                  <FormLabel>Votre Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="vous@email.com" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Entrez votre email pour recevoir le programme (stocké sur Supabase).
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {/* Goal (Radio Buttons) */}
             <FormField
               key="goal-field" // Added key
@@ -374,11 +355,30 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               )}
             />
 
+            {/* Email - Moved to the end */}
+            <FormField
+              key="email-field" // Keep the key
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-[650ms] duration-500"> {/* Adjusted delay */}
+                  <FormLabel>Votre Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="vous@email.com" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Entrez votre email pour recevoir le programme (stocké sur Supabase).
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
 
             <Button
               type="submit"
               className={cn(
-                "w-full animate-in fade-in slide-in-from-bottom-2 delay-[650ms] duration-500",
+                "w-full animate-in fade-in slide-in-from-bottom-2 delay-[700ms] duration-500", // Adjusted delay
                 isLoading && "animate-pulse-subtle" // Apply subtle pulse when loading
               )}
               disabled={isLoading}
