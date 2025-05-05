@@ -25,6 +25,9 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
   affiliateLink,
 }) => {
 
+  // Log the image source when the component renders or updates
+  console.log("AffiliatePopup rendering with imageSrc:", imageSrc);
+
   const handleProceed = () => {
     onClose(); // Close the dialog first
     onProceed(); // Then trigger the proceed action
@@ -40,16 +43,17 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
             Découvrez cette offre avant de voir votre programme.
           </DialogDescription> */}
         </DialogHeader>
-        <div className="my-4">
+        <div className="my-4 flex justify-center"> {/* Center the image container */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageSrc}
             alt="Offre affiliée"
-            className="w-full h-auto rounded-md object-contain" // Adjust styling as needed
+            // Simplified styling: ensure it has width and height are auto
+            className="max-w-full h-auto rounded-md"
           />
         </div>
         <DialogFooter className="flex flex-col sm:flex-row sm:justify-between gap-2">
-           {/* Affiliate Button (placeholder for now) */}
+           {/* Affiliate Button */}
            {affiliateLink ? (
              <Button asChild variant="default">
                <a href={affiliateLink} target="_blank" rel="noopener noreferrer">
