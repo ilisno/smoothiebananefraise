@@ -32,6 +32,14 @@ const popupData = [
     title: 'Boutique Éric Flag — Transforme ton salon en salle de sport', // Removed quotes
     description: '<b>Bandes élastiques, barres de traction, anneaux…</b>\n<b>Tout ce qu’il faut pour t’entraîner chez toi ou dehors.</b>\n<b>Du matériel minimaliste, solide, et stylé.</b>', // Added description with bold tags
   },
+  // Added BoursoBank popup
+  {
+    image: '/popup-placeholder-4.jpg', // Using a new placeholder image path
+    link: 'https://bour.so/p/pC1PYLtQLf6',
+    buttonText: '→ Profiter de l’offre maintenant',
+    title: 'BoursoBank — Change de banque, gagne du cash',
+    description: 'Tu peux toucher jusqu’à 200€ de prime rien qu’en ouvrant ton compte.\nC’est la banque la moins chère de France, et c’est pas nous qui le disons.\nApplication fluide, carte gratuite, zéro paperasse inutile.',
+  },
 ];
 
 const Index = () => {
