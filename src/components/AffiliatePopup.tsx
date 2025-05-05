@@ -42,7 +42,7 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
   };
 
   return (
-    // Removed onOpenChange prop to disable closing on outside click/escape
+    {/* Corrected comment syntax */}
     <Dialog open={isOpen}>
       {/* Adjusted max width to sm:max-w-[350px] */}
       {/* Added hide-dialog-close class */}
