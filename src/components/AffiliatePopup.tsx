@@ -52,7 +52,13 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
           <DialogTitle>{title || "Offre Spéciale !"}</DialogTitle>
           {/* Use the description prop for the DialogDescription */}
           {/* Increased mt-4 for more spacing and added whitespace-pre-wrap */}
-          {description && <DialogDescription className="mt-4 whitespace-pre-wrap">{description}</DialogDescription>}
+          {/* Use dangerouslySetInnerHTML to render HTML tags like <b> */}
+          {description && (
+            <DialogDescription
+              className="mt-4 whitespace-pre-wrap"
+              dangerouslySetInnerHTML={{ __html: description }}
+            />
+          )}
         </DialogHeader>
         <div className="my-4 flex justify-center"> {/* Center the image container */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
