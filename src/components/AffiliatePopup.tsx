@@ -16,6 +16,7 @@ type AffiliatePopupProps = {
   imageSrc: string;
   affiliateLink?: string;
   buttonText?: string; // Add buttonText prop
+  title?: string; // Add title prop
 };
 
 const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
@@ -25,6 +26,7 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
   imageSrc,
   affiliateLink,
   buttonText, // Receive buttonText prop
+  title, // Receive title prop
 }) => {
 
   // Log the image source when the component renders or updates
@@ -40,7 +42,8 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
       {/* Adjusted max width to sm:max-w-[350px] */}
       <DialogContent className="sm:max-w-[350px] md:max-w-[400px]"> {/* Adjust max width as needed */}
         <DialogHeader>
-          <DialogTitle>Offre Spéciale !</DialogTitle>
+          {/* Use the title prop for the DialogTitle */}
+          <DialogTitle>{title || "Offre Spéciale !"}</DialogTitle>
           {/* Optional description */}
           {/* <DialogDescription>
             Découvrez cette offre avant de voir votre programme.

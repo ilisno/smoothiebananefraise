@@ -9,11 +9,11 @@ import { useToast } from "@/components/ui/use-toast";
 
 export type { Exercise, WorkoutDay, Program } from '@/lib/programGenerator';
 
-// Updated popup data with affiliate links and button text
+// Updated popup data with affiliate links, button text, and titles
 const popupData = [
-  { image: '/popup-placeholder-1.jpg', link: 'https://nmsquad.link/03olk', buttonText: 'Découvrir la whey de qualité' }, // Link and text for image 1
-  { image: '/popup-placeholder-2.jpg', link: 'https://go.nordvpn.net/aff_c?offer_id=15&aff_id=122852&url_id=1172', buttonText: 'Sécuriser ma connexion' }, // Link and text for image 2
-  { image: '/popup-placeholder-3.jpg', link: 'https://ericflag.com/?ref=ebdudilx', buttonText: 'M’équiper pour progresser' }, // Link and text for image 3
+  { image: '/popup-placeholder-1.jpg', link: 'https://nmsquad.link/03olk', buttonText: 'Découvrir la whey de qualité', title: 'Nutrimuscle — "Construis du muscle"' }, // Data for image 1
+  { image: '/popup-placeholder-2.jpg', link: 'https://go.nordvpn.net/aff_c?offer_id=15&aff_id=122852&url_id=1172', buttonText: 'Sécuriser ma connexion', title: 'NordVPN — "Ton chien protège ta maison… Qui protège ton Wi-Fi ?"' }, // Data for image 2
+  { image: '/popup-placeholder-3.jpg', link: 'https://ericflag.com/?ref=ebdudilx', buttonText: 'M’équiper pour progresser', title: 'Boutique Éric Flag — "Transforme ton salon en salle de sport"' }, // Data for image 3
 ];
 
 const Index = () => {
@@ -172,8 +172,8 @@ const Index = () => {
           <ProgramForm onGenerate={handleGenerate} isLoading={isLoading} />
         )}
 
-        {/* Show Loading Skeleton */}
         {isLoading && (
+          // Simple Skeleton Loading State
           <div className="w-full max-w-2xl mx-auto space-y-6">
              <Skeleton className="h-16 w-full" />
              <Skeleton className="h-10 w-3/4" />
@@ -206,6 +206,7 @@ const Index = () => {
             imageSrc={popupData[selectedPopupIndex].image}
             affiliateLink={popupData[selectedPopupIndex].link}
             buttonText={popupData[selectedPopupIndex].buttonText} // Pass button text
+            title={popupData[selectedPopupIndex].title} // Pass title
           />
         )}
 
