@@ -182,7 +182,10 @@ const Index = () => {
           Smoothie Banane Fraise 🍌🍓
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Créez votre programme de musculation personnalisé en quelques clics. Simple, rapide et basé sur vos objectifs.
+          Créez votre programme de musculation personnalisé en quelques clics avec notre <strong>générateur de programme personnalisé musculation gratuit</strong>. Obtenez un plan d'entraînement simple, rapide, et parfaitement adapté à vos objectifs, votre niveau et l'équipement dont vous disposez.
+        </p>
+        <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto mt-4">
+          Que vous soyez débutant cherchant à démarrer, ou un pratiquant avancé visant de nouveaux sommets, notre outil vous aide à structurer vos séances de sport. Fini les entraînements génériques ! Recevez un plan de musculation détaillé, semaine après semaine, pour progresser efficacement. Notre <strong>générateur de programme de musculation</strong> est conçu pour être intuitif et vous fournir des résultats, le tout <strong>gratuitement</strong>.
         </p>
          {generatedCount !== null && (
              <p className="mt-4 text-xl font-semibold text-primary animate-bounce-subtle">
@@ -241,7 +244,7 @@ const Index = () => {
       {/* Footer Section */}
       <footer className="text-center mt-12 py-4 border-t">
         <p className="text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Smoothie Banane Fraise - Générateur de programme simple.
+          © {new Date().getFullYear()} Smoothie Banane Fraise - Votre <strong>générateur de programme personnalisé musculation gratuit</strong>. Tous droits réservés.
         </p>
       </footer>
     </div>
