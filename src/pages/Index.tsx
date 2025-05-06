@@ -179,7 +179,7 @@ const Index = () => {
       {/* Header Section */}
       <header className="text-center mb-10 md:mb-12">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
-          Smoothie Banane Fraise 🍌🍓
+          Générateur de Programme Personnalisé Musculation Gratuit <span className="block text-3xl md:text-4xl font-normal mt-1">par Smoothie Banane Fraise 🍌🍓</span>
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
           Créez votre programme de musculation personnalisé en quelques clics avec notre <strong>générateur de programme personnalisé musculation gratuit</strong>. Obtenez un plan d'entraînement simple, rapide, et parfaitement adapté à vos objectifs, votre niveau et l'équipement dont vous disposez.
