@@ -179,13 +179,14 @@ const Index = () => {
       {/* Header Section */}
       <header className="text-center mb-10 md:mb-12">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
-          Générateur de Programme Personnalisé Musculation Gratuit <span className="block text-3xl md:text-4xl font-normal mt-1">par Smoothie Banane Fraise 🍌🍓</span>
+          Générateur de Programme Personnalisé Musculation Gratuit 
+          <span className="block text-xs text-muted-foreground font-normal mt-1">par Smoothie Banane Fraise 🍌🍓</span>
         </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-base text-muted-foreground max-w-2xl mx-auto">
           Créez votre programme de musculation personnalisé en quelques clics avec notre <strong>générateur de programme personnalisé musculation gratuit</strong>. Obtenez un plan d'entraînement simple, rapide, et parfaitement adapté à vos objectifs, votre niveau et l'équipement dont vous disposez.
         </p>
-        <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto mt-4">
-          Que vous soyez débutant cherchant à démarrer, ou un pratiquant avancé visant de nouveaux sommets, notre outil vous aide à structurer vos séances de sport. Fini les entraînements génériques ! Recevez un plan de musculation détaillé, semaine après semaine, pour progresser efficacement. Notre <strong>générateur de programme de musculation</strong> est conçu pour être intuitif et vous fournir des résultats, le tout <strong>gratuitement</strong>.
+        <p className="text-base text-muted-foreground max-w-2xl mx-auto mt-2">
+          Nos programmes de muscu personnalisés vous fourniront des résultats optimaux.
         </p>
          {generatedCount !== null && (
              <p className="mt-4 text-xl font-semibold text-primary animate-bounce-subtle">
