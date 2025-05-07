@@ -7,7 +7,8 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button"; // Import buttonVariants
+import { cn } from "@/lib/utils"; // Import cn
 
 type AffiliatePopupProps = {
   isOpen: boolean;
@@ -18,7 +19,7 @@ type AffiliatePopupProps = {
   buttonText?: string;
   title?: string;
   description?: string;
-  onAffiliateLinkClick: () => void; // Nouvelle prop pour gérer le clic sur le lien affilié
+  onAffiliateLinkClick: () => void;
 };
 
 const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
@@ -30,7 +31,7 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
   buttonText,
   title,
   description,
-  onAffiliateLinkClick, // Utiliser la nouvelle prop
+  onAffiliateLinkClick,
 }) => {
 
   console.log("AffiliatePopup rendering with imageSrc:", imageSrc);
@@ -40,9 +41,11 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
     onProceed();
   };
 
-  const handleAffiliateClick = () => {
-    onAffiliateLinkClick(); // Appeler le callback fourni par le parent
-    // Le lien s'ouvrira toujours grâce au `<a>` tag
+  const handleAffiliateClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // If the link is purely for tracking and shouldn't navigate,
+    // or if navigation should only happen after tracking, you might call e.preventDefault()
+    // For now, we assume default link behavior + tracking.
+    onAffiliateLinkClick();
   };
 
   return (
@@ -66,11 +69,15 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
         </div>
         <DialogFooter className="flex flex-col sm:flex-row sm:justify-between gap-2">
            {affiliateLink ? (
-             <Button asChild variant="default" onClick={handleAffiliateClick}> {/* Appeler handleAffiliateClick ici */}
-               <a href={affiliateLink} target="_blank" rel="noopener noreferrer">
-                 {buttonText || "Découvrir l'offre"}
-               </a>
-             </Button>
+             <a
+               href={affiliateLink}
+               target="_blank"
+               rel="noopener noreferrer"
+               onClick={handleAffiliateClick}
+               className={cn(buttonVariants({ variant: "default" }))} // Apply button styles
+             >
+               {buttonText || "Découvrir l'offre"}
+             </a>
            ) : (
              <Button disabled>{buttonText || "Lien bientôt disponible"}</Button>
            )}
