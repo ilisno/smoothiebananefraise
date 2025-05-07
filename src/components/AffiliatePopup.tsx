@@ -5,21 +5,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  // Removed DialogClose import
-  // import DialogClose from "@/components/ui/dialog";
-  DialogDescription, // Import DialogDescription
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 type AffiliatePopupProps = {
   isOpen: boolean;
-  onClose: () => void; // Function to close the dialog (still needed for the "Voir mon programme" button)
-  onProceed: () => void; // Function to proceed after closing
+  onClose: () => void;
+  onProceed: () => void;
   imageSrc: string;
   affiliateLink?: string;
-  buttonText?: string; // Add buttonText prop
-  title?: string; // Add title prop
-  description?: string; // Add description prop
+  buttonText?: string;
+  title?: string;
+  description?: string;
+  onAffiliateLinkClick: () => void; // Nouvelle prop pour gérer le clic sur le lien affilié
 };
 
 const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
@@ -28,31 +27,29 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
   onProceed,
   imageSrc,
   affiliateLink,
-  buttonText, // Receive buttonText prop
-  title, // Receive title prop
-  description, // Receive description prop
+  buttonText,
+  title,
+  description,
+  onAffiliateLinkClick, // Utiliser la nouvelle prop
 }) => {
 
-  // Log the image source when the component renders or updates
   console.log("AffiliatePopup rendering with imageSrc:", imageSrc);
 
   const handleProceed = () => {
-    onClose(); // Close the dialog first
-    onProceed(); // Then trigger the proceed action
+    onClose();
+    onProceed();
+  };
+
+  const handleAffiliateClick = () => {
+    onAffiliateLinkClick(); // Appeler le callback fourni par le parent
+    // Le lien s'ouvrira toujours grâce au `<a>` tag
   };
 
   return (
-    // Removed onOpenChange prop to disable closing on outside click/escape
     <Dialog open={isOpen}>
-      {/* Adjusted max width to sm:max-w-[400px] md:max-w-[450px] */}
-      {/* Added hide-dialog-close class */}
-      <DialogContent className="sm:max-w-[400px] md:max-w-[450px] hide-dialog-close"> {/* Adjust max width as needed */}
+      <DialogContent className="sm:max-w-[400px] md:max-w-[450px] hide-dialog-close">
         <DialogHeader>
-          {/* Use the title prop for the DialogTitle */}
           <DialogTitle>{title || "Offre Spéciale !"}</DialogTitle>
-          {/* Use the description prop for the DialogDescription */}
-          {/* Increased mt-4 for more spacing and added whitespace-pre-wrap */}
-          {/* Use dangerouslySetInnerHTML to render HTML tags like <b> */}
           {description && (
             <DialogDescription
               className="mt-4 whitespace-pre-wrap"
@@ -60,28 +57,23 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
             />
           )}
         </DialogHeader>
-        <div className="my-4 flex justify-center"> {/* Center the image container */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+        <div className="my-4 flex justify-center">
           <img
             src={imageSrc}
             alt="Offre affiliée"
-            // Simplified styling: ensure it has width and height are auto
-            // Added animate-bounce-subtle class for animation
             className="max-w-full h-auto rounded-md animate-bounce-subtle"
           />
         </div>
         <DialogFooter className="flex flex-col sm:flex-row sm:justify-between gap-2">
-           {/* Affiliate Button */}
            {affiliateLink ? (
-             <Button asChild variant="default">
+             <Button asChild variant="default" onClick={handleAffiliateClick}> {/* Appeler handleAffiliateClick ici */}
                <a href={affiliateLink} target="_blank" rel="noopener noreferrer">
-                 {buttonText || "Découvrir l'offre"} {/* Use buttonText prop */}
+                 {buttonText || "Découvrir l'offre"}
                </a>
              </Button>
            ) : (
              <Button disabled>{buttonText || "Lien bientôt disponible"}</Button>
            )}
-           {/* Proceed Button */}
            <Button onClick={handleProceed} variant="outline">
              Voir mon programme
            </Button>
