@@ -161,6 +161,11 @@ function getSetsRepsRpe(exercise: { name: string, target: string[] }, goal: Form
         reps = (level === 'debutant' ? '10-15' : '15-25');
         rpe = '8-10';
         rest = "30-60s";
+    } else if (exercise.name === "Calf Raises") {
+        sets = (level === 'debutant' ? 2 : 3);
+        reps = (level === 'debutant' ? '12-15' : '15-20');
+        rpe = '9-10';
+        rest = "30-45s";
     } else {
         // --- Adjust based on Goal ---
         if (goal === 'force') {
@@ -225,6 +230,9 @@ function getSetsRepsRpe(exercise: { name: string, target: string[] }, goal: Form
     if (exercise.name === "Relevés de Jambes" || exercise.name === "Crunchs") {
         minReps = 10; // Core exercises often higher rep
     }
+    if (exercise.name === "Calf Raises") {
+        minReps = 12;
+    }
 
 
     const eightRepMinExercises = ["Dumbbell Bench Press", "Dumbbell Row", "Romanian Deadlift (RDL)", "Goblet Squat"];
@@ -279,13 +287,17 @@ function selectExercisesForDay(
     level: FormData['level'],
     addedCoreLifts: Set<string>
 ): Exercise[] {
-    let selectedExercises: Exercise[] = [];
+    let mainExercises: Exercise[] = [];
     const addedNames = new Set<string>();
+    let finisherExercises: Exercise[] = [];
 
-    const addExercise = (exercise: { name: string, target: string[] }, type: 'compound' | 'isolation') => {
-        if (selectedExercises.length < maxExercises && !addedNames.has(exercise.name)) {
+    const addExercise = (exercise: { name: string, target: string[] }, type: 'compound' | 'isolation', toFinisher: boolean = false) => {
+        const list = toFinisher ? finisherExercises : mainExercises;
+        const totalExercises = mainExercises.length + finisherExercises.length;
+
+        if (totalExercises < maxExercises && !addedNames.has(exercise.name)) {
             const params = getSetsRepsRpe(exercise, goal, level, type);
-            selectedExercises.push({ name: exercise.name, ...params });
+            list.push({ name: exercise.name, ...params });
             addedNames.add(exercise.name);
             return true;
         }
@@ -295,9 +307,9 @@ function selectExercisesForDay(
     const dayTargetsMap: Record<typeof dayType, string[]> = {
         push: ['chest', 'shoulders', 'triceps'],
         pull: ['back', 'biceps', 'forearms'],
-        legs: ['quads', 'hamstrings', 'glutes', 'calves', 'legs', 'core'], // Added core for pistol squat
+        legs: ['quads', 'hamstrings', 'glutes', 'calves', 'legs', 'core'],
         upper: ['chest', 'shoulders', 'triceps', 'back', 'biceps', 'forearms'],
-        lower: ['quads', 'hamstrings', 'glutes', 'calves', 'legs', 'core'], // Added core for pistol squat
+        lower: ['quads', 'hamstrings', 'glutes', 'calves', 'legs', 'core'],
         full_body: ['chest', 'shoulders', 'triceps', 'back', 'biceps', 'quads', 'hamstrings', 'glutes', 'legs', 'core']
     };
     const dayTargets = dayTargetsMap[dayType];
@@ -313,33 +325,28 @@ function selectExercisesForDay(
         }
     }
 
-    // --- Powerlifting (Force) & Powerbuilding Specific Prioritization (after special squats) ---
+    // --- Powerlifting (Force) & Powerbuilding Specific Prioritization ---
     if (goal === 'force' || goal === 'powerbuilding') {
         const coreLifts: { name: string, dayTypes: (typeof dayType)[] }[] = [
             { name: "Squat", dayTypes: ['legs', 'full_body', 'lower'] },
             { name: "Bench Press", dayTypes: ['push', 'upper', 'full_body'] },
             { name: "Deadlift", dayTypes: ['legs', 'pull', 'full_body', 'lower'] },
         ];
-
         for (const lift of coreLifts) {
             if (lift.dayTypes.includes(dayType) && !addedCoreLifts.has(lift.name) && !addedNames.has(lift.name)) {
                 const compoundExercise = availableCompound.find(ex => ex.name === lift.name);
                 if (compoundExercise) {
-                    if (addExercise(compoundExercise, 'compound')) {
-                         addedCoreLifts.add(lift.name);
-                    }
-                } else {
-                    console.warn(`${goal} goal selected, but required lift "${lift.name}" is not available for day type "${dayType}".`);
+                    if (addExercise(compoundExercise, 'compound')) addedCoreLifts.add(lift.name);
                 }
             }
         }
     }
 
-    // Filter available exercises for the current day type (excluding already added special squats/core lifts)
+    // Filter available exercises (excluding already added and finishers)
     const dayCompounds = shuffleArray(availableCompound.filter(ex => ex.target.some(t => dayTargets.includes(t)) && !addedNames.has(ex.name)));
-    const dayIsolations = shuffleArray(availableIsolation.filter(ex => ex.target.some(t => dayTargets.includes(t)) && !addedNames.has(ex.name) && !ex.target.includes('core'))); // Exclude core initially
+    const dayIsolations = shuffleArray(availableIsolation.filter(ex => ex.target.some(t => dayTargets.includes(t)) && !addedNames.has(ex.name) && !ex.target.includes('core') && !ex.target.includes('calves')));
 
-    let compoundCount = selectedExercises.filter(ex => availableCompound.some(c => c.name === ex.name)).length;
+    let compoundCount = mainExercises.filter(ex => availableCompound.some(c => c.name === ex.name)).length;
     const targetCompoundCount = dayType === 'full_body' ? Math.max(1, Math.min(3, Math.floor(maxExercises * 0.5)))
                              : Math.max(1, Math.floor(maxExercises * (goal === 'force' || goal === 'powerbuilding' ? 0.6 : 0.5)));
 
@@ -349,43 +356,49 @@ function selectExercisesForDay(
         }
     }
 
-    const currentTargets = new Set(selectedExercises.flatMap(ex =>
-        (availableCompound.find(c => c.name === ex.name) || availableIsolation.find(i => i.name === ex.name))?.target ?? []
-    ));
-
+    const currentTargets = new Set(mainExercises.flatMap(ex => (availableCompound.find(c => c.name === ex.name) || availableIsolation.find(i => i.name === ex.name))?.target ?? []));
     for (const ex of dayIsolations) {
-        if (selectedExercises.length < maxExercises) {
+        if (mainExercises.length + finisherExercises.length < maxExercises) {
              const targetsNewMuscle = !ex.target.every(t => currentTargets.has(t));
-             if (targetsNewMuscle || selectedExercises.length < maxExercises -1 ) {
-                 if(addExercise(ex, 'isolation')) {
-                    ex.target.forEach(t => currentTargets.add(t));
-                 }
+             if (targetsNewMuscle || mainExercises.length + finisherExercises.length < maxExercises - 2) { // Leave space for potential finishers
+                 if(addExercise(ex, 'isolation')) ex.target.forEach(t => currentTargets.add(t));
              }
         }
     }
 
-     if (selectedExercises.length < maxExercises) {
-         for (const ex of dayCompounds) { // Try adding more relevant compounds if space
-             if (addExercise(ex, 'compound')) {}
-         }
-     }
-     if (selectedExercises.length < maxExercises) { // Try adding more relevant isolations if space
-         for (const ex of dayIsolations) {
-             if (addExercise(ex, 'isolation')) {}
-         }
-     }
+    // Try to fill remaining slots with relevant compounds/isolations
+    if (mainExercises.length + finisherExercises.length < maxExercises) {
+        for (const ex of dayCompounds) { addExercise(ex, 'compound'); }
+    }
+    if (mainExercises.length + finisherExercises.length < maxExercises) {
+        for (const ex of dayIsolations) { addExercise(ex, 'isolation'); }
+    }
 
-    // Add Core Work (Relevés de Jambes, Crunchs) for all levels if space allows
+    // --- Add Finishers: Max 1 Core, Max 1 Calf ---
+    let hasCoreFinisher = false;
     const coreExerciseNames = ["Relevés de Jambes", "Crunchs"];
-    for (const coreName of coreExerciseNames) {
-        if (selectedExercises.length < maxExercises && !addedNames.has(coreName)) {
-            const coreEx = availableIsolation.find(ex => ex.name === coreName && ex.target.includes('core')); // Ensure it's from isolation pool
+    const shuffledCoreNames = shuffleArray([...coreExerciseNames]); // Shuffle to vary core exercise
+
+    for (const coreName of shuffledCoreNames) {
+        if (mainExercises.length + finisherExercises.length < maxExercises && !hasCoreFinisher && !addedNames.has(coreName)) {
+            const coreEx = availableIsolation.find(ex => ex.name === coreName && ex.target.includes('core'));
             if (coreEx) {
-                addExercise(coreEx, 'isolation');
+                if (addExercise(coreEx, 'isolation', true)) {
+                    hasCoreFinisher = true;
+                }
             }
         }
     }
 
+    const calfExerciseName = "Calf Raises";
+    if (mainExercises.length + finisherExercises.length < maxExercises && !addedNames.has(calfExerciseName)) {
+        const calfEx = availableIsolation.find(ex => ex.name === calfExerciseName && ex.target.includes('calves'));
+        if (calfEx) {
+            addExercise(calfEx, 'isolation', true);
+        }
+    }
+    
+    const selectedExercises = [...mainExercises, ...finisherExercises];
     console.log(`Selected exercises for ${dayType}:`, selectedExercises.map(e => e.name));
     return selectedExercises;
 }
