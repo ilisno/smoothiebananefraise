@@ -2,30 +2,34 @@ backend:
   name: github
   repo: ilisno/smoothiebananefraise
   branch: main
+  auth_type: implicit # Force le flux d'authentification implicite OAuth côté client
+  app_id: YOUR_GITHUB_OAUTH_APP_CLIENT_ID # REMPLACE CECI PAR TON VRAI CLIENT ID GITHUB OAUTH APP
+  # base_url: https://smoothiebananefraise.vercel.app # Décommente et ajuste si nécessaire
+  # api_root: https://api.github.com # Normalement pas nécessaire, mais peut être explicité
 
 media_folder: "public/uploads/blog"
 public_folder: "/uploads/blog"
 
 collections:
-  - name: "blog_settings" # Nom de la collection globale pour ce fichier
+  - name: "blog_settings" 
     label: "Gestion du Blog"
-    delete: false # On ne supprime pas le fichier blogData.json lui-même
+    delete: false 
     editor:
       preview: false
-    files: # Définit que nous travaillons avec des fichiers spécifiques
-      - name: "posts_data" # Un nom interne pour cette configuration de fichier
-        label: "Articles de Blog" # Ce qui sera affiché dans l'UI pour cette section
-        file: "src/lib/blogData.json" # Le fichier JSON unique
+    files: 
+      - name: "posts_data" 
+        label: "Articles de Blog" 
+        file: "src/lib/blogData.json" 
         description: "Gérer tous les articles de blog ici"
-        fields: # Champs de l'objet racine dans blogData.json
-          - name: "posts" # Doit correspondre à la clé dans blogData.json qui contient le tableau
+        fields: 
+          - name: "posts" 
             label: "Liste des Articles"
             label_singular: "Article"
             widget: "list"
             allow_add: true
             allow_delete: true
-            summary: "{{fields.title}}" # Affiche le titre de l'article dans la liste UI
-            fields: # Champs pour CHAQUE article dans la liste "posts"
+            summary: "{{fields.title}}" 
+            fields: 
               - { label: "Titre", name: "title", widget: "string" }
               - { label: "Slug (URL)", name: "slug", widget: "string", hint: "Partie de l'URL, ex: mon-super-article. Doit être unique." }
               - { label: "Catégorie", name: "category", widget: "string", hint: "Ex: hypertrophie, nutrition, debutant. Utilisé dans l'URL." }
