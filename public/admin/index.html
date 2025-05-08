@@ -4,41 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Content Manager</title>
+  <!-- Pas de script Netlify Identity ici -->
 </head>
 <body>
-  <div id="nc-root"></div>
+  <div id="nc-root"></div> <!-- Decap CMS se monte ici -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  <script>
-    // S'assurer que CMS (Decap CMS) est disponible
-    if (window.CMS) {
-      console.log("Decap CMS script loaded. Initializing with explicit config...");
-      window.CMS.init({
-        config: {
-          backend: {
-            name: "github",
-            repo: "ilisno/smoothiebananefraise", // Ton dépôt
-            branch: "main", // Ta branche principale
-            // auth_type: "implicit", // Pour le flux OAuth côté client avec GitHub
-            // app_id: "YOUR_GITHUB_OAUTH_APP_CLIENT_ID", // Client ID de ton OAuth App GitHub
-            // Pas besoin de base_url ou auth_endpoint si on utilise le proxy api.decapcms.org
-          },
-          // media_folder et public_folder sont importants pour les uploads
-          media_folder: "public/uploads/blog",
-          public_folder: "/uploads/blog",
-          // Les collections seront chargées depuis config.yml si cette partie est omise ici,
-          // ou on peut les définir ici aussi pour un contrôle total.
-          // Pour l'instant, on se concentre sur le backend.
-          // Si le problème persiste, on ajoutera la définition des collections ici aussi.
-          collections: [
-            // On va laisser Decap CMS tenter de charger les collections depuis config.yml
-            // pour voir si le problème d'authentification est résolu en premier.
-            // Si cela ne fonctionne toujours pas, nous copierons la définition des collections ici.
-          ]
-        }
-      });
-    } else {
-      console.error("Decap CMS n'a pas pu être chargé.");
-    }
-  </script>
+  <!-- Laisser Decap CMS charger config.yml et s'initialiser automatiquement -->
 </body>
 </html>
