@@ -1,41 +1,39 @@
 backend:
-  name: github
-  repo: ilisno/smoothiebananefraise
-  branch: main
-  auth_type: implicit # Force le flux d'authentification implicite OAuth côté client
-  app_id: Ov23liaHxRBcNz4ZxcOB # Client ID de ton OAuth App GitHub
-  # base_url: https://smoothiebananefraise.vercel.app # Décommente et ajuste si nécessaire
-  # api_root: https://api.github.com # Normalement pas nécessaire, mais peut être explicité
-
-media_folder: "public/uploads/blog"
-public_folder: "/uploads/blog"
-
-collections:
-  - name: "blog_settings" 
-    label: "Gestion du Blog"
-    delete: false 
-    editor:
-      preview: false
-    files: 
-      - name: "posts_data" 
-        label: "Articles de Blog" 
-        file: "src/lib/blogData.json" 
-        description: "Gérer tous les articles de blog ici"
-        fields: 
-          - name: "posts" 
-            label: "Liste des Articles"
-            label_singular: "Article"
-            widget: "list"
-            allow_add: true
-            allow_delete: true
-            summary: "{{fields.title}}" 
+      name: github
+      repo: ilisno/smoothiebananefraise
+      branch: main
+      auth_type: implicit 
+      app_id: Ov23liaHxRBcNz4ZxcOB # Ton Client ID GitHub OAuth App
+    
+    media_folder: "public/uploads/blog"
+    public_folder: "/uploads/blog"
+    
+    collections:
+      - name: "blog_settings" 
+        label: "Gestion du Blog"
+        delete: false 
+        editor:
+          preview: false
+        files: 
+          - name: "posts_data" 
+            label: "Articles de Blog" 
+            file: "src/lib/blogData.json" 
+            description: "Gérer tous les articles de blog ici"
             fields: 
-              - { label: "Titre", name: "title", widget: "string" }
-              - { label: "Slug (URL)", name: "slug", widget: "string", hint: "Partie de l'URL, ex: mon-super-article. Doit être unique." }
-              - { label: "Catégorie", name: "category", widget: "string", hint: "Ex: hypertrophie, nutrition, debutant. Utilisé dans l'URL." }
-              - { label: "Date de Publication", name: "date", widget: "datetime", format: "YYYY-MM-DD", dateFormat: "DD/MM/YYYY", timeFormat: false }
-              - { label: "Extrait (pour la carte)", name: "excerpt", widget: "text" }
-              - { label: "Contenu Principal", name: "content", widget: "markdown", hint: "Le contenu principal de l'article, supporte le Markdown et le HTML." }
-              - { label: "Image de l'article (URL ou chemin)", name: "imageUrl", widget: "image", required: false, media_folder: "public/uploads/blog/posts", public_folder: "/uploads/blog/posts", hint: "Uploadez une image ou entrez un chemin public comme /blog/mon-image.jpg" }
-              - { label: "Méta Description (SEO)", name: "metaDescription", widget: "string" }
-              - { label: "Méta Mots-clés (SEO)", name: "metaKeywords", widget: "list", field: { label: "Mot-clé", name: "keyword", widget: "string"} }
+              - name: "posts" 
+                label: "Liste des Articles"
+                label_singular: "Article"
+                widget: "list"
+                allow_add: true
+                allow_delete: true
+                summary: "{{fields.title}}" 
+                fields: 
+                  - { label: "Titre", name: "title", widget: "string" }
+                  - { label: "Slug (URL)", name: "slug", widget: "string", hint: "Partie de l'URL, ex: mon-super-article. Doit être unique." }
+                  - { label: "Catégorie", name: "category", widget: "string", hint: "Ex: hypertrophie, nutrition, debutant. Utilisé dans l'URL." }
+                  - { label: "Date de Publication", name: "date", widget: "datetime", format: "YYYY-MM-DD", dateFormat: "DD/MM/YYYY", timeFormat: false }
+                  - { label: "Extrait (pour la carte)", name: "excerpt", widget: "text" }
+                  - { label: "Contenu Principal", name: "content", widget: "markdown", hint: "Le contenu principal de l'article, supporte le Markdown et le HTML." }
+                  - { label: "Image de l'article (URL ou chemin)", name: "imageUrl", widget: "image", required: false, media_folder: "public/uploads/blog/posts", public_folder: "/uploads/blog/posts", hint: "Uploadez une image ou entrez un chemin public comme /blog/mon-image.jpg" }
+                  - { label: "Méta Description (SEO)", name: "metaDescription", widget: "string" }
+                  - { label: "Méta Mots-clés (SEO)", name: "metaKeywords", widget: "list", field: { label: "Mot-clé", name: "keyword", widget: "string"} }
