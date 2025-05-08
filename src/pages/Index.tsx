@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom'; // Importer Link
 import ProgramForm, { FormData } from '@/components/ProgramForm';
 import WorkoutProgram from '@/components/WorkoutProgram';
 import AffiliatePopup from '@/components/AffiliatePopup';
@@ -6,6 +7,7 @@ import { ProgramGenerator, Program } from '@/lib/programGenerator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/components/ui/use-toast";
+import { Helmet } from 'react-helmet-async';
 
 export type { Exercise, WorkoutDay, Program } from '@/lib/programGenerator';
 
@@ -107,7 +109,6 @@ const Index = () => {
       });
       if (error) {
         console.error('Error logging program generation:', error);
-        // Optionnel: toast pour l'erreur de logging, mais peut-être pas nécessaire pour l'utilisateur
       } else {
         console.log('Program generation logged successfully.');
       }
@@ -151,7 +152,7 @@ const Index = () => {
         const generator = new ProgramGenerator(data);
         const program = generator.generate();
         setGeneratedProgram(program);
-        logProgramGeneration(data, program); // Log la génération
+        logProgramGeneration(data, program);
 
         if (data.email !== 'b') {
            incrementGlobalCounter();
@@ -195,77 +196,87 @@ const Index = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col min-h-screen">
-      <header className="text-center mb-10 md:mb-12">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
-          Générateur de Programme Personnalisé Musculation Gratuit 
-          <span className="block text-xs text-muted-foreground font-normal mt-1">par Smoothie Banane Fraise 🍌🍓</span>
-        </h1>
-        <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-          Créez votre programme de musculation personnalisé en quelques clics avec notre <strong>générateur de programme personnalisé musculation gratuit</strong>. Obtenez un plan d'entraînement simple, rapide, et parfaitement adapté à vos objectifs, votre niveau et l'équipement dont vous disposez.
-        </p>
-        <p className="text-base text-muted-foreground max-w-2xl mx-auto mt-2">
-          Nos programmes de muscu personnalisés vous fourniront des résultats optimaux.
-        </p>
-         {generatedCount !== null && (
-             <p className="mt-4 text-xl font-semibold text-primary animate-bounce-subtle">
-                 {generatedCount} programmes générés !
-             </p>
-         )}
-      </header>
+    <>
+      <Helmet>
+        <title>Générateur de Programme Personnalisé Musculation Gratuit - Smoothie Banane Fraise</title>
+        {/* La meta description est déjà dans index.html, mais on peut la spécifier ici aussi si on veut la rendre dynamique par page */}
+        <meta name="description" content="Créez votre programme de musculation personnalisé et gratuit avec notre générateur. Adapté à vos objectifs, niveau et équipement pour des résultats optimaux. Obtenez un plan d'entraînement sur mesure dès maintenant !" />
+      </Helmet>
+      <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col min-h-screen">
+        <header className="text-center mb-10 md:mb-12">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
+            Générateur de Programme Personnalisé Musculation Gratuit 
+            <span className="block text-xs text-muted-foreground font-normal mt-1">par Smoothie Banane Fraise 🍌🍓</span>
+          </h1>
+          <p className="text-base text-muted-foreground max-w-2xl mx-auto">
+            Créez votre programme de musculation personnalisé en quelques clics avec notre <strong>générateur de programme personnalisé musculation gratuit</strong>. Obtenez un plan d'entraînement simple, rapide, et parfaitement adapté à vos objectifs, votre niveau et l'équipement dont vous disposez.
+          </p>
+          <p className="text-base text-muted-foreground max-w-2xl mx-auto mt-2">
+            Nos programmes de muscu personnalisés vous fourniront des résultats optimaux.
+          </p>
+           {generatedCount !== null && (
+               <p className="mt-4 text-xl font-semibold text-primary animate-bounce-subtle">
+                   {generatedCount} programmes générés !
+               </p>
+           )}
+        </header>
 
-      <main className="flex-grow flex items-center justify-center">
-        {!generatedProgram && !isLoading && (
-          <ProgramForm onGenerate={handleGenerate} isLoading={isLoading} />
-        )}
+        <main className="flex-grow flex items-center justify-center">
+          {!generatedProgram && !isLoading && (
+            <ProgramForm onGenerate={handleGenerate} isLoading={isLoading} />
+          )}
 
-        {isLoading && (
-          <div className="w-full max-w-2xl mx-auto space-y-6">
-             <Skeleton className="h-16 w-full" />
-             <Skeleton className="h-10 w-3/4" />
-             <Skeleton className="h-10 w-full" />
-             <Skeleton className="h-10 w-full" />
-             <Skeleton className="h-20 w-full" />
-             <Skeleton className="h-10 w-1/2" />
-             <Skeleton className="h-10 w-1/2" />
-             <Skeleton className="h-24 w-full" />
-             <Skeleton className="h-12 w-full" />
-          </div>
-        )}
+          {isLoading && (
+            <div className="w-full max-w-2xl mx-auto space-y-6">
+               <Skeleton className="h-16 w-full" />
+               <Skeleton className="h-10 w-3/4" />
+               <Skeleton className="h-10 w-full" />
+               <Skeleton className="h-10 w-full" />
+               <Skeleton className="h-20 w-full" />
+               <Skeleton className="h-10 w-1/2" />
+               <Skeleton className="h-10 w-1/2" />
+               <Skeleton className="h-24 w-full" />
+               <Skeleton className="h-12 w-full" />
+            </div>
+          )}
 
-        {generatedProgram && !isLoading && !isPopupOpen && showProgram && (
-          <WorkoutProgram
-              program={generatedProgram}
-              onReset={handleReset}
-              formData={formData!}
-          />
-        )}
-      </main>
+          {generatedProgram && !isLoading && !isPopupOpen && showProgram && (
+            <WorkoutProgram
+                program={generatedProgram}
+                onReset={handleReset}
+                formData={formData!}
+            />
+          )}
+        </main>
 
-      {isPopupOpen && selectedPopupIndex !== null && generatedProgram && (
-          <AffiliatePopup
-            isOpen={isPopupOpen}
-            onClose={() => setIsPopupOpen(false)}
-            onProceed={handleProceedToProgram}
-            imageSrc={popupData[selectedPopupIndex].image}
-            affiliateLink={popupData[selectedPopupIndex].link}
-            buttonText={popupData[selectedPopupIndex].buttonText}
-            title={popupData[selectedPopupIndex].title}
-            description={popupData[selectedPopupIndex].description}
-            onAffiliateLinkClick={() => { // Passer la fonction de log ici
-              if (selectedPopupIndex !== null) {
-                logAffiliateLinkClick(selectedPopupIndex);
-              }
-            }}
-          />
-        )}
+        {isPopupOpen && selectedPopupIndex !== null && generatedProgram && (
+            <AffiliatePopup
+              isOpen={isPopupOpen}
+              onClose={() => setIsPopupOpen(false)}
+              onProceed={handleProceedToProgram}
+              imageSrc={popupData[selectedPopupIndex].image}
+              affiliateLink={popupData[selectedPopupIndex].link}
+              buttonText={popupData[selectedPopupIndex].buttonText}
+              title={popupData[selectedPopupIndex].title}
+              description={popupData[selectedPopupIndex].description}
+              onAffiliateLinkClick={() => {
+                if (selectedPopupIndex !== null) {
+                  logAffiliateLinkClick(selectedPopupIndex);
+                }
+              }}
+            />
+          )}
 
-      <footer className="text-center mt-12 py-4 border-t">
-        <p className="text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Smoothie Banane Fraise - Votre <strong>générateur de programme personnalisé musculation gratuit</strong>. Tous droits réservés.
-        </p>
-      </footer>
-    </div>
+        <footer className="text-center mt-12 py-4 border-t">
+          <p className="text-sm text-muted-foreground mb-2">
+            © {new Date().getFullYear()} Smoothie Banane Fraise - Votre <strong>générateur de programme personnalisé musculation gratuit</strong>. Tous droits réservés.
+          </p>
+          <Link to="/blog" className="text-sm text-primary hover:underline">
+            Visitez notre Blog
+          </Link>
+        </footer>
+      </div>
+    </>
   );
 };
 
