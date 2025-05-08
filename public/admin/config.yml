@@ -1,28 +1,34 @@
 backend:
-  name: github # On lui dit que le château est sur GitHub
-  repo: ilisno/smoothiebananefraise # Voici l'adresse exacte de ton château !
-  branch: main # On lui dit de mettre les articles dans la pièce principale (branche "main")
-  # Optionnel: si votre site est déployé sur Netlify et que vous utilisez Netlify Identity
-  # open_authoring: true 
-  # site_domain: votre-domaine-netlify.netlify.app
+  name: github
+  repo: ilisno/smoothiebananefraise
+  branch: main
+  # Pour Vercel avec GitHub OAuth, la configuration de base du backend est suffisante.
+  # L'authentification se fera via le flux OAuth de GitHub.
 
-media_folder: "public/uploads/blog" # Si tu ajoutes des images aux articles, elles iront ici...
-public_folder: "/uploads/blog" # ...et c'est comme ça qu'on les verra sur le site.
+media_folder: "public/uploads/blog" # Chemin où les images uploadées via le CMS seront stockées globalement
+public_folder: "/uploads/blog" # Chemin public pour accéder à ces images globales
 
 collections:
-  - name: "blog" 
-    label: "Articles de Blog" 
+  - name: "blog_posts" # Nom de la collection (utilisé en interne)
+    label: "Articles de Blog" # Nom affiché dans l'interface du CMS
     label_singular: "Article de Blog"
     description: "Gérer les articles du blog ici."
-    format: "json" 
-    file: "src/lib/blogData.json" # Tous les articles seront rangés dans ce grand livre (fichier JSON)
-    fields: 
+    # Configuration pour un fichier JSON unique contenant une liste d'objets (articles)
+    format: "json"
+    file: "src/lib/blogData.json" # Chemin vers le fichier JSON qui stocke tous les articles
+    # 'fields' définit la structure de chaque objet DANS le tableau JSON
+    fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Slug (URL)", name: "slug", widget: "string", hint: "Partie de l'URL, ex: mon-super-article. Doit être unique." }
       - { label: "Catégorie", name: "category", widget: "string", hint: "Ex: hypertrophie, nutrition, debutant. Utilisé dans l'URL." }
       - { label: "Date de Publication", name: "date", widget: "datetime", format: "YYYY-MM-DD", dateFormat: "DD/MM/YYYY", timeFormat: false }
       - { label: "Extrait (pour la carte)", name: "excerpt", widget: "text" }
       - { label: "Contenu Principal", name: "content", widget: "markdown", hint: "Le contenu principal de l'article, supporte le Markdown et le HTML." }
-      - { label: "Image de l'article (URL)", name: "imageUrl", widget: "image", required: false, media_folder: "public/uploads/blog/posts", public_folder: "/uploads/blog/posts" }
+      - { label: "Image de l'article (URL ou chemin)", name: "imageUrl", widget: "image", required: false, media_folder: "public/uploads/blog/posts", public_folder: "/uploads/blog/posts", hint: "Uploadez une image ou entrez un chemin public comme /blog/mon-image.jpg" }
       - { label: "Méta Description (SEO)", name: "metaDescription", widget: "string" }
       - { label: "Méta Mots-clés (SEO)", name: "metaKeywords", widget: "list", field: { label: "Mot-clé", name: "keyword", widget: "string"} }
+    # Pour un fichier unique contenant une liste, on utilise 'editor.preview: false' si on ne veut pas de preview
+    # ou on configure un composant de preview personnalisé si besoin.
+    # Pour la simplicité, on peut omettre la preview pour l'instant ou la désactiver.
+    editor:
+      preview: false # Désactive la preview dans l'éditeur pour cette collection de type fichier unique.
