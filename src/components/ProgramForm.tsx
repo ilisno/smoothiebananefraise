@@ -185,7 +185,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               name="goal"
               render={({ field }) => (
                 <FormItem className="space-y-3 animate-in fade-in slide-in-from-bottom-2 delay-[350ms]">
-                  <FormLabel>Objectif Principal</FormLabel>
+                  <FormLabel>Objectif principal</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -214,7 +214,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               name="level"
               render={({ field }) => (
                 <FormItem className="space-y-3 animate-in fade-in slide-in-from-bottom-2 delay-400 duration-500">
-                  <FormLabel>Niveau d'Expérience</FormLabel>
+                  <FormLabel>Niveau d'expérience</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -243,7 +243,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               name="split"
               render={({ field }) => (
                 <FormItem className="space-y-3 animate-in fade-in slide-in-from-bottom-2 delay-[450ms] duration-500">
-                  <FormLabel>Type de Split Préféré</FormLabel>
+                  <FormLabel>Type de split préféré</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -321,7 +321,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               render={() => (
                 <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-600 duration-500">
                   <div className="mb-4">
-                    <FormLabel className="text-base">Matériel Disponible</FormLabel>
+                    <FormLabel className="text-base">Matériel disponible</FormLabel>
                     <FormDescription>
                       Cochez tout ce que vous avez à disposition.
                     </FormDescription>
@@ -362,7 +362,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               name="email"
               render={({ field }) => (
                 <FormItem className="animate-in fade-in slide-in-from-bottom-2 delay-[650ms] duration-500"> {/* Adjusted delay */}
-                  <FormLabel>Votre Email</FormLabel>
+                  <FormLabel>Votre email</FormLabel>
                   <FormControl>
                     <Input placeholder="vous@email.com" {...field} />
                   </FormControl>
@@ -383,7 +383,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
               )}
               disabled={isLoading}
             >
-              {isLoading ? "Génération en cours..." : "Générer mon Programme"}
+              {isLoading ? "Génération en cours..." : "Générer mon programme"}
             </Button>
           </form>
         </Form>

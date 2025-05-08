@@ -160,12 +160,12 @@ const WorkoutProgram: React.FC<WorkoutProgramProps> = ({ program, onReset, formD
     <Card className="w-full max-w-4xl mx-auto animate-in fade-in duration-700" id="workout-program">
        <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 screen-only">
             <div>
-                <CardTitle className="text-2xl font-bold">Votre Programme Personnalisé</CardTitle>
+                <CardTitle className="text-2xl font-bold">Votre programme personnalisé</CardTitle>
                 <CardDescription>{program.description}</CardDescription>
             </div>
             <div className="flex flex-wrap gap-2">
                  <Button variant="outline" onClick={onReset}>
-                    <RotateCcw className="mr-2 h-4 w-4" /> Nouveau Programme
+                    <RotateCcw className="mr-2 h-4 w-4" /> Nouveau programme
                 </Button>
                 <Button onClick={exportToPDF}>
                     <Download className="mr-2 h-4 w-4" /> Exporter en PDF

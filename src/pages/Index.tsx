@@ -202,10 +202,15 @@ const Index = () => {
         <title>Générateur de Programme Personnalisé Musculation Gratuit - Smoothie Banane Fraise</title>
         <meta name="description" content="Créez votre programme de musculation personnalisé et gratuit avec notre générateur. Adapté à vos objectifs, niveau et équipement pour des résultats optimaux. Obtenez un plan d'entraînement sur mesure dès maintenant !" />
       </Helmet>
-      <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col min-h-screen">
-        <header className="text-center mb-10 md:mb-12">
+      <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col min-h-screen relative">
+        <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
+          <Button asChild variant="outline">
+            <Link to="/blog">Blog</Link>
+          </Button>
+        </div>
+        <header className="text-center mb-10 md:mb-12 pt-8 md:pt-0"> {/* Ajout de padding-top pour mobile pour éviter chevauchement */}
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
-            Générateur de Programme Personnalisé Musculation Gratuit 
+            Générateur de Programme Personnalisé Musculation Gratuit
             <span className="block text-xs text-muted-foreground font-normal mt-1">par Smoothie Banane Fraise 🍌🍓</span>
           </h1>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto">
@@ -219,11 +224,6 @@ const Index = () => {
                    {generatedCount} programmes générés !
                </p>
            )}
-           <div className="mt-6"> {/* Conteneur pour le bouton du blog */}
-            <Button asChild variant="outline">
-              <Link to="/blog">Visitez notre Blog de Musculation</Link>
-            </Button>
-          </div>
         </header>
 
         <main className="flex-grow flex items-center justify-center">
@@ -276,7 +276,6 @@ const Index = () => {
           <p className="text-sm text-muted-foreground mb-2">
             © {new Date().getFullYear()} Smoothie Banane Fraise - Votre <strong>générateur de programme personnalisé musculation gratuit</strong>. Tous droits réservés.
           </p>
-          {/* Le lien du blog a été déplacé plus haut */}
         </footer>
       </div>
     </>
