@@ -3,7 +3,7 @@ backend:
   repo: ilisno/smoothiebananefraise
   branch: main
   auth_type: implicit # Force le flux d'authentification implicite OAuth côté client
-  app_id: YOUR_GITHUB_OAUTH_APP_CLIENT_ID # REMPLACE CECI PAR TON VRAI CLIENT ID GITHUB OAUTH APP
+  app_id: Ov23liaHxRBcNz4ZxcOB # Client ID de ton OAuth App GitHub
   # base_url: https://smoothiebananefraise.vercel.app # Décommente et ajuste si nécessaire
   # api_root: https://api.github.com # Normalement pas nécessaire, mais peut être explicité
 
