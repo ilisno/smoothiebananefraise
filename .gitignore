@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# TinaCMS generated files
+.tina/
+__generated__/
+# Ne pas commiter les tokens ou secrets si utilisés localement
+# .env.local
