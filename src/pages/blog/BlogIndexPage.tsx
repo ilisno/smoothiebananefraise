@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { sanityClient } from '@/lib/sanityClient';
 import { SanityPost } from '@/types/sanity';
 import { Skeleton } from '@/components/ui/skeleton'; // Pour le chargement
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'; // Ajout des imports manquants
 
 const BlogIndexPage: React.FC = () => {
   const [posts, setPosts] = useState<SanityPost[]>([]);
