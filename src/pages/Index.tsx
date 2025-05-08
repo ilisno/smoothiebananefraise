@@ -199,7 +199,7 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Générateur de Programme Personnalisé Musculation Gratuit - Smoothie Banane Fraise</title>
+        <title>Générateur de programme personnalisé musculation gratuit - Smoothie Banane Fraise</title>
         <meta name="description" content="Créez votre programme de musculation personnalisé et gratuit avec notre générateur. Adapté à vos objectifs, niveau et équipement pour des résultats optimaux. Obtenez un plan d'entraînement sur mesure dès maintenant !" />
       </Helmet>
       <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col min-h-screen relative">
@@ -210,7 +210,7 @@ const Index = () => {
         </div>
         <header className="text-center mb-10 md:mb-12 pt-8 md:pt-0"> {/* Ajout de padding-top pour mobile pour éviter chevauchement */}
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
-            Générateur de Programme Personnalisé Musculation Gratuit
+            Générateur de programme personnalisé musculation gratuit
             <span className="block text-xs text-muted-foreground font-normal mt-1">par Smoothie Banane Fraise 🍌🍓</span>
           </h1>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto">
