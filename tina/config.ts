@@ -1,60 +1,60 @@
 import { defineConfig } from "tinacms";
 
 // Your hosting provider likely exposes this as an environment variable
-const branch = process.env.HEAD || process.env.VERCEL_GIT_COMMIT_REF || "main";
+const branch =
+  process.env.VERCEL_GIT_COMMIT_REF || // Vercel branch env var
+  process.env.HEAD || // Netlify branch env var
+  "main";
+
+// Utiliser les variables d'environnement pour clientId et token
+const clientId = process.env.NEXT_PUBLIC_TINA_CLIENT_ID || null; // Utilise null si non défini
+const token = process.env.TINA_TOKEN || null; // Utilise null si non défini
+
+// Vérifier si les variables nécessaires sont présentes pour le build
+const isTinaEnabled = clientId && token;
 
 export default defineConfig({
   branch,
-  // Remplacez par votre Client ID GitHub OAuth App si vous voulez utiliser l'authentification GitHub
-  // clientId: process.env.NEXT_PUBLIC_TINA_CLIENT_ID, 
-  // Remplacez par votre token si vous utilisez l'authentification par token Tina Cloud
-  // token: process.env.TINA_TOKEN, 
+  clientId: clientId, // Lu depuis les variables d'environnement
+  token: token,       // Lu depuis les variables d'environnement
 
   build: {
-    outputFolder: "admin", // Dossier où l'interface d'admin Tina sera construite
-    publicFolder: "public", // Dossier contenant les assets statiques
+    outputFolder: "admin",
+    publicFolder: "public",
   },
   media: {
     tina: {
-      mediaRoot: "uploads/blog", // Sous-dossier dans publicFolder pour les médias
+      mediaRoot: "uploads/blog",
       publicFolder: "public",
     },
   },
-  // Schéma de votre contenu
   schema: {
     collections: [
       {
-        name: "post", // Nom de la collection
+        name: "post",
         label: "Articles de Blog",
-        path: "src/lib", // Chemin vers le dossier contenant le fichier
-        format: "json", // Format du fichier
+        path: "src/lib",
+        format: "json",
         ui: {
-          // Indique à Tina que tous les documents de cette collection sont dans un seul fichier
           filename: {
-            // Désactive la possibilité de changer le nom du fichier (on veut garder blogData.json)
             readonly: true,
-            // Définit le nom du fichier unique
-            slugify: () => 'blogData', 
+            slugify: () => 'blogData',
           },
-          // Permet de créer de nouveaux articles dans le fichier JSON
           allowedActions: {
             create: true,
             delete: true,
           },
         },
-        // Définition de la structure des données DANS le fichier JSON
         fields: [
           {
-            // Champ qui représente la liste des posts dans le fichier JSON
             type: "object",
-            name: "posts", // Doit correspondre à la clé dans blogData.json
+            name: "posts",
             label: "Liste des Articles",
-            list: true, // Indique que c'est une liste d'objets
+            list: true,
             ui: {
-              // Améliore l'interface pour la liste
               itemProps: (item) => ({ label: item?.title ?? "Nouvel Article" }),
             },
-            fields: [ // Champs pour CHAQUE article dans la liste "posts"
+            fields: [
               { type: "string", label: "Titre", name: "title", isTitle: true, required: true },
               { type: "string", label: "Slug (URL)", name: "slug", required: true, description: "Partie de l'URL, ex: mon-super-article. Doit être unique." },
               { type: "string", label: "Catégorie", name: "category", required: true, description: "Ex: hypertrophie, nutrition, debutant. Utilisé dans l'URL." },
@@ -70,4 +70,10 @@ export default defineConfig({
       },
     ],
   },
+  // Optionnel: pour désactiver Tina en production si les variables ne sont pas définies
+  // Peut être utile si vous ne voulez pas que l'admin soit accessible en production
+  // tinaioConfig: {
+  //   frontendUrlOverride: process.env.VERCEL_URL
+  // },
+  // Peut nécessiter une configuration plus avancée pour désactiver complètement si isTinaEnabled est false
 });
