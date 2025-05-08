@@ -5,8 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import BlogIndexPage from "./pages/blog/BlogIndexPage"; // Importer la page d'index du blog
-import BlogPostPage from "./pages/blog/BlogPostPage";   // Importer la page d'article de blog
+import BlogIndexPage from "./pages/blog/BlogIndexPage";
+import BlogPostPage from "./pages/blog/BlogPostPage";
 
 const queryClient = new QueryClient();
 
@@ -18,9 +18,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/blog" element={<BlogIndexPage />} />         {/* Route pour l'index du blog */}
-          <Route path="/blog/:slug" element={<BlogPostPage />} />   {/* Route pour un article de blog individuel */}
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/blog" element={<BlogIndexPage />} /> {/* Index du blog */}
+          {/* Route pour les articles de blog avec catégorie et slug */}
+          {/* CETTE ROUTE DOIT ÊTRE ASSEZ GÉNÉRIQUE, LA PLACER AVANT NOTFOUND */}
+          <Route path="/:category/:slug" element={<BlogPostPage />} /> 
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

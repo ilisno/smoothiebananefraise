@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
 const BlogPostPage: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const post = blogPosts.find((p) => p.slug === slug);
+  const { category, slug } = useParams<{ category: string; slug: string }>(); // Récupérer category et slug
+  const post = blogPosts.find((p) => p.category === category && p.slug === slug); // Trouver par category et slug
 
   if (!post) {
     return (
@@ -33,7 +33,6 @@ const BlogPostPage: React.FC = () => {
         <title>{`${post.title} | Smoothie Banane Fraise`}</title>
         <meta name="description" content={post.metaDescription} />
         <meta name="keywords" content={post.metaKeywords.join(', ')} />
-        {/* Vous pouvez ajouter d'autres balises meta ici, comme les balises Open Graph pour le partage social */}
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.metaDescription} />
         {post.imageUrl && <meta property="og:image" content={`${window.location.origin}${post.imageUrl}`} />}
@@ -48,6 +47,7 @@ const BlogPostPage: React.FC = () => {
           <h1 className="text-3xl md:text-4xl font-extrabold mb-2">{post.title}</h1>
           <p className="text-sm text-muted-foreground mb-6">
             Publié le {new Date(post.date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}
+            {post.category && <span className="ml-2 capitalize before:content-['•'] before:mr-2">{post.category.replace(/_/g, ' ')}</span>}
           </p>
           
           <div dangerouslySetInnerHTML={{ __html: post.content }} />

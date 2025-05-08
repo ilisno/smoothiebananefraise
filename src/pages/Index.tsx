@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from 'react-helmet-async';
+import { Button } from '@/components/ui/button'; // Importer Button
 
 export type { Exercise, WorkoutDay, Program } from '@/lib/programGenerator';
 
@@ -199,7 +200,6 @@ const Index = () => {
     <>
       <Helmet>
         <title>Générateur de Programme Personnalisé Musculation Gratuit - Smoothie Banane Fraise</title>
-        {/* La meta description est déjà dans index.html, mais on peut la spécifier ici aussi si on veut la rendre dynamique par page */}
         <meta name="description" content="Créez votre programme de musculation personnalisé et gratuit avec notre générateur. Adapté à vos objectifs, niveau et équipement pour des résultats optimaux. Obtenez un plan d'entraînement sur mesure dès maintenant !" />
       </Helmet>
       <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col min-h-screen">
@@ -219,6 +219,11 @@ const Index = () => {
                    {generatedCount} programmes générés !
                </p>
            )}
+           <div className="mt-6"> {/* Conteneur pour le bouton du blog */}
+            <Button asChild variant="outline">
+              <Link to="/blog">Visitez notre Blog de Musculation</Link>
+            </Button>
+          </div>
         </header>
 
         <main className="flex-grow flex items-center justify-center">
@@ -271,9 +276,7 @@ const Index = () => {
           <p className="text-sm text-muted-foreground mb-2">
             © {new Date().getFullYear()} Smoothie Banane Fraise - Votre <strong>générateur de programme personnalisé musculation gratuit</strong>. Tous droits réservés.
           </p>
-          <Link to="/blog" className="text-sm text-primary hover:underline">
-            Visitez notre Blog
-          </Link>
+          {/* Le lien du blog a été déplacé plus haut */}
         </footer>
       </div>
     </>

@@ -1,48 +1,83 @@
 export interface BlogPost {
   slug: string;
   title: string;
+  category: string; // Ajout du champ catégorie
   date: string;
   excerpt: string;
-  content: string; // Pourrait être du Markdown ou du HTML simple
+  content: string;
   metaDescription: string;
   metaKeywords: string[];
-  imageUrl?: string; // Optionnel: image pour l'article
+  imageUrl?: string;
 }
 
 export const blogPosts: BlogPost[] = [
   {
-    slug: "premier-article-de-blog",
-    title: "Bienvenue sur Notre Blog Musculation !",
+    slug: "programme-debutant-efficace", // Slug plus descriptif
+    title: "Programme Musculation Débutant : Le Guide Complet pour Commencer",
+    category: "debutant", // Exemple de catégorie
     date: "2024-07-28",
-    excerpt: "Découvrez les bases pour bien commencer votre parcours de musculation avec notre générateur de programme personnalisé.",
+    excerpt: "Découvrez les bases et un exemple de programme pour bien commencer votre parcours de musculation avec notre générateur.",
     content: `
-      <p>Ceci est le contenu complet de notre premier article. Nous parlerons ici de l'importance d'un <strong>programme de musculation personnalisé</strong> et comment notre <strong>générateur gratuit</strong> peut vous aider.</p>
-      <p>Que vous soyez débutant ou avancé, un plan adapté est la clé du succès. Notre outil prend en compte vos objectifs, votre niveau et votre équipement disponible.</p>
-      <h2>Pourquoi un programme personnalisé ?</h2>
-      <p>Un programme générique ne tient pas compte de vos spécificités. Avec un <strong>plan d'entraînement sur mesure</strong>, vous optimisez chaque séance pour des résultats visibles.</p>
-      <p>N'hésitez pas à utiliser notre <strong>générateur de programme personnalisé musculation gratuit</strong> pour démarrer !</p>
+      <p>Commencer la musculation peut sembler intimidant, mais avec un <strong>programme de musculation personnalisé pour débutant</strong>, c'est beaucoup plus simple. Notre <strong>générateur gratuit</strong> est là pour vous guider.</p>
+      <h2>Les Principes Clés pour un Débutant</h2>
+      <ul>
+        <li><strong>Apprendre la technique :</strong> Avant de soulever lourd, maîtrisez la forme correcte des exercices.</li>
+        <li><strong>Progression graduelle :</strong> Augmentez progressivement les charges ou les répétitions.</li>
+        <li><strong>Régularité :</strong> La clé du succès est la constance dans vos entraînements.</li>
+      </ul>
+      <p>Un <strong>plan d'entraînement sur mesure</strong> vous aidera à éviter les erreurs courantes et à maximiser vos premiers gains. Utilisez notre <strong>générateur de programme personnalisé musculation gratuit</strong> pour obtenir le vôtre !</p>
     `,
-    metaDescription: "Découvrez comment bien démarrer en musculation avec un programme personnalisé gratuit. Conseils et astuces pour tous les niveaux.",
-    metaKeywords: ["blog musculation", "programme personnalisé", "générateur gratuit", "débutant musculation"],
-    imageUrl: "/blog/post1-image.jpg", // Assurez-vous que cette image existe dans public/blog/
+    metaDescription: "Guide complet et programme de musculation pour débutant. Conseils pour bien commencer et progresser efficacement.",
+    metaKeywords: ["programme musculation débutant", "commencer musculation", "plan entraînement débutant", "générateur gratuit"],
+    imageUrl: "/blog/post1-image.jpg",
   },
   {
-    slug: "optimiser-votre-nutrition",
-    title: "Nutrition et Musculation : Les Clés de la Réussite",
+    slug: "nutrition-prise-de-masse", // Slug plus descriptif
+    title: "Nutrition pour la Prise de Masse : Optimisez Vos Gains Musculaires",
+    category: "nutrition", // Exemple de catégorie
     date: "2024-07-29",
-    excerpt: "La nutrition joue un rôle crucial dans l'atteinte de vos objectifs de musculation. Apprenez les bases pour optimiser vos gains.",
+    excerpt: "La nutrition est essentielle pour la prise de masse. Découvrez les aliments et stratégies pour construire du muscle efficacement.",
     content: `
-      <p>L'entraînement est une partie de l'équation, mais sans une <strong>nutrition adaptée</strong>, vos progrès en musculation seront limités.</p>
-      <h2>Les Macronutriments Essentiels</h2>
+      <p>Pour une <strong>prise de masse musculaire</strong> réussie, l'alimentation est aussi cruciale que l'entraînement. Un surplus calorique contrôlé et un apport suffisant en macronutriments sont indispensables.</p>
+      <h2>Macronutriments pour la Prise de Masse</h2>
       <ul>
-        <li><strong>Protéines :</strong> Pour la construction et la réparation musculaire. Visez environ 1.6-2.2g par kg de poids de corps.</li>
-        <li><strong>Glucides :</strong> Votre source d'énergie principale pour les entraînements intenses.</li>
-        <li><strong>Lipides :</strong> Importants pour les fonctions hormonales et la santé globale.</li>
+        <li><strong>Protéines :</strong> Visez 1.6-2.2g par kg de poids de corps pour la construction musculaire.</li>
+        <li><strong>Glucides :</strong> Fournissent l'énergie pour les séances intenses et aident à la récupération. Privilégiez les sources complexes.</li>
+        <li><strong>Lipides :</strong> Essentiels pour la santé hormonale. Optez pour les bonnes graisses (avocats, noix, huiles végétales).</li>
       </ul>
-      <p>Pensez à adapter votre apport calorique en fonction de votre objectif : prise de masse, sèche ou maintien. Un <strong>programme de musculation personnalisé</strong> doit toujours s'accompagner d'un plan nutritionnel cohérent.</p>
+      <p>N'oubliez pas l'hydratation ! Un <strong>programme de musculation personnalisé</strong> pour la prise de masse doit s'accompagner d'un plan nutritionnel adapté.</p>
     `,
-    metaDescription: "Conseils essentiels sur la nutrition pour la musculation. Optimisez votre alimentation pour de meilleurs résultats et gains musculaires.",
-    metaKeywords: ["nutrition musculation", "alimentation sportive", "protéines", "prise de masse", "sèche"],
-    imageUrl: "/blog/post2-image.jpg", // Assurez-vous que cette image existe dans public/blog/
+    metaDescription: "Conseils de nutrition pour une prise de masse efficace. Aliments, macronutriments et stratégies pour optimiser vos gains musculaires.",
+    metaKeywords: ["nutrition prise de masse", "alimentation musculation", "construire du muscle", "protéines musculation"],
+    imageUrl: "/blog/post2-image.jpg",
   },
+  {
+    slug: "tractions-lestees-programme-complet",
+    title: "Tractions Lestées : Programme Complet pour Gagner en Force et en Masse",
+    category: "hypertrophie", // Catégorie de votre exemple
+    date: "2024-07-30",
+    excerpt: "Les tractions lestées sont un exercice redoutable pour développer le dos et les bras. Découvrez comment les intégrer dans un programme complet.",
+    content: `
+      <p>Les <strong>tractions lestées</strong> sont un excellent moyen de franchir un cap en termes de force et de masse musculaire pour le haut du corps. Si vous maîtrisez déjà les tractions au poids du corps, ajouter du lest est la prochaine étape logique.</p>
+      <h2>Pourquoi faire des Tractions Lestées ?</h2>
+      <ul>
+        <li><strong>Surcharge Progressive :</strong> Permet de continuer à progresser lorsque les tractions au poids du corps deviennent trop faciles.</li>
+        <li><strong>Gain de Force :</strong> Excellent pour développer la force brute du tirage vertical.</li>
+        <li><strong>Hypertrophie :</strong> Stimule intensément les muscles du dos (grand dorsal, trapèzes, rhomboïdes) et les biceps.</li>
+      </ul>
+      <h2>Exemple d'intégration dans un Programme :</h2>
+      <p>Voici comment vous pourriez structurer une séance axée sur les tractions lestées dans le cadre d'un <strong>programme de musculation pour l'hypertrophie</strong> :</p>
+      <ol>
+        <li><strong>Échauffement spécifique :</strong> Mobilisations articulaires, tractions au poids du corps légères.</li>
+        <li><strong>Tractions Lestées :</strong> 3-5 séries de 3-8 répétitions (en fonction de votre objectif force/hypertrophie).</li>
+        <li><strong>Rowing Barre ou Haltère :</strong> 3-4 séries de 8-12 répétitions.</li>
+        <li><strong>Tirage Vertical Machine (prise neutre ou large) :</strong> 3 séries de 10-15 répétitions.</li>
+        <li><strong>Exercices d'isolation biceps (optionnel) :</strong> Curl haltères, curl marteau.</li>
+      </ol>
+      <p>Utilisez notre <strong>générateur de programme personnalisé musculation gratuit</strong> pour voir comment adapter au mieux ce type d'exercice à votre routine globale.</p>
+    `,
+    metaDescription: "Programme complet pour les tractions lestées. Augmentez votre force et votre masse musculaire avec cet exercice fondamental pour le dos et les bras.",
+    metaKeywords: ["tractions lestées", "programme traction", "musculation dos", "force dos", "hypertrophie dos", "exercice musculation"],
+    imageUrl: "/blog/post3-image.jpg", // Prévoyez une image pour ce post
+  }
 ];
