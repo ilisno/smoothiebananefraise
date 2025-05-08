@@ -172,8 +172,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onGenerate, isLoading }) => {
   return (
     <Card className="w-full max-w-2xl mx-auto animate-in fade-in duration-500">
       <CardHeader className="animate-in fade-in delay-100 duration-500">
-        <CardTitle className="text-2xl font-bold text-center">Smoothie Banane Fraise 🍌🍓</CardTitle>
-        <CardDescription className="text-center">Générez votre programme d'entraînement personnalisé</CardDescription>
+        <CardTitle className="text-2xl font-bold text-center">Générateur de programme personnalisé musculation gratuit</CardTitle>
       </CardHeader>
       <CardContent className="animate-in fade-in delay-200 duration-500">
         <Form {...form}>
