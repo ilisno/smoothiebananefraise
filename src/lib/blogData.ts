@@ -1,9 +1,7 @@
-import blogDataJson from './blogData.json';
-
 export interface BlogPost {
   slug: string;
   title: string;
-  category: string;
+  category: string; // Ajout du champ catégorie
   date: string;
   excerpt: string;
   content: string;
@@ -12,5 +10,74 @@ export interface BlogPost {
   imageUrl?: string;
 }
 
-// Accéder au tableau d'articles via la clé "posts"
-export const blogPosts: BlogPost[] = blogDataJson.posts as BlogPost[];
+export const blogPosts: BlogPost[] = [
+  {
+    slug: "programme-debutant-efficace", // Slug plus descriptif
+    title: "Programme Musculation Débutant : Le Guide Complet pour Commencer",
+    category: "debutant", // Exemple de catégorie
+    date: "2024-07-28",
+    excerpt: "Découvrez les bases et un exemple de programme pour bien commencer votre parcours de musculation avec notre générateur.",
+    content: `
+      <p>Commencer la musculation peut sembler intimidant, mais avec un <strong>programme de musculation personnalisé pour débutant</strong>, c'est beaucoup plus simple. Notre <strong>générateur gratuit</strong> est là pour vous guider.</p>
+      <h2>Les Principes Clés pour un Débutant</h2>
+      <ul>
+        <li><strong>Apprendre la technique :</strong> Avant de soulever lourd, maîtrisez la forme correcte des exercices.</li>
+        <li><strong>Progression graduelle :</strong> Augmentez progressivement les charges ou les répétitions.</li>
+        <li><strong>Régularité :</strong> La clé du succès est la constance dans vos entraînements.</li>
+      </ul>
+      <p>Un <strong>plan d'entraînement sur mesure</strong> vous aidera à éviter les erreurs courantes et à maximiser vos premiers gains. Utilisez notre <strong>générateur de programme personnalisé musculation gratuit</strong> pour obtenir le vôtre !</p>
+    `,
+    metaDescription: "Guide complet et programme de musculation pour débutant. Conseils pour bien commencer et progresser efficacement.",
+    metaKeywords: ["programme musculation débutant", "commencer musculation", "plan entraînement débutant", "générateur gratuit"],
+    imageUrl: "/blog/post1-image.jpg",
+  },
+  {
+    slug: "nutrition-prise-de-masse", // Slug plus descriptif
+    title: "Nutrition pour la Prise de Masse : Optimisez Vos Gains Musculaires",
+    category: "nutrition", // Exemple de catégorie
+    date: "2024-07-29",
+    excerpt: "La nutrition est essentielle pour la prise de masse. Découvrez les aliments et stratégies pour construire du muscle efficacement.",
+    content: `
+      <p>Pour une <strong>prise de masse musculaire</strong> réussie, l'alimentation est aussi cruciale que l'entraînement. Un surplus calorique contrôlé et un apport suffisant en macronutriments sont indispensables.</p>
+      <h2>Macronutriments pour la Prise de Masse</h2>
+      <ul>
+        <li><strong>Protéines :</strong> Visez 1.6-2.2g par kg de poids de corps pour la construction musculaire.</li>
+        <li><strong>Glucides :</strong> Fournissent l'énergie pour les séances intenses et aident à la récupération. Privilégiez les sources complexes.</li>
+        <li><strong>Lipides :</strong> Essentiels pour la santé hormonale. Optez pour les bonnes graisses (avocats, noix, huiles végétales).</li>
+      </ul>
+      <p>N'oubliez pas l'hydratation ! Un <strong>programme de musculation personnalisé</strong> pour la prise de masse doit s'accompagner d'un plan nutritionnel adapté.</p>
+    `,
+    metaDescription: "Conseils de nutrition pour une prise de masse efficace. Aliments, macronutriments et stratégies pour optimiser vos gains musculaires.",
+    metaKeywords: ["nutrition prise de masse", "alimentation musculation", "construire du muscle", "protéines musculation"],
+    imageUrl: "/blog/post2-image.jpg",
+  },
+  {
+    slug: "tractions-lestees-programme-complet",
+    title: "Tractions Lestées : Programme Complet pour Gagner en Force et en Masse",
+    category: "hypertrophie", // Catégorie de votre exemple
+    date: "2024-07-30",
+    excerpt: "Les tractions lestées sont un exercice redoutable pour développer le dos et les bras. Découvrez comment les intégrer dans un programme complet.",
+    content: `
+      <p>Les <strong>tractions lestées</strong> sont un excellent moyen de franchir un cap en termes de force et de masse musculaire pour le haut du corps. Si vous maîtrisez déjà les tractions au poids du corps, ajouter du lest est la prochaine étape logique.</p>
+      <h2>Pourquoi faire des Tractions Lestées ?</h2>
+      <ul>
+        <li><strong>Surcharge Progressive :</strong> Permet de continuer à progresser lorsque les tractions au poids du corps deviennent trop faciles.</li>
+        <li><strong>Gain de Force :</strong> Excellent pour développer la force brute du tirage vertical.</li>
+        <li><strong>Hypertrophie :</strong> Stimule intensément les muscles du dos (grand dorsal, trapèzes, rhomboïdes) et les biceps.</li>
+      </ul>
+      <h2>Exemple d'intégration dans un Programme :</h2>
+      <p>Voici comment vous pourriez structurer une séance axée sur les tractions lestées dans le cadre d'un <strong>programme de musculation pour l'hypertrophie</strong> :</p>
+      <ol>
+        <li><strong>Échauffement spécifique :</strong> Mobilisations articulaires, tractions au poids du corps légères.</li>
+        <li><strong>Tractions Lestées :</strong> 3-5 séries de 3-8 répétitions (en fonction de votre objectif force/hypertrophie).</li>
+        <li><strong>Rowing Barre ou Haltère :</strong> 3-4 séries de 8-12 répétitions.</li>
+        <li><strong>Tirage Vertical Machine (prise neutre ou large) :</strong> 3 séries de 10-15 répétitions.</li>
+        <li><strong>Exercices d'isolation biceps (optionnel) :</strong> Curl haltères, curl marteau.</li>
+      </ol>
+      <p>Utilisez notre <strong>générateur de programme personnalisé musculation gratuit</strong> pour voir comment adapter au mieux ce type d'exercice à votre routine globale.</p>
+    `,
+    metaDescription: "Programme complet pour les tractions lestées. Augmentez votre force et votre masse musculaire avec cet exercice fondamental pour le dos et les bras.",
+    metaKeywords: ["tractions lestées", "programme traction", "musculation dos", "force dos", "hypertrophie dos", "exercice musculation"],
+    imageUrl: "/blog/post3-image.jpg", // Prévoyez une image pour ce post
+  }
+];

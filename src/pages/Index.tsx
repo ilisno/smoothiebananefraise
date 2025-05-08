@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// import { Link } from 'react-router-dom'; // Link n'est plus nécessaire ici
+import { Link } from 'react-router-dom'; // Importer Link
 import ProgramForm, { FormData } from '@/components/ProgramForm';
 import WorkoutProgram from '@/components/WorkoutProgram';
 import AffiliatePopup from '@/components/AffiliatePopup';
@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from 'react-helmet-async';
-// import { Button } from '@/components/ui/button'; // Button n'est plus nécessaire ici pour le lien blog
+import { Button } from '@/components/ui/button'; // Importer Button
 
 export type { Exercise, WorkoutDay, Program } from '@/lib/programGenerator';
 
@@ -202,8 +202,7 @@ const Index = () => {
         <title>Générateur de Programme Personnalisé Musculation Gratuit - Smoothie Banane Fraise</title>
         <meta name="description" content="Créez votre programme de musculation personnalisé et gratuit avec notre générateur. Adapté à vos objectifs, niveau et équipement pour des résultats optimaux. Obtenez un plan d'entraînement sur mesure dès maintenant !" />
       </Helmet>
-      {/* Le container mx-auto est maintenant dans le Header et le contenu principal */}
-      <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col min-h-[calc(100vh-var(--header-height,80px))]"> {/* Ajuster la hauteur min en fonction de la hauteur du header */}
+      <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col min-h-screen">
         <header className="text-center mb-10 md:mb-12">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
             Générateur de Programme Personnalisé Musculation Gratuit 
@@ -220,7 +219,11 @@ const Index = () => {
                    {generatedCount} programmes générés !
                </p>
            )}
-           {/* Le lien du blog a été déplacé dans le Header global */}
+           <div className="mt-6"> {/* Conteneur pour le bouton du blog */}
+            <Button asChild variant="outline">
+              <Link to="/blog">Visitez notre Blog de Musculation</Link>
+            </Button>
+          </div>
         </header>
 
         <main className="flex-grow flex items-center justify-center">
@@ -273,6 +276,7 @@ const Index = () => {
           <p className="text-sm text-muted-foreground mb-2">
             © {new Date().getFullYear()} Smoothie Banane Fraise - Votre <strong>générateur de programme personnalisé musculation gratuit</strong>. Tous droits réservés.
           </p>
+          {/* Le lien du blog a été déplacé plus haut */}
         </footer>
       </div>
     </>
