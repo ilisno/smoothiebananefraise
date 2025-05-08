@@ -12,5 +12,5 @@ export interface BlogPost {
   imageUrl?: string;
 }
 
-// Exporter les données importées du JSON
-export const blogPosts: BlogPost[] = blogDataJson as BlogPost[];
+// Accéder au tableau d'articles via la clé "posts"
+export const blogPosts: BlogPost[] = blogDataJson.posts as BlogPost[];

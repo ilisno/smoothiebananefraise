@@ -2,33 +2,36 @@ backend:
   name: github
   repo: ilisno/smoothiebananefraise
   branch: main
-  # Pour Vercel avec GitHub OAuth, la configuration de base du backend est suffisante.
-  # L'authentification se fera via le flux OAuth de GitHub.
 
-media_folder: "public/uploads/blog" # Chemin où les images uploadées via le CMS seront stockées globalement
-public_folder: "/uploads/blog" # Chemin public pour accéder à ces images globales
+media_folder: "public/uploads/blog"
+public_folder: "/uploads/blog"
 
 collections:
-  - name: "blog_posts" # Nom de la collection (utilisé en interne)
-    label: "Articles de Blog" # Nom affiché dans l'interface du CMS
-    label_singular: "Article de Blog"
-    description: "Gérer les articles du blog ici."
-    # Configuration pour un fichier JSON unique contenant une liste d'objets (articles)
-    format: "json"
-    file: "src/lib/blogData.json" # Chemin vers le fichier JSON qui stocke tous les articles
-    # 'fields' définit la structure de chaque objet DANS le tableau JSON
-    fields:
-      - { label: "Titre", name: "title", widget: "string" }
-      - { label: "Slug (URL)", name: "slug", widget: "string", hint: "Partie de l'URL, ex: mon-super-article. Doit être unique." }
-      - { label: "Catégorie", name: "category", widget: "string", hint: "Ex: hypertrophie, nutrition, debutant. Utilisé dans l'URL." }
-      - { label: "Date de Publication", name: "date", widget: "datetime", format: "YYYY-MM-DD", dateFormat: "DD/MM/YYYY", timeFormat: false }
-      - { label: "Extrait (pour la carte)", name: "excerpt", widget: "text" }
-      - { label: "Contenu Principal", name: "content", widget: "markdown", hint: "Le contenu principal de l'article, supporte le Markdown et le HTML." }
-      - { label: "Image de l'article (URL ou chemin)", name: "imageUrl", widget: "image", required: false, media_folder: "public/uploads/blog/posts", public_folder: "/uploads/blog/posts", hint: "Uploadez une image ou entrez un chemin public comme /blog/mon-image.jpg" }
-      - { label: "Méta Description (SEO)", name: "metaDescription", widget: "string" }
-      - { label: "Méta Mots-clés (SEO)", name: "metaKeywords", widget: "list", field: { label: "Mot-clé", name: "keyword", widget: "string"} }
-    # Pour un fichier unique contenant une liste, on utilise 'editor.preview: false' si on ne veut pas de preview
-    # ou on configure un composant de preview personnalisé si besoin.
-    # Pour la simplicité, on peut omettre la preview pour l'instant ou la désactiver.
+  - name: "blog_settings" # Nom de la collection globale pour ce fichier
+    label: "Gestion du Blog"
+    delete: false # On ne supprime pas le fichier blogData.json lui-même
     editor:
-      preview: false # Désactive la preview dans l'éditeur pour cette collection de type fichier unique.
+      preview: false
+    files: # Définit que nous travaillons avec des fichiers spécifiques
+      - name: "posts_data" # Un nom interne pour cette configuration de fichier
+        label: "Articles de Blog" # Ce qui sera affiché dans l'UI pour cette section
+        file: "src/lib/blogData.json" # Le fichier JSON unique
+        description: "Gérer tous les articles de blog ici"
+        fields: # Champs de l'objet racine dans blogData.json
+          - name: "posts" # Doit correspondre à la clé dans blogData.json qui contient le tableau
+            label: "Liste des Articles"
+            label_singular: "Article"
+            widget: "list"
+            allow_add: true
+            allow_delete: true
+            summary: "{{fields.title}}" # Affiche le titre de l'article dans la liste UI
+            fields: # Champs pour CHAQUE article dans la liste "posts"
+              - { label: "Titre", name: "title", widget: "string" }
+              - { label: "Slug (URL)", name: "slug", widget: "string", hint: "Partie de l'URL, ex: mon-super-article. Doit être unique." }
+              - { label: "Catégorie", name: "category", widget: "string", hint: "Ex: hypertrophie, nutrition, debutant. Utilisé dans l'URL." }
+              - { label: "Date de Publication", name: "date", widget: "datetime", format: "YYYY-MM-DD", dateFormat: "DD/MM/YYYY", timeFormat: false }
+              - { label: "Extrait (pour la carte)", name: "excerpt", widget: "text" }
+              - { label: "Contenu Principal", name: "content", widget: "markdown", hint: "Le contenu principal de l'article, supporte le Markdown et le HTML." }
+              - { label: "Image de l'article (URL ou chemin)", name: "imageUrl", widget: "image", required: false, media_folder: "public/uploads/blog/posts", public_folder: "/uploads/blog/posts", hint: "Uploadez une image ou entrez un chemin public comme /blog/mon-image.jpg" }
+              - { label: "Méta Description (SEO)", name: "metaDescription", widget: "string" }
+              - { label: "Méta Mots-clés (SEO)", name: "metaKeywords", widget: "list", field: { label: "Mot-clé", name: "keyword", widget: "string"} }
