@@ -1,0 +1,31 @@
+backend:
+  name: github # Ou gitlab, bitbucket, etc.
+  repo: YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME # Ex: smoothiebananefraise/mon-super-site
+  branch: main # Ou la branche où vous voulez que les modifications soient poussées
+  # Optionnel: si votre site est déployé sur Netlify et que vous utilisez Netlify Identity
+  # open_authoring: true 
+  # site_domain: votre-domaine-netlify.netlify.app
+
+media_folder: "public/uploads/blog" # Chemin où les images uploadées via le CMS seront stockées
+public_folder: "/uploads/blog" # Chemin public pour accéder aux images
+
+collections:
+  - name: "blog" # Nom de la collection (utilisé en interne)
+    label: "Articles de Blog" # Nom affiché dans l'interface du CMS
+    label_singular: "Article de Blog"
+    description: "Gérer les articles du blog ici."
+    format: "json" # Nous allons gérer les articles dans un unique fichier JSON
+    file: "src/lib/blogData.json" # Chemin vers le fichier JSON qui stockera tous les articles
+    # Les champs 'slug' et 'path' ne sont pas nécessaires quand on utilise un unique fichier JSON
+    # et que les slugs sont gérés comme un champ dans chaque objet article.
+    # create: true # Permettre la création de nouveaux articles (implicite avec 'file')
+    fields: # Définition des champs pour chaque article
+      - { label: "Titre", name: "title", widget: "string" }
+      - { label: "Slug (URL)", name: "slug", widget: "string", hint: "Partie de l'URL, ex: mon-super-article. Doit être unique." }
+      - { label: "Catégorie", name: "category", widget: "string", hint: "Ex: hypertrophie, nutrition, debutant. Utilisé dans l'URL." }
+      - { label: "Date de Publication", name: "date", widget: "datetime", format: "YYYY-MM-DD", dateFormat: "DD/MM/YYYY", timeFormat: false }
+      - { label: "Extrait (pour la carte)", name: "excerpt", widget: "text" }
+      - { label: "Contenu Principal", name: "content", widget: "markdown", hint: "Le contenu principal de l'article, supporte le Markdown et le HTML." }
+      - { label: "Image de l'article (URL)", name: "imageUrl", widget: "image", required: false, media_folder: "public/uploads/blog/posts", public_folder: "/uploads/blog/posts" }
+      - { label: "Méta Description (SEO)", name: "metaDescription", widget: "string" }
+      - { label: "Méta Mots-clés (SEO)", name: "metaKeywords", widget: "list", field: { label: "Mot-clé", name: "keyword", widget: "string"} }
