@@ -1,25 +1,22 @@
 backend:
-  name: github # Ou gitlab, bitbucket, etc.
-  repo: YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME # Ex: smoothiebananefraise/mon-super-site
-  branch: main # Ou la branche où vous voulez que les modifications soient poussées
+  name: github # On lui dit que le château est sur GitHub
+  repo: ilisno/smoothiebananefraise # Voici l'adresse exacte de ton château !
+  branch: main # On lui dit de mettre les articles dans la pièce principale (branche "main")
   # Optionnel: si votre site est déployé sur Netlify et que vous utilisez Netlify Identity
   # open_authoring: true 
   # site_domain: votre-domaine-netlify.netlify.app
 
-media_folder: "public/uploads/blog" # Chemin où les images uploadées via le CMS seront stockées
-public_folder: "/uploads/blog" # Chemin public pour accéder aux images
+media_folder: "public/uploads/blog" # Si tu ajoutes des images aux articles, elles iront ici...
+public_folder: "/uploads/blog" # ...et c'est comme ça qu'on les verra sur le site.
 
 collections:
-  - name: "blog" # Nom de la collection (utilisé en interne)
-    label: "Articles de Blog" # Nom affiché dans l'interface du CMS
+  - name: "blog" 
+    label: "Articles de Blog" 
     label_singular: "Article de Blog"
     description: "Gérer les articles du blog ici."
-    format: "json" # Nous allons gérer les articles dans un unique fichier JSON
-    file: "src/lib/blogData.json" # Chemin vers le fichier JSON qui stockera tous les articles
-    # Les champs 'slug' et 'path' ne sont pas nécessaires quand on utilise un unique fichier JSON
-    # et que les slugs sont gérés comme un champ dans chaque objet article.
-    # create: true # Permettre la création de nouveaux articles (implicite avec 'file')
-    fields: # Définition des champs pour chaque article
+    format: "json" 
+    file: "src/lib/blogData.json" # Tous les articles seront rangés dans ce grand livre (fichier JSON)
+    fields: 
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Slug (URL)", name: "slug", widget: "string", hint: "Partie de l'URL, ex: mon-super-article. Doit être unique." }
       - { label: "Catégorie", name: "category", widget: "string", hint: "Ex: hypertrophie, nutrition, debutant. Utilisé dans l'URL." }
