@@ -26,7 +26,7 @@ const BlogPromoPopup: React.FC<BlogPromoPopupProps> = ({ isOpen, onClose }) => {
       <DialogContent className="sm:max-w-[450px] md:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
-            Ton Coach Muscu Virtuel t'attend !
+            Ton coach muscu t'attend !
           </DialogTitle>
         </DialogHeader>
         <div className="my-4 flex justify-center">
