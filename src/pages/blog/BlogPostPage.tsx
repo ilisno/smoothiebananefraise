@@ -7,6 +7,7 @@ import { sanityClient, urlFor } from '@/lib/sanityClient';
 import { SanityPost } from '@/types/sanity';
 import { PortableText, PortableTextComponents } from '@portabletext/react';
 import { Skeleton } from '@/components/ui/skeleton'; // Pour le chargement
+import BlogPromoPopup from '@/components/blog/BlogPromoPopup'; // Import du nouveau popup
 
 const portableTextComponents: Partial<PortableTextComponents> = {
   types: {
@@ -23,8 +24,6 @@ const portableTextComponents: Partial<PortableTextComponents> = {
         />
       );
     },
-    // Vous pouvez ajouter des rendus personnalisés pour d'autres types de blocs ici
-    // Par exemple, pour des blocs de code, des citations, etc.
   },
   marks: {
     link: ({ children, value }) => {
@@ -35,7 +34,6 @@ const portableTextComponents: Partial<PortableTextComponents> = {
         </a>
       );
     },
-    // Styles de texte standard (strong, em) sont gérés par défaut par la classe `prose`
   },
   block: {
     h1: ({ children }) => <h1 className="text-4xl font-extrabold my-6">{children}</h1>,
@@ -61,6 +59,10 @@ const BlogPostPage: React.FC = () => {
   const [post, setPost] = useState<SanityPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isPromoPopupOpen, setIsPromoPopupOpen] = useState(false);
+
+  const PROMO_POPUP_SESSION_KEY = 'promoPopupShownThisSession';
+  const POPUP_DELAY = 7000; // 7 secondes
 
   useEffect(() => {
     if (!postSlug || !categorySlug) {
@@ -78,19 +80,27 @@ const BlogPostPage: React.FC = () => {
           title,
           slug,
           mainImage,
-          "category": category->{title, slug}, // Récupérer le titre et le slug de la catégorie
+          "category": category->{title, slug},
           publishedAt,
           excerpt,
           body,
           metaDescription,
           metaKeywords,
-          author->{name} // Récupérer le nom de l'auteur
+          author->{name}
         }`;
         const params = { postSlug, categorySlug };
         const sanityPost: SanityPost = await sanityClient.fetch(query, params);
         
         if (sanityPost) {
           setPost(sanityPost);
+          // Déclencher le popup uniquement si l'article est chargé avec succès
+          const popupShown = sessionStorage.getItem(PROMO_POPUP_SESSION_KEY);
+          if (!popupShown) {
+            const timer = setTimeout(() => {
+              setIsPromoPopupOpen(true);
+            }, POPUP_DELAY);
+            return () => clearTimeout(timer);
+          }
         } else {
           setError("Article non trouvé.");
         }
@@ -105,13 +115,18 @@ const BlogPostPage: React.FC = () => {
     fetchPost();
   }, [postSlug, categorySlug]);
 
+  const handleClosePromoPopup = () => {
+    setIsPromoPopupOpen(false);
+    sessionStorage.setItem(PROMO_POPUP_SESSION_KEY, 'true');
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-12 md:py-16">
-        <Skeleton className="h-8 w-3/4 mb-4" /> {/* Back button placeholder */}
-        <Skeleton className="h-72 w-full mb-8" /> {/* Image placeholder */}
-        <Skeleton className="h-10 w-full mb-2" /> {/* Title placeholder */}
-        <Skeleton className="h-6 w-1/2 mb-6" /> {/* Date/Category placeholder */}
+        <Skeleton className="h-8 w-3/4 mb-4" />
+        <Skeleton className="h-72 w-full mb-8" />
+        <Skeleton className="h-10 w-full mb-2" />
+        <Skeleton className="h-6 w-1/2 mb-6" />
         <Skeleton className="h-5 w-full mb-3" />
         <Skeleton className="h-5 w-full mb-3" />
         <Skeleton className="h-5 w-5/6 mb-3" />
@@ -147,14 +162,12 @@ const BlogPostPage: React.FC = () => {
         {post.metaDescription && <meta name="description" content={post.metaDescription} />}
         {post.metaKeywords && post.metaKeywords.length > 0 && <meta name="keywords" content={post.metaKeywords.join(', ')} />}
         
-        {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />
         <meta property="og:url" content={pageUrl} />
         <meta property="og:title" content={post.title} />
         {post.metaDescription && <meta property="og:description" content={post.metaDescription} />}
         {imageUrl && <meta property="og:image" content={imageUrl} />}
 
-        {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content={pageUrl} />
         <meta name="twitter:title" content={post.title} />
@@ -188,6 +201,7 @@ const BlogPostPage: React.FC = () => {
           </div>
         </article>
       </div>
+      <BlogPromoPopup isOpen={isPromoPopupOpen} onClose={handleClosePromoPopup} />
     </>
   );
 };
