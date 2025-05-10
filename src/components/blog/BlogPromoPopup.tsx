@@ -31,7 +31,7 @@ const BlogPromoPopup: React.FC<BlogPromoPopupProps> = ({ isOpen, onClose }) => {
         </DialogHeader>
         <div className="my-4 flex justify-center">
           <img
-            src="/popup-generateur-promo.jpg" // Assurez-vous d'ajouter cette image dans public/
+            src="/popup-generateur-promo.jpg" // Assurez-vous que cette image est dans le dossier public/
             alt="Promotion du générateur de programme de musculation"
             className="max-w-full h-auto rounded-md shadow-lg"
             style={{ maxHeight: '250px' }} // Limite la hauteur de l'image
@@ -49,7 +49,7 @@ const BlogPromoPopup: React.FC<BlogPromoPopupProps> = ({ isOpen, onClose }) => {
             onClick={handleProceed}
             className={cn(buttonVariants({ variant: "default", size: "lg" }), "w-full sm:w-auto")}
           >
-            Générer Mon Programme Gratuit !
+            Générer mon programme gratuit !
           </Link>
         </DialogFooter>
       </DialogContent>
