@@ -16,7 +16,8 @@ type AffiliatePopupProps = {
   onProceed: () => void;
   imageSrc: string;
   affiliateLink?: string;
-  buttonText?: string;
+  buttonText?: string; // Texte pour le bouton d'affiliation
+  proceedButtonText?: string; // Nouveau: Texte pour le bouton "Proceed"
   title?: string;
   description?: string;
   onAffiliateLinkClick: () => void;
@@ -29,6 +30,7 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
   imageSrc,
   affiliateLink,
   buttonText,
+  proceedButtonText, // Utiliser la nouvelle prop
   title,
   description,
   onAffiliateLinkClick,
@@ -36,20 +38,12 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
 
   console.log("AffiliatePopup rendering with imageSrc:", imageSrc);
 
-  const handleProceed = () => {
-    onClose();
-    onProceed();
-  };
-
   const handleAffiliateClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // If the link is purely for tracking and shouldn't navigate,
-    // or if navigation should only happen after tracking, you might call e.preventDefault()
-    // For now, we assume default link behavior + tracking.
     onAffiliateLinkClick();
   };
 
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}> {/* Ajout de onOpenChange pour fermer avec la croix/echap */}
       <DialogContent className="sm:max-w-[400px] md:max-w-[450px] hide-dialog-close">
         <DialogHeader>
           <DialogTitle>{title || "Offre Spéciale !"}</DialogTitle>
@@ -74,15 +68,15 @@ const AffiliatePopup: React.FC<AffiliatePopupProps> = ({
                target="_blank"
                rel="noopener noreferrer"
                onClick={handleAffiliateClick}
-               className={cn(buttonVariants({ variant: "default" }))} // Apply button styles
+               className={cn(buttonVariants({ variant: "default" }))}
              >
                {buttonText || "Découvrir l'offre"}
              </a>
            ) : (
              <Button disabled>{buttonText || "Lien bientôt disponible"}</Button>
            )}
-           <Button onClick={handleProceed} variant="outline">
-             Voir mon programme
+           <Button onClick={onProceed} variant="outline">
+             {proceedButtonText || "Continuer"} {/* Utilisation de la prop ou du texte par défaut */}
            </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
-import { Menu, Home, BookOpen, MessageCircle } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'; 
+import { Menu, Home, MessageCircle, BookOpen } from 'lucide-react'; 
 
 const Header: React.FC = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -10,7 +10,7 @@ const Header: React.FC = () => {
 
   const handleNavigation = (path: string) => {
     navigate(path);
-    setIsSheetOpen(false); // Ferme le sheet après la navigation
+    setIsSheetOpen(false); 
   };
 
   return (
@@ -20,7 +20,11 @@ const Header: React.FC = () => {
           Smoothie Banane Fraise 🍌🍓
         </Link>
         
-        <nav className="hidden md:flex items-center space-x-2"> {/* Masqué sur mobile, visible sur md et plus */}
+        {/* Navigation pour desktop */}
+        <nav className="hidden md:flex items-center space-x-2">
+          <Button variant="ghost" asChild>
+            <Link to="/">Générateur</Link>
+          </Button>
           <Button variant="ghost" asChild>
             <Link to="/chatbot-musculation">Chatbot</Link>
           </Button>
@@ -29,7 +33,8 @@ const Header: React.FC = () => {
           </Button>
         </nav>
 
-        <div className="md:hidden"> {/* Uniquement visible sur mobile */}
+        {/* Menu hamburger pour mobile */}
+        <div className="md:hidden">
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -53,18 +58,18 @@ const Header: React.FC = () => {
                 <Button
                   variant="ghost"
                   className="w-full justify-start"
-                  onClick={() => handleNavigation('/blog')}
-                >
-                  <BookOpen className="mr-2 h-4 w-4" />
-                  Blog
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start"
                   onClick={() => handleNavigation('/chatbot-musculation')}
                 >
                   <MessageCircle className="mr-2 h-4 w-4" />
                   Chatbot
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={() => handleNavigation('/blog')}
+                >
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  Blog
                 </Button>
               </div>
             </SheetContent>

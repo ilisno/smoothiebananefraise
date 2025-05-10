@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// Link n'est plus nécessaire ici pour le bouton Blog
+import { Link } from 'react-router-dom';
 import ProgramForm, { FormData } from '@/components/ProgramForm';
 import WorkoutProgram from '@/components/WorkoutProgram';
 import AffiliatePopup from '@/components/AffiliatePopup';
@@ -8,7 +8,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from 'react-helmet-async';
-// Button n'est plus nécessaire ici pour le bouton Blog
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Importer Alert
+import { MessageCircle } from 'lucide-react'; // Importer l'icône
 
 export type { Exercise, WorkoutDay, Program } from '@/lib/programGenerator';
 
@@ -202,10 +203,9 @@ const Index = () => {
         <title>Générateur de programme personnalisé musculation gratuit - Smoothie Banane Fraise</title>
         <meta name="description" content="Créez votre programme de musculation personnalisé et gratuit avec notre générateur. Adapté à vos objectifs, niveau et équipement pour des résultats optimaux. Obtenez un plan d'entraînement sur mesure dès maintenant !" />
       </Helmet>
-      <div className="container mx-auto px-4 py-8 md:py-12 flex flex-col min-h-screen"> {/* Ajustement du padding vertical global */}
-        {/* Le bouton Blog en position absolue a été supprimé car il est maintenant dans le Header global */}
-        <header className="text-center mb-8 md:mb-10"> {/* Réduction du margin-bottom et suppression du padding-top ici */}
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-3"> {/* Taille de police réduite */}
+      <div className="container mx-auto px-4 py-8 md:py-12 flex flex-col min-h-screen">
+        <header className="text-center mb-8 md:mb-10">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-3">
             Générateur de programme personnalisé musculation gratuit
             <span className="block text-xs text-muted-foreground font-normal mt-1">par Smoothie Banane Fraise 🍌🍓</span>
           </h1>
@@ -221,6 +221,14 @@ const Index = () => {
                </p>
            )}
         </header>
+
+        <Alert className="mb-8 max-w-2xl mx-auto">
+          <MessageCircle className="h-4 w-4" />
+          <AlertTitle>Besoin de conseils ?</AlertTitle>
+          <AlertDescription>
+            Des questions sur la musculation ou votre entraînement ? Discutez avec notre <Link to="/chatbot-musculation" className="font-semibold text-primary hover:underline">Coach IA</Link> !
+          </AlertDescription>
+        </Alert>
 
         <main className="flex-grow flex items-center justify-center">
           {!generatedProgram && !isLoading && (
