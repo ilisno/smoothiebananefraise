@@ -10,9 +10,7 @@ const Header: React.FC = () => {
           Smoothie Banane Fraise 🍌🍓
         </Link>
         <nav className="flex items-center space-x-4">
-          <Button variant="ghost" asChild>
-            <Link to="/">Générateur</Link>
-          </Button>
+          {/* Le bouton "Générateur" a été supprimé car le logo/titre principal y mène déjà */}
           <Button variant="ghost" asChild>
             <Link to="/blog">Blog</Link>
           </Button>
