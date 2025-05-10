@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import ChatInterface, { Message } from '@/components/Chatbot/ChatInterface';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+// Link et Button ne sont plus nécessaires ici pour l'ancien menu
 import { useToast } from "@/components/ui/use-toast";
 
 const GROQ_API_KEY = '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';
@@ -23,8 +22,13 @@ const ChatbotPage: React.FC = () => {
 
   // Message d'introduction de l'IA
   useEffect(() => {
-    addMessage('assistant', "Bienvenue dans ton chat de musculation. Comment puis-je t'aider aujourd'hui ?");
-  }, []);
+    // Ajoute le message d'introduction seulement si la conversation est vide
+    // pour éviter de le répéter si l'utilisateur navigue ailleurs puis revient.
+    if (messages.length === 0) {
+      addMessage('assistant', "Bienvenue dans ton chat de musculation. Comment puis-je t'aider aujourd'hui ?");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Exécuté une seule fois au montage
 
   const handleSendMessage = useCallback(async () => {
     if (!inputValue.trim()) return;
@@ -34,22 +38,16 @@ const ChatbotPage: React.FC = () => {
     setInputValue('');
     setIsLoading(true);
 
-    // Préparer l'historique pour l'API (les 5 derniers messages + le message système)
-    const historyForApi = messages.slice(-5); // Prend les 5 derniers messages
+    const historyForApi = messages.slice(-5); 
     const apiMessages = [
       { role: 'system', content: "Tu es un coach musculation. Donne des conseils pratiques et adaptés." },
-      ...historyForApi.map(msg => ({ role: msg.role, content: msg.content })), // Ajoute l'historique existant
-      { role: 'user', content: userMessageContent }, // Ajoute le nouveau message utilisateur
+      ...historyForApi.map(msg => ({ role: msg.role, content: msg.content })),
+      { role: 'user', content: userMessageContent },
     ];
     
-    // S'assurer de ne pas dépasser une certaine limite pour l'historique envoyé à l'API
-    // (ici on prend les 5 derniers + system + nouveau user, donc 7 au max)
-    // Si l'historique est plus long, on pourrait le tronquer davantage.
-    // Pour cette implémentation, on envoie les 5 derniers messages de l'historique + le message système + le message utilisateur actuel.
-
     try {
       console.log("Sending to Groq API:", JSON.stringify({
-        model: "mixtral-8x7b-32768",
+        model: "llama3-70b-8192", // Modèle mis à jour
         messages: apiMessages,
         temperature: 0.7,
       }, null, 2));
@@ -61,7 +59,7 @@ const ChatbotPage: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: "mixtral-8x7b-32768",
+          model: "llama3-70b-8192", // Modèle mis à jour
           messages: apiMessages,
           temperature: 0.7,
         }),
@@ -102,27 +100,9 @@ const ChatbotPage: React.FC = () => {
         <title>Chatbot Musculation | Smoothie Banane Fraise</title>
         <meta name="description" content="Discutez avec notre coach musculation IA pour obtenir des conseils personnalisés." />
       </Helmet>
-      <div className="container mx-auto py-4 md:py-8 flex flex-col" style={{ height: 'calc(100vh - 4rem)'}}> {/* 4rem est la hauteur du Header global */}
-        {/* Menu simple */}
-        <nav className="mb-4 pb-2 border-b">
-          <ul className="flex items-center justify-center space-x-4 md:space-x-6">
-            <li>
-              <span className="text-lg font-semibold text-primary">Chatbot Musculation</span>
-            </li>
-            <li>
-              <Button variant="link" asChild className="text-muted-foreground hover:text-primary">
-                {/* Le lien Outils peut pointer vers une future page ou être désactivé */}
-                <Link to="/outils" onClick={(e) => { e.preventDefault(); toast({ title: "Bientôt disponible", description: "La section Outils arrive bientôt !" }); }}>Outils</Link>
-              </Button>
-            </li>
-            <li>
-              <Button variant="link" asChild className="text-muted-foreground hover:text-primary">
-                <Link to="/blog">Blog</Link>
-              </Button>
-            </li>
-          </ul>
-        </nav>
-
+      {/* Le container principal prendra toute la hauteur moins le header global */}
+      <div className="container mx-auto py-4 md:py-8 flex flex-col" style={{ height: 'calc(100vh - 4rem)'}}> 
+        {/* Le menu de navigation spécifique au chatbot a été supprimé */}
         <div className="flex-grow">
           <ChatInterface
             messages={messages}
@@ -132,7 +112,6 @@ const ChatbotPage: React.FC = () => {
             isLoading={isLoading}
           />
         </div>
-         {/* Commentaire sur la clé API */}
          <p className="text-xs text-muted-foreground text-center mt-4">
             Note: La clé API Groq est utilisée côté client pour la démonstration. 
             Dans une application de production, elle devrait être sécurisée côté serveur.
