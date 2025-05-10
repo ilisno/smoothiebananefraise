@@ -122,7 +122,7 @@ const BlogPostPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-12 md:py-16">
+      <div className="container mx-auto py-12 md:py-16"> {/* Changement ici: px-4 supprimé */}
         <Skeleton className="h-8 w-3/4 mb-4" />
         <Skeleton className="h-72 w-full mb-8" />
         <Skeleton className="h-10 w-full mb-2" />
@@ -141,7 +141,7 @@ const BlogPostPage: React.FC = () => {
           <title>Article non trouvé | Smoothie Banane Fraise</title>
           <meta name="description" content="L'article de blog que vous cherchez n'a pas été trouvé." />
         </Helmet>
-        <div className="container mx-auto px-4 py-12 text-center">
+        <div className="container mx-auto py-12 text-center"> {/* Changement ici: px-4 supprimé */}
           <h1 className="text-3xl font-bold mb-4">Oops! Article non trouvé</h1>
           <p className="mb-6">{error || "Nous n'avons pas pu trouver l'article que vous cherchiez."}</p>
           <Button asChild>
@@ -174,7 +174,7 @@ const BlogPostPage: React.FC = () => {
         {post.metaDescription && <meta name="twitter:description" content={post.metaDescription} />}
         {imageUrl && <meta name="twitter:image" content={imageUrl} />}
       </Helmet>
-      <div className="container mx-auto px-4 py-12 md:py-16">
+      <div className="container mx-auto py-12 md:py-16"> {/* Changement ici: px-4 supprimé */}
         <article className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl mx-auto">
           {post.mainImage && (
             <img 
