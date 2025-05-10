@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export interface Message {
   role: 'user' | 'assistant' | 'system';
@@ -17,6 +18,7 @@ interface ChatInterfaceProps {
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSendMessage: () => void;
   isLoading: boolean;
+  isInputDisabled?: boolean; // Nouvelle prop
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -25,6 +27,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   onInputChange,
   onSendMessage,
   isLoading,
+  isInputDisabled = false, // Valeur par défaut
 }) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -36,7 +39,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   useEffect(scrollToBottom, [messages]);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !isLoading) {
+    if (e.key === 'Enter' && !isLoading && !isInputDisabled) {
       onSendMessage();
     }
   };
@@ -55,17 +58,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           L'IA réfléchit...
         </div>
       )}
-      <div className="border-t p-4 flex items-center gap-2">
+      <div className={cn(
+        "border-t p-4 flex items-center gap-2",
+        isInputDisabled && "opacity-50 cursor-not-allowed" // Style pour l'état désactivé
+      )}>
         <Input
           type="text"
-          placeholder="Posez votre question ici..."
+          placeholder={isInputDisabled ? "Veuillez fermer le popup pour continuer..." : "Posez votre question ici..."}
           value={inputValue}
           onChange={onInputChange}
           onKeyPress={handleKeyPress}
-          disabled={isLoading}
+          disabled={isLoading || isInputDisabled}
           className="flex-grow"
         />
-        <Button onClick={onSendMessage} disabled={isLoading || !inputValue.trim()}>
+        <Button onClick={onSendMessage} disabled={isLoading || isInputDisabled || !inputValue.trim()}>
           <Send className="h-4 w-4" />
           <span className="sr-only">Envoyer</span>
         </Button>
