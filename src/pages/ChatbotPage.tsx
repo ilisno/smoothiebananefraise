@@ -245,7 +245,7 @@ const ChatbotPage: React.FC = () => {
                     <label htmlFor="email-chatbot" className="text-sm font-medium">Adresse email</label>
                     <Input
                       id="email-chatbot"
-                      type="email" // Garder type="email" pour le formatage du clavier sur mobile
+                      type="text" // Changé de "email" à "text"
                       placeholder="vous@email.com"
                       value={emailInputValue}
                       onChange={(e) => setEmailInputValue(e.target.value)}
