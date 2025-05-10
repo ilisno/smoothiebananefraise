@@ -50,7 +50,7 @@ const ChatbotPage: React.FC = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
 
   const [isChatbotVisible, setIsChatbotVisible] = useState(false);
-  const [isInitialPopupOpen, setIsInitialPopupOpen] = useState(true); 
+  const [isInitialPopupOpen, setIsInitialPopupOpen] = useState(true); // Reste true initialement
   const [isPeriodicPopupOpen, setIsPeriodicPopupOpen] = useState(false);
   
   const periodicPopupIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -119,13 +119,15 @@ const ChatbotPage: React.FC = () => {
   };
 
   useEffect(() => {
+    // Si userEmail est défini (par une soumission valide ou 'b'), et que le popup initial n'est PAS ouvert,
+    // alors on peut considérer que l'utilisateur a passé l'étape de l'email/popup.
     if (userEmail && !isInitialPopupOpen) {
         setIsChatbotVisible(true);
         if (messages.length === 0) {
              addMessage('assistant', "Bienvenue ! Pose-moi tes questions sur la musculation. Je serai concis.");
         }
     }
-  }, [userEmail, isInitialPopupOpen, messages.length]);
+  }, [userEmail, isInitialPopupOpen, messages.length]); // Dépendances ajustées
 
 
   useEffect(() => {
@@ -134,7 +136,7 @@ const ChatbotPage: React.FC = () => {
         if (!isPeriodicPopupOpen && !isInitialPopupOpen) { 
           setIsPeriodicPopupOpen(true);
         }
-      }, 180000); 
+      }, 180000); // Délai changé à 3 minutes (180000 ms)
     } else {
       if (periodicPopupIntervalRef.current) clearInterval(periodicPopupIntervalRef.current);
     }
@@ -311,7 +313,6 @@ const ChatbotPage: React.FC = () => {
                 onInputChange={(e) => setInputValue(e.target.value)}
                 onSendMessage={handleSendMessage}
                 isLoading={isLoading}
-                isInputDisabled={isPeriodicPopupOpen} {/* Passer la prop ici */}
               />
             </div>
             <Alert className="mt-4">
@@ -323,6 +324,7 @@ const ChatbotPage: React.FC = () => {
             </Alert>
           </>
         )}
+        {/* Fallback pour le chargement si userEmail est défini mais que le chatbot n'est pas encore visible */}
         {userEmail && !isChatbotVisible && !isInitialPopupOpen && (
              <div className="flex-grow flex items-center justify-center">
                 <Loader2 className="mr-2 h-8 w-8 animate-spin text-primary" />
