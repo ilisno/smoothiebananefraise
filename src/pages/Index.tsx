@@ -202,10 +202,10 @@ const Index = () => {
         <title>Générateur de programme personnalisé musculation gratuit - Smoothie Banane Fraise</title>
         <meta name="description" content="Créez votre programme de musculation personnalisé et gratuit avec notre générateur. Adapté à vos objectifs, niveau et équipement pour des résultats optimaux. Obtenez un plan d'entraînement sur mesure dès maintenant !" />
       </Helmet>
-      <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col min-h-screen">
+      <div className="container mx-auto px-4 py-8 md:py-12 flex flex-col min-h-screen"> {/* Ajustement du padding vertical global */}
         {/* Le bouton Blog en position absolue a été supprimé car il est maintenant dans le Header global */}
-        <header className="text-center mb-10 md:mb-12 pt-8 md:pt-0">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
+        <header className="text-center mb-8 md:mb-10"> {/* Réduction du margin-bottom et suppression du padding-top ici */}
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-3"> {/* Taille de police réduite */}
             Générateur de programme personnalisé musculation gratuit
             <span className="block text-xs text-muted-foreground font-normal mt-1">par Smoothie Banane Fraise 🍌🍓</span>
           </h1>
