@@ -136,7 +136,7 @@ const ChatbotPage: React.FC = () => {
         if (!isPeriodicPopupOpen && !isInitialPopupOpen) { 
           setIsPeriodicPopupOpen(true);
         }
-      }, 60000); 
+      }, 180000); // Délai changé à 3 minutes (180000 ms)
     } else {
       if (periodicPopupIntervalRef.current) clearInterval(periodicPopupIntervalRef.current);
     }
@@ -245,7 +245,7 @@ const ChatbotPage: React.FC = () => {
                     <label htmlFor="email-chatbot" className="text-sm font-medium">Adresse email</label>
                     <Input
                       id="email-chatbot"
-                      type="text" // Changé de "email" à "text"
+                      type="text" 
                       placeholder="vous@email.com"
                       value={emailInputValue}
                       onChange={(e) => setEmailInputValue(e.target.value)}
