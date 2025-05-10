@@ -23,10 +23,10 @@ const Header: React.FC = () => {
         {/* Navigation pour desktop */}
         <nav className="hidden md:flex items-center space-x-2">
           <Button variant="ghost" asChild>
-            <Link to="/">Générateur</Link>
+            <Link to="/">Générateur de Programme</Link>
           </Button>
           <Button variant="ghost" asChild>
-            <Link to="/chatbot-musculation">Chatbot</Link>
+            <Link to="/chatbot-musculation">Coach IA</Link>
           </Button>
           <Button variant="ghost" asChild>
             <Link to="/blog">Blog</Link>
@@ -53,7 +53,7 @@ const Header: React.FC = () => {
                   onClick={() => handleNavigation('/')}
                 >
                   <Home className="mr-2 h-4 w-4" />
-                  Générateur
+                  Générateur de Programme
                 </Button>
                 <Button
                   variant="ghost"
@@ -61,7 +61,7 @@ const Header: React.FC = () => {
                   onClick={() => handleNavigation('/chatbot-musculation')}
                 >
                   <MessageCircle className="mr-2 h-4 w-4" />
-                  Chatbot
+                  Coach IA
                 </Button>
                 <Button
                   variant="ghost"
