@@ -50,7 +50,7 @@ const ChatbotPage: React.FC = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
 
   const [isChatbotVisible, setIsChatbotVisible] = useState(false);
-  const [isInitialPopupOpen, setIsInitialPopupOpen] = useState(true); // Reste true initialement
+  const [isInitialPopupOpen, setIsInitialPopupOpen] = useState(true); 
   const [isPeriodicPopupOpen, setIsPeriodicPopupOpen] = useState(false);
   
   const periodicPopupIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -119,15 +119,13 @@ const ChatbotPage: React.FC = () => {
   };
 
   useEffect(() => {
-    // Si userEmail est défini (par une soumission valide ou 'b'), et que le popup initial n'est PAS ouvert,
-    // alors on peut considérer que l'utilisateur a passé l'étape de l'email/popup.
     if (userEmail && !isInitialPopupOpen) {
         setIsChatbotVisible(true);
         if (messages.length === 0) {
              addMessage('assistant', "Bienvenue ! Pose-moi tes questions sur la musculation. Je serai concis.");
         }
     }
-  }, [userEmail, isInitialPopupOpen, messages.length]); // Dépendances ajustées
+  }, [userEmail, isInitialPopupOpen, messages.length]);
 
 
   useEffect(() => {
@@ -136,7 +134,7 @@ const ChatbotPage: React.FC = () => {
         if (!isPeriodicPopupOpen && !isInitialPopupOpen) { 
           setIsPeriodicPopupOpen(true);
         }
-      }, 180000); // Délai changé à 3 minutes (180000 ms)
+      }, 180000); 
     } else {
       if (periodicPopupIntervalRef.current) clearInterval(periodicPopupIntervalRef.current);
     }
@@ -302,11 +300,11 @@ const ChatbotPage: React.FC = () => {
         )}
 
         {userEmail && isChatbotVisible && !isInitialPopupOpen && (
-          <>
+          <div className="flex flex-col flex-grow"> {/* Enveloppeur flex pour le chat et l'alerte */}
             <h2 className="text-xl md:text-2xl font-semibold text-center mb-4 md:mb-6">
               Pose tes questions muscu / nutrition et obtient ta réponse instantanément.
             </h2>
-            <div className="flex-grow" style={{ height: 'calc(100vh - 20rem)' }}> 
+            <div className="flex-grow"> {/* Ce div prendra la hauteur disponible pour le chat */}
               <ChatInterface
                 messages={messages}
                 inputValue={inputValue}
@@ -315,14 +313,14 @@ const ChatbotPage: React.FC = () => {
                 isLoading={isLoading}
               />
             </div>
-            <Alert className="mt-4">
+            <Alert className="mt-4 flex-shrink-0"> {/* L'alerte ne grandit pas et reste en bas */}
               <Info className="h-4 w-4" />
               <AlertTitle>Conseil</AlertTitle>
               <AlertDescription>
                 Besoin d'un plan d'entraînement complet et sur mesure ? Essayez notre <Link to="/" className="font-semibold text-primary hover:underline">Générateur de Programme</Link> !
               </AlertDescription>
             </Alert>
-          </>
+          </div>
         )}
         {/* Fallback pour le chargement si userEmail est défini mais que le chatbot n'est pas encore visible */}
         {userEmail && !isChatbotVisible && !isInitialPopupOpen && (

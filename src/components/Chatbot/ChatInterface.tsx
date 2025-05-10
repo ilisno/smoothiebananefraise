@@ -42,7 +42,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)] md:h-[calc(100vh-10rem)] border rounded-lg shadow-sm">
+    <div className="flex flex-col h-full border rounded-lg shadow-sm"> {/* Changé h-[calc(100vh-Xrem)] en h-full */}
       <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
         {messages.filter(msg => msg.role !== 'system').map((msg) => (
           <ChatMessage key={msg.id} role={msg.role} content={msg.content} />
