@@ -68,15 +68,6 @@ const ChatbotPage: React.FC = () => {
     setEmailError(null);
     setIsSubmittingEmail(true);
 
-    if (emailInputValue.toLowerCase() === 'b') {
-      console.log("Bypassing Supabase insertion for test email 'b' for Coach Virtuel.");
-      setUserEmail('b'); // Set userEmail to 'b' to signify bypass
-      setIsInitialPopupOpen(true); // Trigger the initial popup
-      toast({ title: "Accès direct", description: "Vous pouvez maintenant accéder au coach virtuel." });
-      setIsSubmittingEmail(false);
-      return;
-    }
-
     if (!emailInputValue.trim() || !/\S+@\S+\.\S+/.test(emailInputValue)) {
       setEmailError("Veuillez entrer une adresse email valide.");
       setIsSubmittingEmail(false);
@@ -140,7 +131,7 @@ const ChatbotPage: React.FC = () => {
   }, [userEmail, isChatbotVisible, isInitialPopupOpen, isPeriodicPopupOpen]);
 
   const logConversation = async (userMsg: string, aiMsg: string) => {
-    if (!userEmail || userEmail === 'b') return; // Do not log for 'b'
+    if (!userEmail) return; 
     try {
       const { error } = await supabase.from('chatbot_conversations').insert({
         user_email: userEmail,
@@ -240,7 +231,7 @@ const ChatbotPage: React.FC = () => {
                     <Input
                       id="email-chatbot"
                       type="email"
-                      placeholder="vous@email.com (ou 'b' pour tester)"
+                      placeholder="vous@email.com"
                       value={emailInputValue}
                       onChange={(e) => setEmailInputValue(e.target.value)}
                       required
