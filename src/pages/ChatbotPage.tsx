@@ -11,8 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
-const GROQ_API_KEY = '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';
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+// GROQ_API_KEY et GROQ_API_URL ne sont plus nécessaires ici
 
 const popupAffiliateData = [
   {
@@ -53,7 +52,7 @@ const ChatbotPage: React.FC = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
 
   const [isChatbotVisible, setIsChatbotVisible] = useState(false);
-  const [isInitialPopupOpen, setIsInitialPopupOpen] = useState(true); // Sera conditionné par la soumission de l'email
+  const [isInitialPopupOpen, setIsInitialPopupOpen] = useState(true);
   const [isPeriodicPopupOpen, setIsPeriodicPopupOpen] = useState(false);
   
   const periodicPopupIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -75,19 +74,16 @@ const ChatbotPage: React.FC = () => {
     }
     setIsSubmittingEmail(true);
     try {
-      // Tenter d'insérer l'email dans la table 'subscribers'
       const { error: subscriberError } = await supabase
         .from('subscribers')
-        .insert({ email: emailInputValue }, { upsert: true }); // upsert pour éviter erreur si email existe déjà
+        .insert({ email: emailInputValue }, { upsert: true });
 
-      if (subscriberError && subscriberError.code !== '23505') { // 23505 est le code pour violation de contrainte unique
+      if (subscriberError && subscriberError.code !== '23505') {
         throw subscriberError;
       }
       
       setUserEmail(emailInputValue);
-      // Le popup d'affiliation s'ouvrira maintenant, puis le chatbot
-      setIsInitialPopupOpen(true); // Déclenche le popup d'affiliation
-      // isChatbotVisible sera mis à true par handleInitialPopupClose
+      setIsInitialPopupOpen(true);
       
       toast({ title: "Email enregistré !", description: "Vous pouvez maintenant accéder au chatbot." });
     } catch (error) {
@@ -161,27 +157,40 @@ const ChatbotPage: React.FC = () => {
     ];
     
     try {
-      const response = await fetch(GROQ_API_URL, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: "llama3-70b-8192", messages: apiMessages, temperature: 0.7 }),
+      console.log("[ChatbotPage] Invoking Supabase Edge Function 'groq-proxy' with payload:", {
+        model: "llama3-70b-8192",
+        messages: apiMessages,
+        temperature: 0.7,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorData.error?.message || 'Unknown error'}`);
+      const { data: functionResponse, error: functionError } = await supabase.functions.invoke('groq-proxy', {
+        body: {
+          model: "llama3-70b-8192",
+          messages: apiMessages,
+          temperature: 0.7,
+        }
+      });
+
+      if (functionError) {
+        console.error("[ChatbotPage] Edge Function Error:", functionError);
+        throw new Error(`Erreur de la fonction Edge: ${functionError.message}`);
       }
 
-      const data = await response.json();
-      if (data.choices && data.choices.length > 0 && data.choices[0].message) {
-        const aiResponse = data.choices[0].message.content;
+      console.log("[ChatbotPage] Received from Edge Function:", functionResponse);
+
+      if (functionResponse.choices && functionResponse.choices.length > 0 && functionResponse.choices[0].message) {
+        const aiResponse = functionResponse.choices[0].message.content;
         addMessage('assistant', aiResponse);
-        await logConversation(userMessageContent, aiResponse); // Log la conversation
+        await logConversation(userMessageContent, aiResponse);
+      } else if (functionResponse.error) {
+         // Si l'Edge Function a renvoyé une erreur structurée de Groq
+        const groqErrorMessage = typeof functionResponse.error === 'string' ? functionResponse.error : (functionResponse.error.message || "Erreur inconnue de l'API Groq via proxy");
+        throw new Error(`Erreur de l'API Groq (via proxy): ${groqErrorMessage}`);
       } else {
-        throw new Error("Réponse invalide de l'API Groq.");
+        throw new Error("Réponse invalide de la fonction Edge.");
       }
     } catch (error) {
-      console.error('Erreur API Groq:', error);
+      console.error('[ChatbotPage] Error during handleSendMessage:', error);
       const errMsg = error instanceof Error ? error.message : "Erreur inconnue.";
       addMessage('assistant', `Désolé, une erreur est survenue : ${errMsg}`);
       toast({ title: "Erreur Chatbot", description: `Impossible de contacter l'IA : ${errMsg}`, variant: "destructive" });
@@ -194,12 +203,12 @@ const ChatbotPage: React.FC = () => {
     return (
       <>
         <Helmet>
-          <title>Accès Chatbot Musculation | Smoothie Banane Fraise</title>
+          <title>Accès Coach IA | Smoothie Banane Fraise</title>
         </Helmet>
         <div className="container mx-auto py-8 flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
           <Card className="w-full max-w-md">
             <CardHeader>
-              <CardTitle>Accéder au Chatbot Musculation</CardTitle>
+              <CardTitle>Accéder au Coach IA</CardTitle>
               <CardDescription>Veuillez entrer votre adresse email pour commencer à discuter avec notre coach IA.</CardDescription>
             </CardHeader>
             <form onSubmit={handleEmailSubmit}>
@@ -221,7 +230,7 @@ const ChatbotPage: React.FC = () => {
               <CardFooter>
                 <Button type="submit" className="w-full" disabled={isSubmittingEmail}>
                   {isSubmittingEmail && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Accéder au Chatbot
+                  Accéder au Coach IA
                 </Button>
               </CardFooter>
             </form>
@@ -234,7 +243,7 @@ const ChatbotPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Chatbot Musculation | Smoothie Banane Fraise</title>
+        <title>Coach IA Musculation | Smoothie Banane Fraise</title>
         <meta name="description" content="Discutez avec notre coach musculation IA pour obtenir des conseils personnalisés." />
       </Helmet>
       
@@ -243,7 +252,7 @@ const ChatbotPage: React.FC = () => {
           isOpen={isInitialPopupOpen}
           onClose={handleInitialPopupClose} 
           onProceed={handleInitialPopupClose} 
-          proceedButtonText="Accéder au Chatbot"
+          proceedButtonText="Accéder au Coach IA"
           imageSrc={selectedAffiliatePopup.image}
           affiliateLink={selectedAffiliatePopup.link}
           buttonText={selectedAffiliatePopup.buttonText} 
@@ -292,15 +301,12 @@ const ChatbotPage: React.FC = () => {
                 Besoin d'un plan d'entraînement complet et sur mesure ? Essayez notre <Link to="/" className="font-semibold text-primary hover:underline">Générateur de Programme</Link> !
               </AlertDescription>
             </Alert>
-            <p className="text-xs text-muted-foreground text-center mt-2">
-              Note: La clé API Groq est utilisée côté client pour la démonstration. 
-              Dans une application de production, elle devrait être sécurisée côté serveur.
-            </p>
+            {/* Le commentaire sur la clé API n'est plus pertinent ici car elle est côté serveur */}
           </>
         )}
-        {!isChatbotVisible && !isInitialPopupOpen && userEmail && ( // Ajout de userEmail ici pour la condition
+        {!isChatbotVisible && !isInitialPopupOpen && userEmail && (
              <div className="flex-grow flex items-center justify-center">
-                <p>Chargement du chatbot...</p> 
+                <p>Chargement du Coach IA...</p> 
             </div>
         )}
       </div>
