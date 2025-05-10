@@ -208,96 +208,99 @@ const ChatbotPage: React.FC = () => {
     }
   }, [inputValue, messages, toast, isPeriodicPopupOpen, userEmail]);
 
-  if (!userEmail) {
-    return (
-      <>
-        <Helmet>
-          <title>Accès Coach Virtuel | Smoothie Banane Fraise</title>
-        </Helmet>
-        <div className="container mx-auto py-8 flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <CardTitle>Accéder au Coach Virtuel</CardTitle>
-              <CardDescription>Veuillez entrer votre adresse email pour commencer à discuter avec notre coach virtuel.</CardDescription>
-            </CardHeader>
-            <form onSubmit={handleEmailSubmit}>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <label htmlFor="email-chatbot" className="text-sm font-medium">Adresse email</label>
-                  <Input
-                    id="email-chatbot"
-                    type="email"
-                    placeholder="vous@email.com (ou 'b' pour tester)"
-                    value={emailInputValue}
-                    onChange={(e) => setEmailInputValue(e.target.value)}
-                    required
-                    disabled={isSubmittingEmail}
-                  />
-                  {emailError && <p className="text-sm text-destructive">{emailError}</p>}
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button type="submit" className="w-full" disabled={isSubmittingEmail}>
-                  {isSubmittingEmail && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Accéder au Coach Virtuel
-                </Button>
-              </CardFooter>
-            </form>
-          </Card>
-        </div>
-      </>
-    );
-  }
-
   return (
     <>
       <Helmet>
-        <title>Coach Virtuel Musculation | Smoothie Banane Fraise</title>
-        <meta name="description" content="Discutez avec notre coach musculation virtuel pour obtenir des conseils personnalisés." />
+        <title>Coach Virtuel Musculation - Conseils Instantanés | Smoothie Banane Fraise</title>
+        <meta name="description" content="Discutez avec notre coach musculation virtuel pour obtenir des conseils personnalisés et des réponses instantanées à vos questions sur l'entraînement et la nutrition." />
+        <meta name="keywords" content="coach virtuel musculation, chatbot fitness, conseils musculation, nutrition sportive IA, entraînement personnalisé IA" />
       </Helmet>
       
-      {isInitialPopupOpen && selectedAffiliatePopup && (
-        <AffiliatePopup
-          isOpen={isInitialPopupOpen}
-          onClose={handleInitialPopupClose} 
-          onProceed={handleInitialPopupClose} 
-          proceedButtonText="Accéder au Coach Virtuel"
-          imageSrc={selectedAffiliatePopup.image}
-          affiliateLink={selectedAffiliatePopup.link}
-          buttonText={selectedAffiliatePopup.buttonText} 
-          title={selectedAffiliatePopup.title}
-          description={selectedAffiliatePopup.description}
-          onAffiliateLinkClick={handleInitialAffiliateClick} 
-        />
-      )}
+      <div className="container mx-auto py-4 md:py-8 flex flex-col" style={{ minHeight: 'calc(100vh - 4rem)'}}> 
+        <header className="text-center mb-6 md:mb-8">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+            Coach Virtuel Musculation
+          </h1>
+          <p className="mt-2 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+            Obtenez des réponses rapides à toutes vos questions sur la musculation, la nutrition et l'entraînement grâce à notre Coach Virtuel. Un expert IA à votre service pour optimiser votre progression.
+          </p>
+        </header>
 
-      {isPeriodicPopupOpen && selectedAffiliatePopup && (
-        <AffiliatePopup
-          isOpen={isPeriodicPopupOpen}
-          onClose={() => setIsPeriodicPopupOpen(false)}
-          onProceed={() => setIsPeriodicPopupOpen(false)} 
-          imageSrc={selectedAffiliatePopup.image}
-          affiliateLink={selectedAffiliatePopup.link}
-          buttonText={selectedAffiliatePopup.buttonText}
-          title={selectedAffiliatePopup.title}
-          description={selectedAffiliatePopup.description}
-          onAffiliateLinkClick={() => { 
-            if (selectedAffiliatePopup.link) {
-              logAffiliateLinkClick(0, selectedAffiliatePopup);
-              window.open(selectedAffiliatePopup.link, '_blank');
-            }
-            setIsPeriodicPopupOpen(false);
-          }}
-        />
-      )}
+        {!userEmail && (
+          <div className="flex flex-col items-center justify-center flex-grow">
+            <Card className="w-full max-w-md">
+              <CardHeader>
+                <CardTitle>Accéder au Coach Virtuel</CardTitle>
+                <CardDescription>Veuillez entrer votre adresse email pour commencer à discuter.</CardDescription>
+              </CardHeader>
+              <form onSubmit={handleEmailSubmit}>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="email-chatbot" className="text-sm font-medium">Adresse email</label>
+                    <Input
+                      id="email-chatbot"
+                      type="email"
+                      placeholder="vous@email.com (ou 'b' pour tester)"
+                      value={emailInputValue}
+                      onChange={(e) => setEmailInputValue(e.target.value)}
+                      required
+                      disabled={isSubmittingEmail}
+                    />
+                    {emailError && <p className="text-sm text-destructive">{emailError}</p>}
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button type="submit" className="w-full" disabled={isSubmittingEmail}>
+                    {isSubmittingEmail && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Accéder au Coach Virtuel
+                  </Button>
+                </CardFooter>
+              </form>
+            </Card>
+          </div>
+        )}
+      
+        {userEmail && isInitialPopupOpen && selectedAffiliatePopup && (
+          <AffiliatePopup
+            isOpen={isInitialPopupOpen}
+            onClose={handleInitialPopupClose} 
+            onProceed={handleInitialPopupClose} 
+            proceedButtonText="Accéder au Coach Virtuel"
+            imageSrc={selectedAffiliatePopup.image}
+            affiliateLink={selectedAffiliatePopup.link}
+            buttonText={selectedAffiliatePopup.buttonText} 
+            title={selectedAffiliatePopup.title}
+            description={selectedAffiliatePopup.description}
+            onAffiliateLinkClick={handleInitialAffiliateClick} 
+          />
+        )}
 
-      <div className="container mx-auto py-4 md:py-8 flex flex-col" style={{ height: 'calc(100vh - 4rem)'}}> 
-        {isChatbotVisible && !isInitialPopupOpen && (
+        {userEmail && isPeriodicPopupOpen && selectedAffiliatePopup && (
+          <AffiliatePopup
+            isOpen={isPeriodicPopupOpen}
+            onClose={() => setIsPeriodicPopupOpen(false)}
+            onProceed={() => setIsPeriodicPopupOpen(false)} 
+            imageSrc={selectedAffiliatePopup.image}
+            affiliateLink={selectedAffiliatePopup.link}
+            buttonText={selectedAffiliatePopup.buttonText}
+            title={selectedAffiliatePopup.title}
+            description={selectedAffiliatePopup.description}
+            onAffiliateLinkClick={() => { 
+              if (selectedAffiliatePopup.link) {
+                logAffiliateLinkClick(0, selectedAffiliatePopup);
+                window.open(selectedAffiliatePopup.link, '_blank');
+              }
+              setIsPeriodicPopupOpen(false);
+            }}
+          />
+        )}
+
+        {userEmail && isChatbotVisible && !isInitialPopupOpen && (
           <>
             <h2 className="text-xl md:text-2xl font-semibold text-center mb-4 md:mb-6">
               Pose tes questions muscu / nutrition et obtient ta réponse instantanément.
             </h2>
-            <div className="flex-grow">
+            <div className="flex-grow" style={{ height: 'calc(100vh - 20rem)' }}> {/* Ajustement pour la hauteur */}
               <ChatInterface
                 messages={messages}
                 inputValue={inputValue}
@@ -315,7 +318,7 @@ const ChatbotPage: React.FC = () => {
             </Alert>
           </>
         )}
-        {!isChatbotVisible && !isInitialPopupOpen && userEmail && (
+        {userEmail && !isChatbotVisible && !isInitialPopupOpen && (
              <div className="flex-grow flex items-center justify-center">
                 <p>Chargement du Coach virtuel...</p> 
             </div>
