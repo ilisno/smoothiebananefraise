@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import PostCard from '@/components/blog/PostCard';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+// Link n'est plus nécessaire ici pour le bouton de retour
+// Button n'est plus nécessaire ici pour le bouton de retour
 import { sanityClient } from '@/lib/sanityClient';
 import { SanityPost } from '@/types/sanity';
-import { Skeleton } from '@/components/ui/skeleton'; // Pour le chargement
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'; // Ajout des imports manquants
+import { Skeleton } from '@/components/ui/skeleton'; 
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'; 
 
 const BlogIndexPage: React.FC = () => {
   const [posts, setPosts] = useState<SanityPost[]>([]);
@@ -18,7 +18,6 @@ const BlogIndexPage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        // Récupérer les posts, et pour chaque post, récupérer le titre et le slug de sa catégorie
         const query = `*[_type == "post"] | order(publishedAt desc) {
           _id,
           title,
@@ -28,7 +27,7 @@ const BlogIndexPage: React.FC = () => {
           excerpt,
           metaDescription,
           metaKeywords,
-          category->{ // Expansion de la référence de catégorie
+          category->{ 
             title,
             slug
           }
@@ -98,11 +97,7 @@ const BlogIndexPage: React.FC = () => {
           <p className="text-center text-muted-foreground">Aucun article de blog pour le moment.</p>
         )}
         
-        <div className="text-center mt-12">
-          <Button asChild>
-            <Link to="/">Retour à l'accueil</Link>
-          </Button>
-        </div>
+        {/* Le bouton de retour à l'accueil a été supprimé car il est maintenant dans le Header global */}
       </div>
     </>
   );

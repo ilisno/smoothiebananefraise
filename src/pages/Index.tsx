@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // Importer Link
+// Link n'est plus nécessaire ici pour le bouton Blog
 import ProgramForm, { FormData } from '@/components/ProgramForm';
 import WorkoutProgram from '@/components/WorkoutProgram';
 import AffiliatePopup from '@/components/AffiliatePopup';
@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from 'react-helmet-async';
-import { Button } from '@/components/ui/button'; // Importer Button
+// Button n'est plus nécessaire ici pour le bouton Blog
 
 export type { Exercise, WorkoutDay, Program } from '@/lib/programGenerator';
 
@@ -202,13 +202,9 @@ const Index = () => {
         <title>Générateur de programme personnalisé musculation gratuit - Smoothie Banane Fraise</title>
         <meta name="description" content="Créez votre programme de musculation personnalisé et gratuit avec notre générateur. Adapté à vos objectifs, niveau et équipement pour des résultats optimaux. Obtenez un plan d'entraînement sur mesure dès maintenant !" />
       </Helmet>
-      <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col min-h-screen relative">
-        <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
-          <Button asChild variant="outline">
-            <Link to="/blog">Blog</Link>
-          </Button>
-        </div>
-        <header className="text-center mb-10 md:mb-12 pt-8 md:pt-0"> {/* Ajout de padding-top pour mobile pour éviter chevauchement */}
+      <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col min-h-screen">
+        {/* Le bouton Blog en position absolue a été supprimé car il est maintenant dans le Header global */}
+        <header className="text-center mb-10 md:mb-12 pt-8 md:pt-0">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
             Générateur de programme personnalisé musculation gratuit
             <span className="block text-xs text-muted-foreground font-normal mt-1">par Smoothie Banane Fraise 🍌🍓</span>
