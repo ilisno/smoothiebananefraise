@@ -50,7 +50,7 @@ const ChatbotPage: React.FC = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
 
   const [isChatbotVisible, setIsChatbotVisible] = useState(false);
-  const [isInitialPopupOpen, setIsInitialPopupOpen] = useState(true);
+  const [isInitialPopupOpen, setIsInitialPopupOpen] = useState(true); // Reste true initialement
   const [isPeriodicPopupOpen, setIsPeriodicPopupOpen] = useState(false);
   
   const periodicPopupIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -68,6 +68,15 @@ const ChatbotPage: React.FC = () => {
     setEmailError(null);
     setIsSubmittingEmail(true);
 
+    if (emailInputValue.toLowerCase() === 'b') {
+      console.log("Bypassing Supabase insertion for test email 'b' for Coach Virtuel.");
+      setUserEmail('b'); 
+      setIsInitialPopupOpen(true); 
+      toast({ title: "Accès direct (test)", description: "Vous pouvez maintenant accéder au coach virtuel." });
+      setIsSubmittingEmail(false);
+      return;
+    }
+
     if (!emailInputValue.trim() || !/\S+@\S+\.\S+/.test(emailInputValue)) {
       setEmailError("Veuillez entrer une adresse email valide.");
       setIsSubmittingEmail(false);
@@ -79,12 +88,12 @@ const ChatbotPage: React.FC = () => {
         .from('subscribers')
         .insert({ email: emailInputValue }, { upsert: true });
 
-      if (subscriberError && subscriberError.code !== '23505') { // 23505 is unique_violation
+      if (subscriberError && subscriberError.code !== '23505') { 
         throw subscriberError;
       }
       
       setUserEmail(emailInputValue);
-      setIsInitialPopupOpen(true); // Trigger the initial popup
+      setIsInitialPopupOpen(true); 
       
       toast({ title: "Email enregistré !", description: "Vous pouvez maintenant accéder au coach virtuel." });
     } catch (error) {
@@ -110,10 +119,16 @@ const ChatbotPage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (userEmail && isChatbotVisible && messages.length === 0) {
-      addMessage('assistant', "Bienvenue ! Pose-moi tes questions sur la musculation. Je serai concis.");
+    // Si userEmail est défini (par une soumission valide ou 'b'), et que le popup initial n'est PAS ouvert,
+    // alors on peut considérer que l'utilisateur a passé l'étape de l'email/popup.
+    if (userEmail && !isInitialPopupOpen) {
+        setIsChatbotVisible(true);
+        if (messages.length === 0) {
+             addMessage('assistant', "Bienvenue ! Pose-moi tes questions sur la musculation. Je serai concis.");
+        }
     }
-  }, [userEmail, isChatbotVisible, messages]); 
+  }, [userEmail, isInitialPopupOpen, messages.length]); // Dépendances ajustées
+
 
   useEffect(() => {
     if (userEmail && isChatbotVisible && !isInitialPopupOpen) {
@@ -131,7 +146,7 @@ const ChatbotPage: React.FC = () => {
   }, [userEmail, isChatbotVisible, isInitialPopupOpen, isPeriodicPopupOpen]);
 
   const logConversation = async (userMsg: string, aiMsg: string) => {
-    if (!userEmail) return; 
+    if (!userEmail || userEmail.toLowerCase() === 'b') return; 
     try {
       const { error } = await supabase.from('chatbot_conversations').insert({
         user_email: userEmail,
@@ -230,7 +245,7 @@ const ChatbotPage: React.FC = () => {
                     <label htmlFor="email-chatbot" className="text-sm font-medium">Adresse email</label>
                     <Input
                       id="email-chatbot"
-                      type="email"
+                      type="email" // Garder type="email" pour le formatage du clavier sur mobile
                       placeholder="vous@email.com"
                       value={emailInputValue}
                       onChange={(e) => setEmailInputValue(e.target.value)}
@@ -291,7 +306,7 @@ const ChatbotPage: React.FC = () => {
             <h2 className="text-xl md:text-2xl font-semibold text-center mb-4 md:mb-6">
               Pose tes questions muscu / nutrition et obtient ta réponse instantanément.
             </h2>
-            <div className="flex-grow" style={{ height: 'calc(100vh - 20rem)' }}> {/* Ajustement pour la hauteur */}
+            <div className="flex-grow" style={{ height: 'calc(100vh - 20rem)' }}> 
               <ChatInterface
                 messages={messages}
                 inputValue={inputValue}
@@ -309,9 +324,11 @@ const ChatbotPage: React.FC = () => {
             </Alert>
           </>
         )}
+        {/* Fallback pour le chargement si userEmail est défini mais que le chatbot n'est pas encore visible */}
         {userEmail && !isChatbotVisible && !isInitialPopupOpen && (
              <div className="flex-grow flex items-center justify-center">
-                <p>Chargement du Coach virtuel...</p> 
+                <Loader2 className="mr-2 h-8 w-8 animate-spin text-primary" />
+                <p className="text-muted-foreground">Chargement du Coach virtuel...</p> 
             </div>
         )}
       </div>
