@@ -11,8 +11,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
-// GROQ_API_KEY et GROQ_API_URL ne sont plus nécessaires ici
-
 const popupAffiliateData = [
   {
     image: '/popup-placeholder-1.jpg',
@@ -85,7 +83,7 @@ const ChatbotPage: React.FC = () => {
       setUserEmail(emailInputValue);
       setIsInitialPopupOpen(true);
       
-      toast({ title: "Email enregistré !", description: "Vous pouvez maintenant accéder au chatbot." });
+      toast({ title: "Email enregistré !", description: "Vous pouvez maintenant accéder au coach virtuel." });
     } catch (error) {
       console.error('Error submitting email to Supabase:', error);
       setEmailError("Erreur lors de l'enregistrement de l'email. Veuillez réessayer.");
@@ -151,7 +149,7 @@ const ChatbotPage: React.FC = () => {
 
     const historyForApi = messages.slice(-5); 
     const apiMessages = [
-      { role: 'system', content: "Tu es un coach musculation. Donne des conseils pratiques et adaptés. Tes réponses doivent être concises et aller droit au but." }, 
+      { role: 'system', content: "Tu es un coach musculation virtuel. Donne des conseils pratiques et adaptés. Tes réponses doivent être concises et aller droit au but." }, 
       ...historyForApi.map(msg => ({ role: msg.role, content: msg.content })),
       { role: 'user', content: userMessageContent },
     ];
@@ -183,7 +181,6 @@ const ChatbotPage: React.FC = () => {
         addMessage('assistant', aiResponse);
         await logConversation(userMessageContent, aiResponse);
       } else if (functionResponse.error) {
-         // Si l'Edge Function a renvoyé une erreur structurée de Groq
         const groqErrorMessage = typeof functionResponse.error === 'string' ? functionResponse.error : (functionResponse.error.message || "Erreur inconnue de l'API Groq via proxy");
         throw new Error(`Erreur de l'API Groq (via proxy): ${groqErrorMessage}`);
       } else {
@@ -193,7 +190,7 @@ const ChatbotPage: React.FC = () => {
       console.error('[ChatbotPage] Error during handleSendMessage:', error);
       const errMsg = error instanceof Error ? error.message : "Erreur inconnue.";
       addMessage('assistant', `Désolé, une erreur est survenue : ${errMsg}`);
-      toast({ title: "Erreur Chatbot", description: `Impossible de contacter l'IA : ${errMsg}`, variant: "destructive" });
+      toast({ title: "Erreur Coach Virtuel", description: `Impossible de contacter le coach virtuel : ${errMsg}`, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -203,13 +200,13 @@ const ChatbotPage: React.FC = () => {
     return (
       <>
         <Helmet>
-          <title>Accès Coach IA | Smoothie Banane Fraise</title>
+          <title>Accès Coach Virtuel | Smoothie Banane Fraise</title>
         </Helmet>
         <div className="container mx-auto py-8 flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
           <Card className="w-full max-w-md">
             <CardHeader>
-              <CardTitle>Accéder au Coach IA</CardTitle>
-              <CardDescription>Veuillez entrer votre adresse email pour commencer à discuter avec notre coach IA.</CardDescription>
+              <CardTitle>Accéder au Coach Virtuel</CardTitle>
+              <CardDescription>Veuillez entrer votre adresse email pour commencer à discuter avec notre coach virtuel.</CardDescription>
             </CardHeader>
             <form onSubmit={handleEmailSubmit}>
               <CardContent className="space-y-4">
@@ -230,7 +227,7 @@ const ChatbotPage: React.FC = () => {
               <CardFooter>
                 <Button type="submit" className="w-full" disabled={isSubmittingEmail}>
                   {isSubmittingEmail && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Accéder au Coach IA
+                  Accéder au Coach Virtuel
                 </Button>
               </CardFooter>
             </form>
@@ -243,8 +240,8 @@ const ChatbotPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Coach IA Musculation | Smoothie Banane Fraise</title>
-        <meta name="description" content="Discutez avec notre coach musculation IA pour obtenir des conseils personnalisés." />
+        <title>Coach Virtuel Musculation | Smoothie Banane Fraise</title>
+        <meta name="description" content="Discutez avec notre coach musculation virtuel pour obtenir des conseils personnalisés." />
       </Helmet>
       
       {isInitialPopupOpen && selectedAffiliatePopup && (
@@ -252,7 +249,7 @@ const ChatbotPage: React.FC = () => {
           isOpen={isInitialPopupOpen}
           onClose={handleInitialPopupClose} 
           onProceed={handleInitialPopupClose} 
-          proceedButtonText="Accéder au Coach IA"
+          proceedButtonText="Accéder au Coach Virtuel"
           imageSrc={selectedAffiliatePopup.image}
           affiliateLink={selectedAffiliatePopup.link}
           buttonText={selectedAffiliatePopup.buttonText} 
@@ -285,6 +282,9 @@ const ChatbotPage: React.FC = () => {
       <div className="container mx-auto py-4 md:py-8 flex flex-col" style={{ height: 'calc(100vh - 4rem)'}}> 
         {isChatbotVisible && !isInitialPopupOpen && (
           <>
+            <h2 className="text-xl md:text-2xl font-semibold text-center mb-4 md:mb-6">
+              Pose tes questions muscu / nutrition et obtient ta réponse instantanément.
+            </h2>
             <div className="flex-grow">
               <ChatInterface
                 messages={messages}
@@ -301,12 +301,11 @@ const ChatbotPage: React.FC = () => {
                 Besoin d'un plan d'entraînement complet et sur mesure ? Essayez notre <Link to="/" className="font-semibold text-primary hover:underline">Générateur de Programme</Link> !
               </AlertDescription>
             </Alert>
-            {/* Le commentaire sur la clé API n'est plus pertinent ici car elle est côté serveur */}
           </>
         )}
         {!isChatbotVisible && !isInitialPopupOpen && userEmail && (
              <div className="flex-grow flex items-center justify-center">
-                <p>Chargement du Coach IA...</p> 
+                <p>Chargement du Coach virtuel...</p> 
             </div>
         )}
       </div>

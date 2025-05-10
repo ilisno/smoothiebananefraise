@@ -26,7 +26,7 @@ const Header: React.FC = () => {
             <Link to="/">Générateur de Programme</Link>
           </Button>
           <Button variant="ghost" asChild>
-            <Link to="/chatbot-musculation">Coach IA</Link>
+            <Link to="/coach-virtuel">Coach virtuel</Link>
           </Button>
           <Button variant="ghost" asChild>
             <Link to="/blog">Blog</Link>
@@ -58,10 +58,10 @@ const Header: React.FC = () => {
                 <Button
                   variant="ghost"
                   className="w-full justify-start"
-                  onClick={() => handleNavigation('/chatbot-musculation')}
+                  onClick={() => handleNavigation('/coach-virtuel')}
                 >
                   <MessageCircle className="mr-2 h-4 w-4" />
-                  Coach IA
+                  Coach virtuel
                 </Button>
                 <Button
                   variant="ghost"

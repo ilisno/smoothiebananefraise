@@ -8,8 +8,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from 'react-helmet-async';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Importer Alert
-import { MessageCircle } from 'lucide-react'; // Importer l'icône
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; 
+import { MessageCircle } from 'lucide-react'; 
 
 export type { Exercise, WorkoutDay, Program } from '@/lib/programGenerator';
 
@@ -226,7 +226,7 @@ const Index = () => {
           <MessageCircle className="h-4 w-4" />
           <AlertTitle>Besoin de conseils ?</AlertTitle>
           <AlertDescription>
-            Des questions sur la musculation ou votre entraînement ? Discutez avec notre <Link to="/chatbot-musculation" className="font-semibold text-primary hover:underline">Coach IA</Link> !
+            Des questions sur la musculation ou votre entraînement ? Discutez avec notre <Link to="/coach-virtuel" className="font-semibold text-primary hover:underline">Coach virtuel</Link> !
           </AlertDescription>
         </Alert>
 
