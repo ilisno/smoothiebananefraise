@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button'; // Pour un style cohérent si besoin
+import { Button } from '@/components/ui/button'; 
 
 const Header: React.FC = () => {
   return (
@@ -9,8 +9,11 @@ const Header: React.FC = () => {
         <Link to="/" className="text-lg font-semibold hover:text-primary transition-colors">
           Smoothie Banane Fraise 🍌🍓
         </Link>
-        <nav className="flex items-center space-x-4">
+        <nav className="flex items-center space-x-2 md:space-x-4">
           {/* Le bouton "Générateur" a été supprimé car le logo/titre principal y mène déjà */}
+          <Button variant="ghost" asChild>
+            <Link to="/chatbot-musculation">Chatbot</Link>
+          </Button>
           <Button variant="ghost" asChild>
             <Link to="/blog">Blog</Link>
           </Button>
