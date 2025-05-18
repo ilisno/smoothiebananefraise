@@ -3,10 +3,13 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription as CardDescriptionShadcn } from "@/components/ui/card"; // Import CardHeader, CardTitle, CardDescription
 import { Send, Loader2 } from 'lucide-react'; // Icons for send and loading
 import { supabase } from '@/integrations/supabase/client'; // Import Supabase client
 import { showError } from '@/utils/toast'; // Import toast utility for errors
+import { useForm } from "react-hook-form"; // Import useForm
+import { zodResolver } from "@hookform/resolvers/zod"; // Import zodResolver
+import * as z from "zod"; // Import zod
 
 // Define message types
 interface Message {
@@ -14,21 +17,47 @@ interface Message {
   content: string;
 }
 
+// Define schema for email validation
+const emailSchema = z.object({
+  email: z.string().email({
+    message: "Veuillez entrer une adresse email valide.",
+  }),
+});
+
+type EmailFormValues = z.infer<typeof emailSchema>;
+
 const CoachVirtuel: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: "Bienvenue dans ton chat de musculation. Comment puis-je t'aider aujourd'hui ?" }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null); // State to store the user's email
   const messagesEndRef = useRef<HTMLDivElement>(null); // Ref for auto-scrolling
+
+  // Initialize the email form
+  const emailForm = useForm<EmailFormValues>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
 
   // Auto-scroll to the latest message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Handle email form submission
+  const onEmailSubmit = (values: EmailFormValues) => {
+    setUserEmail(values.email); // Store the submitted email
+    console.log("Email submitted:", values.email);
+    // Optionally save the email to local storage or session storage
+    // localStorage.setItem('chatbotUserEmail', values.email);
+  };
+
   const sendMessage = async () => {
-    if (inputMessage.trim() === '' || isLoading) return;
+    if (inputMessage.trim() === '' || isLoading || !userEmail) return; // Ensure email is available
 
     const userMessageContent = inputMessage.trim();
     const newUserMessage: Message = { role: 'user', content: userMessageContent };
@@ -71,7 +100,7 @@ const CoachVirtuel: React.FC = () => {
         .from('chatbot_conversations')
         .insert([
           {
-            // user_email: 'user@example.com', // Replace with actual user email if available
+            user_email: userEmail, // Use the stored user email
             user_message: userMessageContent,
             ai_response: assistantMessageContent,
           },
@@ -104,6 +133,47 @@ const CoachVirtuel: React.FC = () => {
     }
   };
 
+  // If email is not submitted, show the email form
+  if (!userEmail) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-100">
+        <Header />
+        <main className="flex-grow container mx-auto px-4 py-12 flex justify-center items-center">
+          <Card className="w-full max-w-md shadow-lg">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl font-bold text-gray-800">Accéder au Coach Virtuel</CardTitle>
+              <CardDescriptionShadcn className="text-gray-600">
+                Veuillez entrer votre email pour commencer la conversation.
+              </CardDescriptionShadcn>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} className="space-y-4">
+                <FormField
+                  control={emailForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="vous@email.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full bg-sbf-red text-white hover:bg-red-700">
+                  Commencer la conversation
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // If email is submitted, show the chatbot interface
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />
