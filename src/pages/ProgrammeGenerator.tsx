@@ -72,38 +72,34 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
   const baseReps = objectif === "Powerlifting" ? "3-5" : (objectif === "Sèche / Perte de Gras" ? "12-15" : "8-12");
   const baseSets = 3; // Use number for calculations
 
-  // Exercise list with type and muscle group
+  // Exercise list with type, muscle group (general), and specific muscle group (for legs)
   const allExercises = [
-    { name: "Squat Barre", muscleGroup: "Jambes", type: "compound", equipment: ["barre-halteres"] },
-    { name: "Soulevé de Terre Roumain", muscleGroup: "Jambes", type: "compound", equipment: ["barre-halteres"] },
-    { name: "Développé Couché", muscleGroup: "Pectoraux", type: "compound", equipment: ["barre-halteres"] },
-    { name: "Développé Incliné Haltères", muscleGroup: "Pectoraux", type: "compound", equipment: ["barre-halteres"] },
-    { name: "Tractions", muscleGroup: "Dos", type: "compound", equipment: ["poids-corps"] },
-    { name: "Tractions australiennes", muscleGroup: "Dos", type: "compound", equipment: ["poids-corps"] },
-    { name: "Dips", muscleGroup: "Triceps", type: "compound", equipment: ["poids-corps"] }, // Renamed Dips
-    { name: "Pompes", muscleGroup: "Pectoraux", type: "compound", equipment: [] },
-    { name: "Rowing Barre", muscleGroup: "Dos", type: "compound", equipment: ["barre-halteres"] },
-    { name: "Presse à Cuisses", muscleGroup: "Jambes", type: "compound", equipment: ["machines-guidees"] },
-    { name: "Fentes Haltères", muscleGroup: "Jambes", type: "compound", equipment: ["barre-halteres"] },
-    { name: "Développé Militaire Barre", muscleGroup: "Épaules", type: "compound", equipment: ["barre-halteres"] },
-    { name: "Écartés Poulie", muscleGroup: "Pectoraux", type: "isolation", equipment: ["machines-guidees"] },
-    { name: "Tirage Vertical Machine", muscleGroup: "Dos", type: "compound", equipment: ["machines-guidees"] },
-    { name: "Élévations Latérales Haltères", muscleGroup: "Épaules", type: "isolation", equipment: ["barre-halteres"] },
-    { name: "Curl Biceps Barre", muscleGroup: "Biceps", type: "isolation", equipment: ["barre-halteres"] },
-    { name: "Extension Triceps Poulie Haute", muscleGroup: "Triceps", type: "isolation", equipment: ["machines-guidees"] },
-    { name: "Crunchs", muscleGroup: "Abdos", type: "isolation", equipment: [] }, // Added Crunchs
-    { name: "Leg Raises", muscleGroup: "Abdos", type: "isolation", equipment: [] }, // Added Leg Raises
-    { name: "Leg Extension", muscleGroup: "Jambes", type: "isolation", equipment: ["machines-guidees"] },
-    { name: "Leg Curl", muscleGroup: "Jambes", type: "isolation", equipment: ["machines-guidees"] },
+    { name: "Squat Barre", muscleGroup: "Jambes", specificMuscleGroup: "Quadriceps", type: "compound", equipment: ["barre-halteres"] },
+    { name: "Soulevé de Terre Roumain", muscleGroup: "Jambes", specificMuscleGroup: "Ischios", type: "compound", equipment: ["barre-halteres"] },
+    { name: "Développé Couché", muscleGroup: "Pectoraux", specificMuscleGroup: null, type: "compound", equipment: ["barre-halteres"] },
+    { name: "Développé Incliné Haltères", muscleGroup: "Pectoraux", specificMuscleGroup: null, type: "compound", equipment: ["barre-halteres"] },
+    { name: "Tractions", muscleGroup: "Dos", specificMuscleGroup: null, type: "compound", equipment: ["poids-corps"] },
+    { name: "Tractions australiennes", muscleGroup: "Dos", specificMuscleGroup: null, type: "compound", equipment: ["poids-corps"] },
+    { name: "Dips", muscleGroup: "Triceps", specificMuscleGroup: null, type: "compound", equipment: ["poids-corps"] }, // Renamed Dips
+    { name: "Pompes", muscleGroup: "Pectoraux", specificMuscleGroup: null, type: "compound", equipment: [] },
+    { name: "Rowing Barre", muscleGroup: "Dos", specificMuscleGroup: null, type: "compound", equipment: ["barre-halteres"] },
+    { name: "Presse à Cuisses", muscleGroup: "Jambes", specificMuscleGroup: "Quadriceps", type: "compound", equipment: ["machines-guidees"] },
+    { name: "Fentes Haltères", muscleGroup: "Jambes", specificMuscleGroup: "Quadriceps", type: "compound", equipment: ["barre-halteres"] },
+    { name: "Développé Militaire Barre", muscleGroup: "Épaules", specificMuscleGroup: null, type: "compound", equipment: ["barre-halteres"] },
+    { name: "Écartés Poulie", muscleGroup: "Pectoraux", specificMuscleGroup: null, type: "isolation", equipment: ["machines-guidees"] },
+    { name: "Tirage Vertical Machine", muscleGroup: "Dos", specificMuscleGroup: null, type: "compound", equipment: ["machines-guidees"] },
+    { name: "Élévations Latérales Haltères", muscleGroup: "Épaules", specificMuscleGroup: null, type: "isolation", equipment: ["barre-halteres"] },
+    { name: "Curl Biceps Barre", muscleGroup: "Biceps", specificMuscleGroup: null, type: "isolation", equipment: ["barre-halteres"] },
+    { name: "Extension Triceps Poulie Haute", muscleGroup: "Triceps", specificMuscleGroup: null, type: "isolation", equipment: ["machines-guidees"] },
+    { name: "Crunchs", muscleGroup: "Abdos", specificMuscleGroup: null, type: "isolation", equipment: [] }, // Added Crunchs
+    { name: "Leg Raises", muscleGroup: "Abdos", specificMuscleGroup: null, type: "isolation", equipment: [] }, // Added Leg Raises
+    { name: "Leg Extension", muscleGroup: "Jambes", specificMuscleGroup: "Quadriceps", type: "isolation", equipment: ["machines-guidees"] }, // New
+    { name: "Leg Curl", muscleGroup: "Jambes", specificMuscleGroup: "Ischios", type: "isolation", equipment: ["machines-guidees"] }, // New
+    { name: "Calf Raises", muscleGroup: "Jambes", specificMuscleGroup: "Mollets", type: "isolation", equipment: [] }, // New
   ];
 
   // Define "big strength" exercises for RPE calculation
   const bigStrengthExercises = ["Squat Barre", "Soulevé de Terre Roumain", "Développé Couché", "Développé Militaire Barre"];
-  // Define other compound exercises that are not "big strength"
-  const otherCompoundExercises = allExercises.filter(ex => ex.type === 'compound' && !bigStrengthExercises.includes(ex.name));
-  // Define isolation exercises
-  const isolationExercises = allExercises.filter(ex => ex.type === 'isolation');
-
 
   // Filter exercises based on available equipment
   const availableExercises = allExercises.filter(ex =>
@@ -157,74 +153,101 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
       const addedExerciseNames = new Set<string>(); // To track added exercises
 
       // Helper to add exercise if available, targets muscle group, not already added, and respects volume cap
-      const tryAddExercise = (exerciseName: string, muscleGroup: string, type: 'compound' | 'isolation') => {
-          const exercise = availableExercises.find(ex =>
-              ex.name === exerciseName &&
-              ex.muscleGroup === muscleGroup &&
-              ex.type === type &&
-              !addedExerciseNames.has(ex.name)
-          );
-
-          if (exercise) {
-              // Check volume cap only for large muscle groups
-              if (largeMuscleGroups.includes(exercise.muscleGroup)) {
-                  if (weeklyVolume[exercise.muscleGroup] + baseSets > weeklyVolumeCap) {
-                      console.log(`Skipping ${exercise.name} due to weekly volume cap for ${exercise.muscleGroup}`);
-                      return false; // Cannot add due to cap
-                  }
-                  weeklyVolume[exercise.muscleGroup] += baseSets; // Add sets to weekly volume
-              }
-
-              dayExercises.push(exercise);
-              addedExerciseNames.add(exercise.name);
-              console.log(`Added ${exercise.name} for ${exercise.muscleGroup}. Weekly volume for ${exercise.muscleGroup}: ${weeklyVolume[exercise.muscleGroup] || 0}`);
-              return true; // Exercise added
+      // Returns true if added, false otherwise
+      const addExerciseIfPossible = (exercise: typeof allExercises[number]) => {
+          if (!exercise || addedExerciseNames.has(exercise.name)) {
+              return false;
           }
-          return false; // Exercise not available or already added
+
+          // Check if exercise is available with current equipment
+          const isAvailable = exercise.equipment.length === 0 || (materiel && exercise.equipment.some(eq => materiel.includes(eq)));
+          if (!isAvailable) {
+              return false;
+          }
+
+          // Check volume cap only for large muscle groups
+          if (largeMuscleGroups.includes(exercise.muscleGroup)) {
+               if ((weeklyVolume[exercise.muscleGroup] || 0) + baseSets > weeklyVolumeCap) {
+                   console.log(`Skipping ${exercise.name} due to weekly volume cap for ${exercise.muscleGroup}`);
+                   return false; // Cannot add due to cap
+               }
+               weeklyVolume[exercise.muscleGroup] = (weeklyVolume[exercise.muscleGroup] || 0) + baseSets; // Add sets to weekly volume
+               console.log(`Added ${exercise.name} for ${exercise.muscleGroup}. Weekly volume for ${exercise.muscleGroup}: ${weeklyVolume[exercise.muscleGroup] || 0}`);
+          }
+
+          dayExercises.push(exercise);
+          addedExerciseNames.add(exercise.name);
+          return true; // Exercise added
       };
 
-      // --- Prioritized Exercise Selection for the Day ---
+      // Filter all exercises by target muscle groups for today
+      const potentialExercisesForToday = allExercises.filter(ex =>
+          targetMuscleGroups.includes(ex.muscleGroup)
+      );
 
-      // 1. Add "Big Strength" compounds if targeted and possible
-      bigStrengthExercises.forEach(exName => {
-          const exercise = allExercises.find(e => e.name === exName);
-          if (exercise && targetMuscleGroups.includes(exercise.muscleGroup)) {
-              tryAddExercise(exName, exercise.muscleGroup, 'compound');
-          }
-      });
+      // Categorize potential exercises for today based on type and specific needs
+      const bigStrengthForToday = potentialExercisesForToday.filter(ex => bigStrengthExercises.includes(ex.name));
+      const inclineBenchForToday = potentialExercisesForToday.filter(ex => ex.name === "Développé Incliné Haltères");
+      const otherCompoundsForToday = potentialExercisesForToday.filter(ex =>
+          ex.type === 'compound' &&
+          !bigStrengthExercises.includes(ex.name) &&
+          ex.name !== "Développé Incliné Haltères"
+      );
+      const legIsolationsForToday = potentialExercisesForToday.filter(ex =>
+          ex.type === 'isolation' &&
+          ex.muscleGroup === 'Jambes' // Filter by general muscle group 'Jambes' for isolation
+      );
+      const armShoulderIsolationsForToday = potentialExercisesForToday.filter(ex =>
+          ex.type === 'isolation' &&
+          (ex.muscleGroup === 'Biceps' || ex.muscleGroup === 'Triceps' || ex.muscleGroup === 'Épaules')
+      );
+      const absIsolationsForToday = potentialExercisesForToday.filter(ex => ex.muscleGroup === "Abdos" && ex.type === 'isolation');
 
-      // 2. Ensure Biceps and Triceps isolation if targeted and possible
-      if (targetMuscleGroups.includes("Biceps")) {
-          tryAddExercise("Curl Biceps Barre", "Biceps", "isolation");
-          // Could add a fallback if Barre Curl isn't available, e.g., try Dumbbell Curl
+
+      // --- Add exercises in the desired order and quantity ---
+
+      // 1. Big Strength (Add all available big strength exercises for today)
+      bigStrengthForToday.forEach(ex => addExerciseIfPossible(ex));
+
+      // 2. Développé Incliné Haltères (Add if available and targeted)
+      inclineBenchForToday.forEach(ex => addExerciseIfPossible(ex));
+
+      // 3. Other Compounds (Add a few other compounds if available and targeted)
+      otherCompoundsForToday.slice(0, 2).forEach(ex => addExerciseIfPossible(ex)); // Limit to 2 other compounds
+
+      // 4. Leg Isolations (Add a few leg isolations if available and targeted)
+      legIsolationsForToday.slice(0, 2).forEach(ex => addExerciseIfPossible(ex)); // Limit to 2 leg isolations
+
+      // 5. Arm/Shoulder Isolations (Add a few arm/shoulder isolations if available and targeted)
+      armShoulderIsolationsForToday.slice(0, 2).forEach(ex => addExerciseIfPossible(ex)); // Limit to 2 arm/shoulder isolations
+
+      // 6. Abs Isolations (Add a few ab isolations if available and targeted)
+      absIsolationsForToday.slice(0, 2).forEach(ex => addExerciseIfPossible(ex)); // Limit to 2 ab isolations
+
+
+      // --- Ensure minimums if targeted and possible (Biceps, Triceps, Abs) ---
+      // Ensure at least one Biceps isolation if targeted and not already added
+      if (targetMuscleGroups.includes("Biceps") && !dayExercises.some(ex => ex.muscleGroup === "Biceps" && ex.type === "isolation")) {
+          const bicepsIso = availableExercises.find(ex => ex.muscleGroup === "Biceps" && ex.type === "isolation");
+          if (bicepsIso) addExerciseIfPossible(bicepsIso);
       }
-       if (targetMuscleGroups.includes("Triceps")) {
-          tryAddExercise("Extension Triceps Poulie Haute", "Triceps", "isolation");
-           // Could add a fallback if Pulley Extension isn't available, e.g., try Overhead Extension
+      // Ensure at least one Triceps isolation if targeted and not already added
+      if (targetMuscleGroups.includes("Triceps") && !dayExercises.some(ex => ex.muscleGroup === "Triceps" && ex.type === "isolation")) {
+           const tricepsIso = availableExercises.find(ex => ex.muscleGroup === "Triceps" && ex.type === "isolation");
+           if (tricepsIso) addExerciseIfPossible(tricepsIso);
       }
-       if (targetMuscleGroups.includes("Abdos")) {
-          // Add at least one ab exercise if targeted
-          tryAddExercise("Crunchs", "Abdos", "isolation") || tryAddExercise("Leg Raises", "Abdos", "isolation");
+      // Ensure at least one Ab exercise if targeted and not already added
+      if (targetMuscleGroups.includes("Abdos") && !dayExercises.some(ex => ex.muscleGroup === "Abdos")) {
+           const abEx = availableExercises.find(ex => ex.muscleGroup === "Abdos");
+           if (abEx) addExerciseIfPossible(abEx);
       }
 
 
-      // 3. Add other Compound exercises if targeted and possible
-      otherCompoundExercises.forEach(ex => {
-          if (targetMuscleGroups.includes(ex.muscleGroup)) {
-              tryAddExercise(ex.name, ex.muscleGroup, 'compound');
-          }
-      });
-
-      // 4. Add other Isolation exercises if targeted and possible (excluding Biceps/Triceps/Abdos already prioritized)
-      isolationExercises.filter(ex => !["Biceps", "Triceps", "Abdos"].includes(ex.muscleGroup)).forEach(ex => {
-           if (targetMuscleGroups.includes(ex.muscleGroup)) {
-              tryAddExercise(ex.name, ex.muscleGroup, 'isolation');
-          }
-      });
-
-
-      // Simple limit on total exercises per day (e.g., max 8 exercises)
-      const finalDayExercises = dayExercises.slice(0, 8);
+      // The total exercise limit (max 8) is implicitly handled by the slicing and limited additions above.
+      // If the total number of exercises added exceeds 8, the slicing below will still apply,
+      // but the goal is to build the list in order up to a reasonable number.
+      // Let's keep the slice as a final safeguard, although the ordered additions should manage this.
+      const finalDayExercises = dayExercises.slice(0, 8); // Keep the slice as a safeguard
 
 
       // Format exercises for the program structure and calculate RPE
@@ -233,9 +256,9 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
         if (ex.type === "isolation") {
           rpeNote = "RPE 10";
         } else if (bigStrengthExercises.includes(ex.name)) {
-          // RPE progression for big strength: 5 -> 6 -> 8 -> 10
-          const rpeMap: { [key: number]: number } = { 1: 5, 2: 6, 3: 8, 4: 10 };
-          rpeNote = `RPE ${rpeMap[weekNum] || 5}`; // Default to 5 if weekNum is unexpected
+          // RPE progression for big strength: 6 -> 7 -> 8 -> 10
+          const rpeMap: { [key: number]: number } = { 1: 6, 2: 7, 3: 8, 4: 10 };
+          rpeNote = `RPE ${rpeMap[weekNum] || 6}`; // Default to 6 if weekNum is unexpected
         } else {
           // RPE progression for other compounds: 7 -> 7.5 -> 8 -> 9
            const rpeMap: { [key: number]: number | string } = { 1: 7, 2: 7.5, 3: 8, 4: 9 };
