@@ -3,19 +3,21 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
+import { sanityClient } from '@/integrations/sanity/client'; // Import Sanity client
 
-// Placeholder type for blog posts (will be replaced by Sanity data structure)
+// Define the type for blog posts based on the Sanity query
 type BlogPost = {
   _id: string;
   title: string;
-  slug: string; // Unique identifier for the post URL
+  slug: { current: string }; // Sanity slugs have a 'current' property
   publishedAt: string;
-  category?: string;
+  category?: { title: string; slug: { current: string } }; // Category is a reference
   mainImage?: {
-    url: string;
-    alt: string;
+    asset: { url: string }; // Image asset has a url
+    alt?: string; // Alt text for the image
   };
-  // Add other fields as needed (e.g., excerpt, author)
+  // Add other fields if needed for the list view (e.g., excerpt)
+  excerpt?: string;
 };
 
 const Blog: React.FC = () => {
@@ -24,53 +26,37 @@ const Blog: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // --- Sanity Data Fetching (Placeholder) ---
-  // We will add the actual Sanity fetching logic here next.
+  // --- Sanity Data Fetching ---
   useEffect(() => {
-    // Simulate fetching data
     const fetchPosts = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Replace this with actual Sanity client fetching
-        const dummyPosts: BlogPost[] = [
-          {
-            _id: '1',
-            title: 'Tractions lestées : programme complet pour exploser son 1RM',
-            slug: 'tractions-lestees-programme-1rm',
-            publishedAt: '2025-05-03',
-            category: 'Hypertrophie',
-            mainImage: { url: 'https://via.placeholder.com/400x200', alt: 'Illustration tractions lestées' }, // Replace with actual image URL
+        // GROQ query to fetch all documents of type 'post'
+        // Select specific fields and structure them correctly
+        const query = `*[_type == "post"]{
+          _id,
+          title,
+          slug,
+          publishedAt,
+          "category": category->{title, slug}, // Fetch category title and slug
+          mainImage{
+            asset->{url}, // Fetch image URL
+            alt
           },
-          {
-            _id: '2',
-            title: 'Tirer le slack au deadlift : la clé pour un soulevé de terre plus puissant',
-            slug: 'slack-pull-deadlift',
-            publishedAt: '2025-04-23',
-            category: 'Hypertrophie',
-            mainImage: { url: 'https://via.placeholder.com/400x200', alt: 'Illustration deadlift' }, // Replace with actual image URL
-          },
-          {
-            _id: '3',
-            title: 'Douleur au biceps quand je tends le bras, que faire ?',
-            slug: 'douleur-biceps-bras-tendu',
-            publishedAt: '2025-04-02',
-            category: 'Hypertrophie',
-            mainImage: { url: 'https://via.placeholder.com/400x200', alt: 'Illustration anatomie biceps' }, // Replace with actual image URL
-          },
-           {
-            _id: '4',
-            title: 'Comment choisir ses haltères pour la maison ?',
-            slug: 'choisir-halteres-maison',
-            publishedAt: '2025-03-15',
-            category: 'Équipement',
-            mainImage: { url: 'https://via.placeholder.com/400x200', alt: 'Illustration haltères' }, // Replace with actual image URL
-          },
-        ];
-        setPosts(dummyPosts);
+          excerpt // Assuming you have an excerpt field
+        } | order(publishedAt desc)`; // Order by published date, newest first
+
+        console.log("Fetching posts with query:", query); // Log the query
+
+        const data = await sanityClient.fetch<BlogPost[]>(query);
+
+        console.log("Fetched data:", data); // Log the fetched data
+
+        setPosts(data);
       } catch (err) {
         console.error("Failed to fetch posts:", err);
-        setError("Impossible de charger les articles du blog.");
+        setError("Impossible de charger les articles du blog. Veuillez vérifier la console pour plus de détails.");
       } finally {
         setLoading(false);
       }
@@ -101,26 +87,28 @@ const Blog: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {posts.map((post) => (
               <Card key={post._id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                 {post.mainImage && (
+                 {post.mainImage?.asset?.url && ( // Check if url exists
                     <img
-                      src={post.mainImage.url}
-                      alt={post.mainImage.alt}
+                      src={post.mainImage.asset.url} // Use the correct path for the URL
+                      alt={post.mainImage.alt || post.title} // Use alt text or title
                       className="w-full h-48 object-cover" // Fixed height for images
                     />
                   )}
                 <CardHeader className="flex-grow p-4"> {/* Added flex-grow */}
                   <CardTitle className="text-lg font-semibold text-gray-800 text-left mb-2">{post.title}</CardTitle>
                   <p className="text-sm text-gray-500 text-left">
-                    {new Date(post.publishedAt).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    {post.category && ` • ${post.category}`}
+                    {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Date inconnue'}
+                    {post.category?.title && ` • ${post.category.title}`} {/* Use category title */}
                   </p>
                 </CardHeader>
                  <CardContent className="p-4 pt-0"> {/* Adjusted padding */}
-                   {/* Add excerpt here if available in post data */}
-                   {/* <p className="text-gray-700 text-left mb-4">{post.excerpt}</p> */}
-                   <Link to={`/blog/${post.slug}`} className="text-sbf-red hover:underline font-semibold flex items-center justify-start"> {/* Adjusted link color and alignment */}
-                     Lire la suite →
-                   </Link>
+                   {post.excerpt && <p className="text-gray-700 text-left mb-4">{post.excerpt}</p>} {/* Display excerpt if available */}
+                   {/* Link to the individual post page - assuming a route structure like /blog/:categorySlug/:postSlug */}
+                   {post.slug?.current && post.category?.slug?.current && (
+                     <Link to={`/blog/${post.category.slug.current}/${post.slug.current}`} className="text-sbf-red hover:underline font-semibold flex items-center justify-start"> {/* Adjusted link color and alignment */}
+                       Lire la suite →
+                     </Link>
+                   )}
                  </CardContent>
               </Card>
             ))}
