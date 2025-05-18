@@ -3,10 +3,48 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button'; // Using shadcn Button
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Using shadcn Card
-import { DollarSign, Target, Clock, LineChart } from 'lucide-react'; // Importing icons
+import { Card, CardContent, CardHeader, CardTitle, CardDescription as CardDescriptionShadcn } from '@/components/ui/card'; // Using shadcn Card
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'; // Using shadcn Accordion
+import { DollarSign, Target, Clock, LineChart, ChevronRight, Quote } from 'lucide-react'; // Importing icons
 
 const Index: React.FC = () => {
+  // Placeholder Testimonials
+  const testimonials = [
+    {
+      quote: "J'ai économisé une fortune et mes résultats n'ont jamais été aussi bons ! Le programme est vraiment adapté.",
+      author: "Alex D.",
+    },
+    {
+      quote: "Simple, rapide et efficace. J'adore la flexibilité et les conseils personnalisés.",
+      author: "Sophie L.",
+    },
+    {
+      quote: "Enfin un programme qui prend en compte mon matériel et mon emploi du temps chargé.",
+      author: "Marc P.",
+    },
+  ];
+
+  // Placeholder FAQ
+  const faqItems = [
+    {
+      question: "Comment le programme est-il personnalisé ?",
+      answer: "Notre générateur utilise les informations que vous fournissez (objectif, expérience, matériel, etc.) pour créer un plan d'entraînement unique et adapté à vos besoins.",
+    },
+    {
+      question: "Est-ce vraiment moins cher qu'un coach ?",
+      answer: "Oui, l'accès à notre générateur est proposé à un prix bien inférieur à celui d'un coaching individuel classique, tout en offrant une personnalisation poussée.",
+    },
+    {
+      question: "Puis-je ajuster mon programme plus tard ?",
+      answer: "Actuellement, le générateur crée un programme basé sur vos inputs. Pour des ajustements continus ou des conseils, notre Coach Virtuel sera bientôt disponible.",
+    },
+     {
+      question: "Que se passe-t-il si je ne suis pas satisfait ?",
+      answer: "Nous offrons une garantie 'satisfait ou 100% remboursé' car nous sommes confiants dans l'efficacité de nos programmes.",
+    },
+  ];
+
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />
@@ -44,7 +82,7 @@ const Index: React.FC = () => {
         <hr className="w-full max-w-4xl my-12 border-gray-300" />
 
         {/* Benefits Section */}
-        <section className="mt-16 w-full max-w-4xl">
+        <section className="mt-8 w-full max-w-4xl"> {/* Adjusted margin-top */}
           <h2 className="text-3xl font-bold text-gray-800 mb-8">
             Le coaching réinventé, c'est surtout
           </h2>
@@ -87,6 +125,97 @@ const Index: React.FC = () => {
             </Card>
           </div>
         </section>
+
+         {/* Separator Line */}
+        <hr className="w-full max-w-4xl my-12 border-gray-300" />
+
+        {/* How it Works Section */}
+        <section className="mt-8 w-full max-w-4xl text-left">
+            <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+                Comment ça marche ?
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <Card className="bg-white shadow-md p-6 flex flex-col items-center text-center">
+                    <div className="flex items-center justify-center w-12 h-12 bg-sbf-yellow text-gray-800 rounded-full text-xl font-bold mb-4">1</div>
+                    <CardTitle className="text-gray-800 text-xl font-semibold mb-3">Remplis le formulaire</CardTitle>
+                    <CardDescriptionShadcn className="text-gray-600">
+                        Indique tes objectifs, ton niveau, ton matériel et tes disponibilités.
+                    </CardDescriptionShadcn>
+                </Card>
+                 <Card className="bg-white shadow-md p-6 flex flex-col items-center text-center">
+                    <div className="flex items-center justify-center w-12 h-12 bg-sbf-yellow text-gray-800 rounded-full text-xl font-bold mb-4">2</div>
+                    <CardTitle className="text-gray-800 text-xl font-semibold mb-3">Obtiens ton programme</CardTitle>
+                    <CardDescriptionShadcn className="text-gray-600">
+                        Notre IA génère instantanément un programme sur mesure pour 4 semaines.
+                    </CardDescriptionShadcn>
+                </Card>
+                 <Card className="bg-white shadow-md p-6 flex flex-col items-center text-center">
+                    <div className="flex items-center justify-center w-12 h-12 bg-sbf-yellow text-gray-800 rounded-full text-xl font-bold mb-4">3</div>
+                    <CardTitle className="text-gray-800 text-xl font-semibold mb-3">Transforme ton physique</CardTitle>
+                    <CardDescriptionShadcn className="text-gray-600">
+                        Suis ton plan et constate des progrès rapides et durables.
+                    </CardDescriptionShadcn>
+                </Card>
+            </div>
+        </section>
+
+         {/* Separator Line */}
+        <hr className="w-full max-w-4xl my-12 border-gray-300" />
+
+        {/* Testimonials Section */}
+        <section className="mt-8 w-full max-w-4xl">
+            <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+                Ce que disent nos utilisateurs
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {testimonials.map((testimonial, index) => (
+                    <Card key={index} className="bg-white shadow-md p-6 flex flex-col justify-between">
+                        <CardContent className="p-0 mb-4 italic text-gray-700">
+                            <Quote size={24} className="text-gray-400 mb-2" />
+                            "{testimonial.quote}"
+                        </CardContent>
+                        <CardFooter className="p-0 text-right font-semibold text-gray-800">
+                            - {testimonial.author}
+                        </CardFooter>
+                    </Card>
+                ))}
+            </div>
+        </section>
+
+         {/* Separator Line */}
+        <hr className="w-full max-w-4xl my-12 border-gray-300" />
+
+        {/* FAQ Section */}
+        <section className="mt-8 w-full max-w-3xl text-left"> {/* Centered and max-width */}
+            <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+                Questions Fréquentes
+            </h2>
+            <Accordion type="single" collapsible className="w-full">
+                {faqItems.map((item, index) => (
+                    <AccordionItem value={`faq-${index}`} key={index}>
+                        <AccordionTrigger className="text-lg font-semibold text-gray-800 hover:no-underline">
+                            {item.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-gray-700">
+                            {item.answer}
+                        </AccordionContent>
+                    </AccordionItem>
+                ))}
+            </Accordion>
+        </section>
+
+         {/* Separator Line */}
+        <hr className="w-full max-w-4xl my-12 border-gray-300" />
+
+        {/* Second Call To Action Button */}
+         <Button
+          asChild // Use asChild to render as a Link
+          className="bg-sbf-red text-white hover:bg-sbf-yellow hover:text-sbf-red text-lg px-8 py-6 rounded-md font-semibold shadow-lg transition-colors duration-300 border-2 border-sbf-yellow mt-8" // Added margin-top
+        >
+           <Link to="/programme">Je veux mon programme personnalisé !</Link> {/* Slightly different text */}
+        </Button>
+
+
       </main>
 
       <Footer />
