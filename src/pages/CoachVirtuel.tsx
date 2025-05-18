@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Send, Loader2 } from 'lucide-react'; // Icons for send and loading
 import { supabase } from '@/integrations/supabase/client'; // Import Supabase client
+import { showError } from '@/utils/toast'; // Import toast utility for errors
 
 // Define message types
 interface Message {
@@ -29,7 +30,9 @@ const CoachVirtuel: React.FC = () => {
   const sendMessage = async () => {
     if (inputMessage.trim() === '' || isLoading) return;
 
-    const newUserMessage: Message = { role: 'user', content: inputMessage };
+    const userMessageContent = inputMessage.trim();
+    const newUserMessage: Message = { role: 'user', content: userMessageContent };
+
     // Add user message immediately to the state
     setMessages(prevMessages => [...prevMessages, newUserMessage]);
     setInputMessage(''); // Clear input field
@@ -42,29 +45,54 @@ const CoachVirtuel: React.FC = () => {
       const messagesToSend = [...history, newUserMessage];
 
       // Call the Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke('chatbot', {
+      const { data, error: edgeFunctionError } = await supabase.functions.invoke('chatbot', {
         body: { messages: messagesToSend },
       });
 
-      if (error) {
-        console.error("Error invoking Edge Function:", error);
-        setMessages(prevMessages => [
-          ...prevMessages,
-          { role: 'assistant', content: "Désolé, une erreur est survenue lors de la communication avec le coach virtuel." }
-        ]);
+      let assistantMessageContent = "Désolé, une erreur est survenue lors de la communication avec le coach virtuel.";
+
+      if (edgeFunctionError) {
+        console.error("Error invoking Edge Function:", edgeFunctionError);
+        // Use the default error message
+      } else if (data && data.assistantMessage) {
+        assistantMessageContent = data.assistantMessage;
       } else {
-        // Add AI response to the state
-        setMessages(prevMessages => [
-          ...prevMessages,
-          { role: 'assistant', content: data.assistantMessage }
-        ]);
+         console.error("Edge Function returned unexpected data:", data);
+         // Use the default error message
       }
+
+      const newAssistantMessage: Message = { role: 'assistant', content: assistantMessageContent };
+
+      // Add AI response to the state
+      setMessages(prevMessages => [...prevMessages, newAssistantMessage]);
+
+      // --- Save conversation to Supabase ---
+      const { error: dbError } = await supabase
+        .from('chatbot_conversations')
+        .insert([
+          {
+            // user_email: 'user@example.com', // Replace with actual user email if available
+            user_message: userMessageContent,
+            ai_response: assistantMessageContent,
+          },
+        ]);
+
+      if (dbError) {
+        console.error("Error saving conversation to database:", dbError);
+        showError("Impossible d'enregistrer la conversation."); // Notify user about DB error
+      } else {
+        console.log("Conversation saved to database.");
+      }
+      // --- End Save conversation ---
+
+
     } catch (error) {
       console.error("Unexpected error:", error);
       setMessages(prevMessages => [
         ...prevMessages,
         { role: 'assistant', content: "Désolé, une erreur inattendue est survenue." }
       ]);
+      showError("Une erreur inattendue est survenue."); // Notify user about unexpected error
     } finally {
       setIsLoading(false);
     }
