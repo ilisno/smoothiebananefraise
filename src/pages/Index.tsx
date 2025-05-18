@@ -4,7 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button'; // Using shadcn Button
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Using shadcn Card
-import { DollarSign, Target, Clock, LineChart, Zap, Heart, Scale, Dumbbell } from 'lucide-react'; // Importing icons
+import { DollarSign, Target, Clock, LineChart, Zap, Heart, Scale, Dumbbell, MessageSquare, Activity } from 'lucide-react'; // Importing icons
 
 const Index: React.FC = () => {
   return (
@@ -43,7 +43,7 @@ const Index: React.FC = () => {
         {/* Separator Line */}
         <hr className="w-full max-w-4xl my-12 border-gray-300" />
 
-        {/* Benefits Section 1 */}
+        {/* Benefits Section 1 (Kept as is, focuses on general advantages) */}
         <section className="mt-16 w-full max-w-4xl">
           <h2 className="text-3xl font-bold text-gray-800 mb-8">
             Le coaching réinventé, c'est surtout
@@ -88,45 +88,69 @@ const Index: React.FC = () => {
           </div>
         </section>
 
+
         {/* Separator Line */}
         <hr className="w-full max-w-4xl my-12 border-gray-300" />
 
-        {/* Benefits Section 2 - Life Improvement */}
-        <section className="mt-16 w-full max-w-4xl text-left"> {/* Align text left */}
-           <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center"> {/* Center heading */}
-             Comment SmoothieBananeFraise va changer votre vie
+        {/* Features Section */}
+        <section className="mt-16 w-full max-w-4xl text-center"> {/* Center align text */}
+           <h2 className="text-3xl font-bold text-gray-800 mb-8">
+             Nos Fonctionnalités Clés
            </h2>
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-8"> {/* Two columns on medium screens */}
-             <div className="flex items-start space-x-4"> {/* Align items to start */}
-               <Zap size={30} className="text-sbf-red flex-shrink-0 mt-1" /> {/* Icon */}
-               <div>
-                 <p className="font-bold text-gray-800">Plus d'énergie au quotidien</p>
-                 <p className="text-gray-600 text-sm">Un corps plus fort, c'est une vitalité décuplée pour affronter vos journées.</p>
-               </div>
-             </div>
-             <div className="flex items-start space-x-4">
-               <Heart size={30} className="text-sbf-red flex-shrink-0 mt-1" /> {/* Icon */}
-               <div>
-                 <p className="font-bold text-gray-800">Meilleure santé globale</p>
-                 <p className="text-gray-600 text-sm">Réduisez les risques de maladies et améliorez votre bien-être général.</p>
-               </div>
-             </div>
-             <div className="flex items-start space-x-4">
-               <Scale size={30} className="text-sbf-red flex-shrink-0 mt-1" /> {/* Icon */}
-               <div>
-                 <p className="font-bold text-gray-800">Confiance en soi boostée</p>
-                 <p className="text-gray-600 text-sm">Voir votre corps se transformer renforce votre estime et votre mental.</p>
-               </div>
-             </div>
-             <div className="flex items-start space-x-4">
-               <Dumbbell size={30} className="text-sbf-red flex-shrink-0 mt-1" /> {/* Icon */}
-               <div>
-                 <p className="font-bold text-gray-800">Des résultats concrets et durables</p>
-                 <p className="text-gray-600 text-sm">Suivez un plan structuré pour atteindre vos objectifs physiques efficacement.</p>
-               </div>
-             </div>
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-8"> {/* Three columns on medium screens */}
+
+             {/* Feature Card: Programme Generator */}
+             <Card className="bg-white shadow-md flex flex-col items-center text-center p-6">
+               <Dumbbell size={40} className="text-sbf-red mb-3" />
+               <CardHeader className="p-0 mb-3">
+                 <CardTitle className="text-gray-800 text-xl font-semibold">Générateur de Programme</CardTitle>
+               </CardHeader>
+               <CardContent className="p-0 flex-grow flex flex-col justify-between"> {/* Added flex-grow and justify-between */}
+                 <p className="text-gray-600 text-sm mb-4">
+                   Créez un programme d'entraînement 100% personnalisé en quelques clics, adapté à vos objectifs, votre niveau et votre matériel.
+                 </p>
+                 <Button asChild variant="outline" className="mt-auto text-sbf-red border-sbf-red hover:bg-sbf-red hover:text-white"> {/* Added mt-auto */}
+                   <Link to="/programme">Créer mon programme</Link>
+                 </Button>
+               </CardContent>
+             </Card>
+
+             {/* Feature Card: Coach Virtuel */}
+             <Card className="bg-white shadow-md flex flex-col items-center text-center p-6">
+               <MessageSquare size={40} className="text-sbf-red mb-3" />
+               <CardHeader className="p-0 mb-3">
+                 <CardTitle className="text-gray-800 text-xl font-semibold">Coach Virtuel</CardTitle>
+               </CardHeader>
+               <CardContent className="p-0 flex-grow flex flex-col justify-between"> {/* Added flex-grow and justify-between */}
+                 <p className="text-gray-600 text-sm mb-4">
+                   Posez toutes vos questions sur la musculation, la nutrition ou l'entraînement à notre coach IA, disponible 24/7.
+                 </p>
+                 <Button asChild variant="outline" className="mt-auto text-sbf-red border-sbf-red hover:bg-sbf-red hover:text-white"> {/* Added mt-auto */}
+                   <Link to="/coach-virtuel">Parler au coach</Link>
+                 </Button>
+               </CardContent>
+             </Card>
+
+             {/* Feature Card: Performance Tracking (Placeholder) */}
+             <Card className="bg-white shadow-md flex flex-col items-center text-center p-6 opacity-60 cursor-not-allowed"> {/* Added opacity and cursor */}
+               <Activity size={40} className="text-gray-500 mb-3" /> {/* Changed icon color */}
+               <CardHeader className="p-0 mb-3">
+                 <CardTitle className="text-gray-800 text-xl font-semibold">Suivi des Performances</CardTitle>
+               </CardHeader>
+               <CardContent className="p-0 flex-grow flex flex-col justify-between"> {/* Added flex-grow and justify-between */}
+                 <p className="text-gray-600 text-sm mb-4">
+                   Suivez vos progrès, enregistrez vos séances et visualisez votre évolution au fil du temps. (Bientôt disponible)
+                 </p>
+                 {/* Disabled button or placeholder */}
+                 <Button variant="outline" className="mt-auto text-gray-500 border-gray-300" disabled> {/* Added mt-auto and disabled */}
+                   Bientôt disponible
+                 </Button>
+               </CardContent>
+             </Card>
+
            </div>
         </section>
+
 
       </main>
 
