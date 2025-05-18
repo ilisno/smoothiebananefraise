@@ -13,7 +13,10 @@ const Index: React.FC = () => {
       <main className="flex-grow container mx-auto px-4 py-12 flex flex-col items-center justify-center text-center">
         {/* Main Heading and Subtitle */}
         <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-          Tes outils pour <br className="hidden md:block"/> transformer ton physique
+          Tes outils pour <br className="hidden md:block"/>
+          <span className="bg-sbf-red text-white px-3 py-1 rounded-md inline-block mt-2 md:mt-0">
+            transformer ton physique
+          </span>
         </h1>
         <p className="text-xl text-gray-600 mb-8 max-w-2xl">
           Obtenez votre programme de musculation personnalisé pour 10x moins cher qu'un coaching classique.
