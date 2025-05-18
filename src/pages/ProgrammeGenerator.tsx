@@ -323,9 +323,8 @@ const ProgrammeGenerator: React.FC = () => {
        setGeneratedProgram(program);
        console.log("Program generated:", program);
 
-
-       // Insert form data into Supabase table
-       const { data, error } = await supabase
+       // --- Insert form data into program_generation_logs table ---
+       const { data: logData, error: logError } = await supabase
          .from('program_generation_logs')
          .insert([
            {
@@ -336,15 +335,40 @@ const ProgrammeGenerator: React.FC = () => {
            },
          ]);
 
-       if (error) {
-         console.error("Error inserting data:", error);
-         showError("Une erreur est survenue lors de l'enregistrement de vos informations.");
+       if (logError) {
+         console.error("Error inserting data into program_generation_logs:", logError);
+         showError("Une erreur est survenue lors de l'enregistrement de vos informations de programme.");
        } else {
-         console.log("Data inserted successfully:", data);
-         showSuccess("Vos informations ont été enregistrées !");
+         console.log("Program log data inserted successfully:", logData);
+         // showSuccess("Vos informations de programme ont été enregistrées !"); // Avoid multiple success toasts
        }
+
+       // --- Insert email into subscribers table (if email is provided and valid) ---
+       if (values.email && values.email !== "b") { // Check if email is provided and not the default "b"
+           const { data: subscriberData, error: subscriberError } = await supabase
+             .from('subscribers')
+             .insert([
+               { email: values.email }
+             ])
+             .onConflict('email') // Specify the column to check for conflicts
+             .ignoreDuplicates(); // Ignore the insert if there's a conflict on the email
+
+           if (subscriberError) {
+             console.error("Error inserting email into subscribers table:", subscriberError);
+             // Optionally show an error, but maybe not critical if program log saved
+             // showError("Impossible d'ajouter votre email à la liste d'abonnés.");
+           } else {
+             console.log("Email inserted into subscribers table (or already exists):", subscriberData);
+             // showSuccess("Votre email a été ajouté à la liste d'abonnés !"); // Avoid multiple success toasts
+           }
+       }
+
+       // Show a single success toast after both operations (or the main one)
+       showSuccess("Votre programme a été généré et vos informations enregistrées !");
+
+
      } catch (error) {
-       console.error("An unexpected error occurred:", error);
+       console.error("An unexpected error occurred during generation or saving:", error);
        showError("Une erreur inattendue est survenue.");
      } finally {
        setIsSubmitting(false);
@@ -366,7 +390,7 @@ const ProgrammeGenerator: React.FC = () => {
         }
     };
 
-    // Show a random popup. When it's closed (by clicking "Continuer" or outside), the callback will run.
+    // Show a random popup. When it's closed, the callback will run.
     showRandomPopup({ onCloseCallback: handlePopupCloseAndGenerate });
 
     // The rest of the onSubmit function is handled by the callback.
