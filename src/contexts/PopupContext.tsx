@@ -30,8 +30,8 @@ const PopupContext = createContext<PopupContextType | undefined>(undefined);
 const randomPopupContents: Omit<PopupContent, 'onCloseCallback'>[] = [ // Omit callback here as it's added dynamically
   {
     id: 'random_popup_1',
-    title: "Offre Spéciale Musculation",
-    description: "Découvrez des produits de qualité pour vos entraînements.",
+    title: "Nutrimuscle - Que du propre, du traçable et du performant.",
+    description: "La whey Nutrimuscle, c’est du sérieux pour des vrais résultats. Formulations haut de gamme, sans compromis.",
     imageSrc: "/popup-placeholder-1.jpg",
     imageAlt: "Nutrimuscle Whey Protein",
     primaryButtonText: "Découvrir l'offre",
@@ -41,8 +41,8 @@ const randomPopupContents: Omit<PopupContent, 'onCloseCallback'>[] = [ // Omit c
   },
   {
     id: 'random_popup_2',
-    title: "Protégez votre connexion",
-    description: "Sécurisez vos données et accédez à plus de contenu.",
+    title: "NordVPN - Aujourd’hui, protéger sa connexion, c’est comme fermer sa porte à clé.",
+    description: "NordVPN, c’est le chien de garde numérique de +15 millions d’utilisateurs. Jusqu’à -73 % de réduction + 4 mois offerts maintenant.",
     imageSrc: "/popup-placeholder-2.jpg",
     imageAlt: "NordVPN",
     primaryButtonText: "Profiter de l'offre",
@@ -52,8 +52,8 @@ const randomPopupContents: Omit<PopupContent, 'onCloseCallback'>[] = [ // Omit c
   },
   {
     id: 'random_popup_3',
-    title: "Améliorez vos performances",
-    description: "Accédez à des programmes et conseils d'experts.",
+    title: "Eric Flag, matériel pour faire de la muscu chez soi",
+    description: "Bandes élastiques, barres de traction, anneaux… Tout ce qu’il faut pour t’entraîner chez toi ou dehors. Du matériel minimaliste, solide, et stylé.",
     imageSrc: "/popup-placeholder-3.jpg",
     imageAlt: "Eric Flag",
     primaryButtonText: "Visiter le site",
@@ -63,8 +63,8 @@ const randomPopupContents: Omit<PopupContent, 'onCloseCallback'>[] = [ // Omit c
   },
   {
     id: 'random_popup_4',
-    title: "Optimisez vos finances",
-    description: "Découvrez des solutions bancaires avantageuses.",
+    title: "BoursoBank — Change de banque, gagne du cash",
+    description: "Tu peux toucher jusqu’à 200€ de prime rien qu’en ouvrant ton compte. C’est la banque la moins chère de France, et c’est pas nous qui le disons. Application fluide, carte gratuite, zéro paperasse inutile.",
     imageSrc: "/popup-placeholder-4.jpg",
     imageAlt: "BoursoBank",
     primaryButtonText: "Découvrir l'offre",
