@@ -45,7 +45,7 @@ const formSchema = z.object({
   materiel: z.array(z.string()).optional(), // Array of selected equipment
   email: z.string().email({
     message: "Veuillez entrer une adresse email valide.",
-  }),
+  }).or(z.literal("b")), // Allow "b" or a valid email
 });
 
 // Define a type for the program structure (placeholder for now)
