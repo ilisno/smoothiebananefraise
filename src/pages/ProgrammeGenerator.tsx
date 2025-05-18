@@ -77,6 +77,9 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
     { name: "Développé Couché", muscleGroup: "Pectoraux", type: "compound", equipment: ["barre-halteres"] },
     { name: "Développé Incliné Haltères", muscleGroup: "Pectoraux", type: "compound", equipment: ["barre-halteres"] },
     { name: "Tractions", muscleGroup: "Dos", type: "compound", equipment: ["poids-corps"] },
+    { name: "Tractions australiennes", muscleGroup: "Dos", type: "compound", equipment: ["poids-corps"] }, // Added
+    { name: "Dips sur barres parallèles", muscleGroup: "Triceps", type: "compound", equipment: ["poids-corps"] }, // Added
+    { name: "Pompes", muscleGroup: "Pectoraux", type: "compound", equipment: [] }, // Added (bodyweight, no specific equipment needed)
     { name: "Rowing Barre", muscleGroup: "Dos", type: "compound", equipment: ["barre-halteres"] },
     { name: "Presse à Cuisses", muscleGroup: "Jambes", type: "compound", equipment: ["machines-guidees"] },
     { name: "Fentes Haltères", muscleGroup: "Jambes", type: "compound", equipment: ["barre-halteres"] },
