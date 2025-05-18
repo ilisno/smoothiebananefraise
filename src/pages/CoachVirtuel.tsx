@@ -67,9 +67,9 @@ const CoachVirtuel: React.FC = () => {
         console.log("Email to insert:", values.email);
         const { data: subscriberData, error: subscriberError } = await supabase
           .from('subscribers')
-          .insert(
-            [{ email: values.email }], // CORRECT: Array syntax
-            { onConflict: 'email' } // CORRECT: Column name (must be UNIQUE)
+          .upsert(
+            [{ email: values.email }], // tableau obligatoire
+            { onConflict: ['email'], ignoreDuplicates: true }
           );
 
         if (subscriberError) {
