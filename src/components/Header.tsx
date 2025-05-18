@@ -33,37 +33,33 @@ const Header: React.FC = () => {
         {/* Mobile Menu (Hamburger Icon) */}
         <div className="md:hidden"> {/* Show only on mobile */}
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            {/* Removed asChild={false} - using default behavior */}
-            <SheetTrigger
-              className="md:hidden" // Apply mobile visibility class directly here
-              asChild={false} // Explicitly set asChild to false
-              aria-label="Toggle Menu"
-            >
-              {/* Using Button component directly inside Trigger */}
-              <Button variant="ghost" size="icon">
-                 <Menu className="h-6 w-6" /> {/* Menu icon is now inside the Button */}
+            {/* Corrected SheetTrigger usage with asChild */}
+            <SheetTrigger asChild> {/* Use asChild={true} */}
+              {/* Make Button the single child of SheetTrigger */}
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Toggle Menu"
+                className="md:hidden" // Keep mobile visibility class
+              >
+                 <Menu className="h-6 w-6" /> {/* Menu icon is inside the Button */}
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-64 p-6"> {/* Sidebar content */}
               <nav className="flex flex-col space-y-4"> {/* Stack links vertically */}
                  <SheetClose asChild> {/* Close sheet when link is clicked */}
-                    {/* Removed manual onClick */}
                     <Link to="/" className="text-lg font-medium hover:underline">accueil</Link>
                  </SheetClose>
                  <SheetClose asChild> {/* Close sheet when link is clicked */}
-                    {/* Removed manual onClick */}
                     <Link to="/programme" className="text-lg font-medium hover:underline">générateur de programme</Link>
                  </SheetClose>
                  <SheetClose asChild> {/* Close sheet when link is clicked */}
-                    {/* Removed manual onClick */}
                     <Link to="/coach-virtuel" className="text-lg font-medium hover:underline">coach virtuel</Link>
                  </SheetClose>
                  <SheetClose asChild> {/* Close sheet when link is clicked */}
-                    {/* Removed manual onClick */}
                     <Link to="/blog" className="text-lg font-medium hover:underline">blog</Link>
                  </SheetClose>
                  <SheetClose asChild> {/* Close sheet when link is clicked */}
-                    {/* Removed manual onClick */}
                     <Link to="/mon-espace" className="text-lg font-medium hover:underline">mon espace</Link>
                  </SheetClose>
               </nav>
