@@ -10,6 +10,14 @@ import { showError } from '@/utils/toast'; // Import toast utility for errors
 import { useForm } from "react-hook-form"; // Import useForm
 import { zodResolver } from "@hookform/resolvers/zod"; // Import zodResolver
 import * as z from "zod"; // Import zod
+import {
+  Form, // Import Form
+  FormField, // Import FormField
+  FormItem, // Import FormItem
+  FormLabel, // Import FormLabel
+  FormControl, // Import FormControl
+  FormMessage, // Import FormMessage
+} from "@/components/ui/form"; // Import form components
 
 // Define message types
 interface Message {
@@ -147,24 +155,26 @@ const CoachVirtuel: React.FC = () => {
               </CardDescriptionShadcn>
             </CardHeader>
             <CardContent>
-              <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} className="space-y-4">
-                <FormField
-                  control={emailForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="vous@email.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full bg-sbf-red text-white hover:bg-red-700">
-                  Commencer la conversation
-                </Button>
-              </form>
+              <Form {...emailForm}> {/* Wrap the form with the Form component */}
+                <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} className="space-y-4">
+                  <FormField
+                    control={emailForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="vous@email.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full bg-sbf-red text-white hover:bg-red-700">
+                    Commencer la conversation
+                  </Button>
+                </form>
+              </Form> {/* Close Form component */}
             </CardContent>
           </Card>
         </main>
