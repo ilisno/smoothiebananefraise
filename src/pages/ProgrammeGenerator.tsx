@@ -71,7 +71,6 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
 
   const baseReps = objectif === "Powerlifting" ? "3-5" : (objectif === "Sèche / Perte de Gras" ? "12-15" : "8-12");
   const baseSets = "3"; // Simplified
-  const baseRPE = experience === 'Débutant (< 1 an)' ? '6-7' : (experience === 'Intermédiaire (1-3 ans)' ? '7-8' : '8-9');
 
   // Exercise list with type and muscle group
   const allExercises = [
@@ -80,22 +79,26 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
     { name: "Développé Couché", muscleGroup: "Pectoraux", type: "compound", equipment: ["barre-halteres"] },
     { name: "Développé Incliné Haltères", muscleGroup: "Pectoraux", type: "compound", equipment: ["barre-halteres"] },
     { name: "Tractions", muscleGroup: "Dos", type: "compound", equipment: ["poids-corps"] },
-    { name: "Tractions australiennes", muscleGroup: "Dos", type: "compound", equipment: ["poids-corps"] }, // Added
-    { name: "Dips sur barres parallèles", muscleGroup: "Triceps", type: "compound", equipment: ["poids-corps"] }, // Added
-    { name: "Pompes", muscleGroup: "Pectoraux", type: "compound", equipment: [] }, // Added (bodyweight, no specific equipment needed)
+    { name: "Tractions australiennes", muscleGroup: "Dos", type: "compound", equipment: ["poids-corps"] },
+    { name: "Dips", muscleGroup: "Triceps", type: "compound", equipment: ["poids-corps"] }, // Renamed Dips
+    { name: "Pompes", muscleGroup: "Pectoraux", type: "compound", equipment: [] },
     { name: "Rowing Barre", muscleGroup: "Dos", type: "compound", equipment: ["barre-halteres"] },
     { name: "Presse à Cuisses", muscleGroup: "Jambes", type: "compound", equipment: ["machines-guidees"] },
     { name: "Fentes Haltères", muscleGroup: "Jambes", type: "compound", equipment: ["barre-halteres"] },
     { name: "Développé Militaire Barre", muscleGroup: "Épaules", type: "compound", equipment: ["barre-halteres"] },
     { name: "Écartés Poulie", muscleGroup: "Pectoraux", type: "isolation", equipment: ["machines-guidees"] },
-    { name: "Tirage Vertical Machine", muscleGroup: "Dos", type: "compound", equipment: ["machines-guidees"] }, // Can be compound or isolation depending on form/machine
+    { name: "Tirage Vertical Machine", muscleGroup: "Dos", type: "compound", equipment: ["machines-guidees"] },
     { name: "Élévations Latérales Haltères", muscleGroup: "Épaules", type: "isolation", equipment: ["barre-halteres"] },
     { name: "Curl Biceps Barre", muscleGroup: "Biceps", type: "isolation", equipment: ["barre-halteres"] },
     { name: "Extension Triceps Poulie Haute", muscleGroup: "Triceps", type: "isolation", equipment: ["machines-guidees"] },
-    { name: "Crunchs", muscleGroup: "Abdos", type: "isolation", equipment: [] },
+    { name: "Crunchs", muscleGroup: "Abdos", type: "isolation", equipment: [] }, // Added Crunchs
+    { name: "Leg Raises", muscleGroup: "Abdos", type: "isolation", equipment: [] }, // Added Leg Raises
     { name: "Leg Extension", muscleGroup: "Jambes", type: "isolation", equipment: ["machines-guidees"] },
     { name: "Leg Curl", muscleGroup: "Jambes", type: "isolation", equipment: ["machines-guidees"] },
   ];
+
+  // Define "big strength" exercises for RPE calculation
+  const bigStrengthExercises = ["Squat Barre", "Soulevé de Terre Roumain", "Développé Couché", "Développé Militaire Barre"];
 
   // Filter exercises based on available equipment
   const availableExercises = allExercises.filter(ex =>
@@ -168,6 +171,7 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
       const otherCompounds = availableExercises.filter(ex =>
           ex.type === "compound" &&
           targetMuscleGroups.some(group => ex.muscleGroup === group) && // Check if exercise muscle group is in target groups
+          !bigStrengthExercises.includes(ex.name) && // Exclude big strength exercises already considered
           !addedExerciseNames.has(ex.name)
       );
       // Add other compounds, aiming for a reasonable number
@@ -175,7 +179,7 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
       otherCompounds.slice(0, 3).forEach(ex => addedExerciseNames.add(ex.name));
 
 
-      // 5. Add Isolation exercises for target muscle groups
+      // 5. Add Isolation exercises for target muscle groups (including new ab exercises)
       const isolationExercises = availableExercises.filter(ex =>
           ex.type === "isolation" &&
           targetMuscleGroups.some(group => ex.muscleGroup === group) && // Check if exercise muscle group is in target groups
@@ -190,13 +194,28 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
       const finalDayExercises = dayExercises.slice(0, 8);
 
 
-      // Format exercises for the program structure
-      day.exercises = finalDayExercises.map(ex => ({
-        name: ex.name,
-        sets: baseSets,
-        reps: baseReps,
-        notes: `RPE ${baseRPE}` // Simplified RPE
-      }));
+      // Format exercises for the program structure and calculate RPE
+      day.exercises = finalDayExercises.map(ex => {
+        let rpeNote = "";
+        if (ex.type === "isolation") {
+          rpeNote = "RPE 10";
+        } else if (bigStrengthExercises.includes(ex.name)) {
+          // RPE progression for big strength: 5 -> 6 -> 8 -> 10
+          const rpeMap: { [key: number]: number } = { 1: 5, 2: 6, 3: 8, 4: 10 };
+          rpeNote = `RPE ${rpeMap[weekNum] || 5}`; // Default to 5 if weekNum is unexpected
+        } else {
+          // RPE progression for other compounds: 7 -> 7.5 -> 8 -> 9
+           const rpeMap: { [key: number]: number | string } = { 1: 7, 2: 7.5, 3: 8, 4: 9 };
+           rpeNote = `RPE ${rpeMap[weekNum] || 7}`; // Default to 7 if weekNum is unexpected
+        }
+
+        return {
+          name: ex.name,
+          sets: baseSets,
+          reps: baseReps, // Keep base reps for now, RPE guides intensity
+          notes: rpeNote
+        };
+      });
 
       week.days.push(day);
     }
@@ -243,6 +262,12 @@ const ProgrammeGenerator: React.FC = () => {
      console.log("Generating and saving program for values:", values);
 
      try {
+       // --- Call the client-side generator ---
+       const program = generateProgramClientSide(values);
+       setGeneratedProgram(program);
+       console.log("Program generated:", program);
+
+
        // Insert form data into Supabase table
        const { data, error } = await supabase
          .from('program_generation_logs')
@@ -250,7 +275,8 @@ const ProgrammeGenerator: React.FC = () => {
            {
              form_data: values,
              user_email: values.email,
-             // program_title and program_description can be added later if generated
+             program_title: program.title, // Add program title
+             program_description: program.description, // Add program description
            },
          ]);
 
@@ -260,12 +286,6 @@ const ProgrammeGenerator: React.FC = () => {
        } else {
          console.log("Data inserted successfully:", data);
          showSuccess("Vos informations ont été enregistrées !");
-
-         // --- Call the client-side generator ---
-         const program = generateProgramClientSide(values);
-         setGeneratedProgram(program);
-         // You might want to update the Supabase log with program details here
-         // await supabase.from('program_generation_logs').update({ program_title: program.title, program_description: program.description }).eq('id', data[0].id);
        }
      } catch (error) {
        console.error("An unexpected error occurred:", error);
