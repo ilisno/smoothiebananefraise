@@ -6,7 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ProgrammeGenerator from "./pages/ProgrammeGenerator";
-import Blog from "./pages/Blog"; // Import the new Blog page
+import Blog from "./pages/Blog"; // Import the Blog page
+import BlogPostDetail from "./pages/BlogPostDetail"; // Import the new BlogPostDetail page
 
 const queryClient = new QueryClient();
 
@@ -20,9 +21,9 @@ const App = () => (
           <Route path="/" element={<Index />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="/programme" element={<ProgrammeGenerator />} />
-          <Route path="/blog" element={<Blog />} /> {/* Add the new Blog route */}
-          {/* You might want a route for individual blog posts like /blog/:slug */}
-          {/* <Route path="/blog/:slug" element={<BlogPostDetail />} /> */}
+          <Route path="/blog" element={<Blog />} /> {/* Route for the blog list page */}
+          {/* Route for individual blog posts using category and post slugs */}
+          <Route path="/:categorySlug/:postSlug" element={<BlogPostDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
