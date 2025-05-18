@@ -70,7 +70,7 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
   const { objectif, experience, split, joursEntrainement, materiel, dureeMax } = values;
 
   const baseReps = objectif === "Powerlifting" ? "3-5" : (objectif === "Sèche / Perte de Gras" ? "12-15" : "8-12");
-  const baseSets = "3"; // Simplified
+  const baseSets = 3; // Use number for calculations
 
   // Exercise list with type and muscle group
   const allExercises = [
@@ -99,6 +99,11 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
 
   // Define "big strength" exercises for RPE calculation
   const bigStrengthExercises = ["Squat Barre", "Soulevé de Terre Roumain", "Développé Couché", "Développé Militaire Barre"];
+  // Define other compound exercises that are not "big strength"
+  const otherCompoundExercises = allExercises.filter(ex => ex.type === 'compound' && !bigStrengthExercises.includes(ex.name));
+  // Define isolation exercises
+  const isolationExercises = allExercises.filter(ex => ex.type === 'isolation');
+
 
   // Filter exercises based on available equipment
   const availableExercises = allExercises.filter(ex =>
@@ -122,12 +127,21 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
   const selectedSplitMuscles = splitMuscles[split] || splitMuscles["Autre / Pas de préférence"];
   const numSplitDays = selectedSplitMuscles.length;
 
+  // Define large muscle groups for volume tracking
+  const largeMuscleGroups = ["Jambes", "Pectoraux", "Dos", "Épaules"];
+  const weeklyVolumeCap = 15; // Max sets per week for large muscle groups
+
   // Generate 4 weeks
   for (let weekNum = 1; weekNum <= 4; weekNum++) {
     const week: Program['weeks'][number] = {
       weekNumber: weekNum,
       days: [],
     };
+
+    // Initialize weekly volume tracker for this week
+    const weeklyVolume: { [key: string]: number } = {};
+    largeMuscleGroups.forEach(group => weeklyVolume[group] = 0);
+
 
     // Generate days based on joursEntrainement
     for (let dayIndex = 0; dayIndex < joursEntrainement; dayIndex++) {
@@ -142,52 +156,71 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
       let dayExercises: typeof allExercises = [];
       const addedExerciseNames = new Set<string>(); // To track added exercises
 
-      // Helper to add exercise if available, targets muscle group, and not already added
-      const addExerciseIfAvailable = (name: string, muscleGroup: string, type: 'compound' | 'isolation') => {
+      // Helper to add exercise if available, targets muscle group, not already added, and respects volume cap
+      const tryAddExercise = (exerciseName: string, muscleGroup: string, type: 'compound' | 'isolation') => {
           const exercise = availableExercises.find(ex =>
-              ex.name === name &&
-              targetMuscleGroups.includes(ex.muscleGroup) &&
+              ex.name === exerciseName &&
+              ex.muscleGroup === muscleGroup &&
               ex.type === type &&
               !addedExerciseNames.has(ex.name)
           );
+
           if (exercise) {
+              // Check volume cap only for large muscle groups
+              if (largeMuscleGroups.includes(exercise.muscleGroup)) {
+                  if (weeklyVolume[exercise.muscleGroup] + baseSets > weeklyVolumeCap) {
+                      console.log(`Skipping ${exercise.name} due to weekly volume cap for ${exercise.muscleGroup}`);
+                      return false; // Cannot add due to cap
+                  }
+                  weeklyVolume[exercise.muscleGroup] += baseSets; // Add sets to weekly volume
+              }
+
               dayExercises.push(exercise);
               addedExerciseNames.add(exercise.name);
-              return true; // Indicate if added
+              console.log(`Added ${exercise.name} for ${exercise.muscleGroup}. Weekly volume for ${exercise.muscleGroup}: ${weeklyVolume[exercise.muscleGroup] || 0}`);
+              return true; // Exercise added
           }
-          return false; // Indicate if not added
+          return false; // Exercise not available or already added
       };
 
-      // 1. Add Squat if applicable and available
-      addExerciseIfAvailable("Squat Barre", "Jambes", "compound");
+      // --- Prioritized Exercise Selection for the Day ---
 
-      // 2. Add Deadlift (Romanian Deadlift used here) if applicable and available
-      addExerciseIfAvailable("Soulevé de Terre Roumain", "Jambes", "compound");
+      // 1. Add "Big Strength" compounds if targeted and possible
+      bigStrengthExercises.forEach(exName => {
+          const exercise = allExercises.find(e => e.name === exName);
+          if (exercise && targetMuscleGroups.includes(exercise.muscleGroup)) {
+              tryAddExercise(exName, exercise.muscleGroup, 'compound');
+          }
+      });
 
-      // 3. Add Bench Press if applicable and available
-      addExerciseIfAvailable("Développé Couché", "Pectoraux", "compound");
+      // 2. Ensure Biceps and Triceps isolation if targeted and possible
+      if (targetMuscleGroups.includes("Biceps")) {
+          tryAddExercise("Curl Biceps Barre", "Biceps", "isolation");
+          // Could add a fallback if Barre Curl isn't available, e.g., try Dumbbell Curl
+      }
+       if (targetMuscleGroups.includes("Triceps")) {
+          tryAddExercise("Extension Triceps Poulie Haute", "Triceps", "isolation");
+           // Could add a fallback if Pulley Extension isn't available, e.g., try Overhead Extension
+      }
+       if (targetMuscleGroups.includes("Abdos")) {
+          // Add at least one ab exercise if targeted
+          tryAddExercise("Crunchs", "Abdos", "isolation") || tryAddExercise("Leg Raises", "Abdos", "isolation");
+      }
 
-      // 4. Add other Compound exercises for target muscle groups
-      const otherCompounds = availableExercises.filter(ex =>
-          ex.type === "compound" &&
-          targetMuscleGroups.some(group => ex.muscleGroup === group) && // Check if exercise muscle group is in target groups
-          !bigStrengthExercises.includes(ex.name) && // Exclude big strength exercises already considered
-          !addedExerciseNames.has(ex.name)
-      );
-      // Add other compounds, aiming for a reasonable number
-      dayExercises.push(...otherCompounds.slice(0, 3)); // Add up to 3 other compounds
-      otherCompounds.slice(0, 3).forEach(ex => addedExerciseNames.add(ex.name));
 
+      // 3. Add other Compound exercises if targeted and possible
+      otherCompoundExercises.forEach(ex => {
+          if (targetMuscleGroups.includes(ex.muscleGroup)) {
+              tryAddExercise(ex.name, ex.muscleGroup, 'compound');
+          }
+      });
 
-      // 5. Add Isolation exercises for target muscle groups (including new ab exercises)
-      const isolationExercises = availableExercises.filter(ex =>
-          ex.type === "isolation" &&
-          targetMuscleGroups.some(group => ex.muscleGroup === group) && // Check if exercise muscle group is in target groups
-          !addedExerciseNames.has(ex.name)
-      );
-      // Add isolation exercises, aiming for a reasonable number
-      dayExercises.push(...isolationExercises.slice(0, 3)); // Add up to 3 isolation exercises
-      isolationExercises.slice(0, 3).forEach(ex => addedExerciseNames.add(ex.name));
+      // 4. Add other Isolation exercises if targeted and possible (excluding Biceps/Triceps/Abdos already prioritized)
+      isolationExercises.filter(ex => !["Biceps", "Triceps", "Abdos"].includes(ex.muscleGroup)).forEach(ex => {
+           if (targetMuscleGroups.includes(ex.muscleGroup)) {
+              tryAddExercise(ex.name, ex.muscleGroup, 'isolation');
+          }
+      });
 
 
       // Simple limit on total exercises per day (e.g., max 8 exercises)
@@ -211,8 +244,8 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
 
         return {
           name: ex.name,
-          sets: baseSets,
-          reps: baseReps, // Keep base reps for now, RPE guides intensity
+          sets: baseSets.toString(), // Convert back to string for display
+          reps: baseReps,
           notes: rpeNote
         };
       });
