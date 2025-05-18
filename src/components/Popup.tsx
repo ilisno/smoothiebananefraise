@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Link } from 'react-router-dom'; // Assuming buttons might link to other pages
+// Removed Link import as we are not using react-router-dom Link directly in buttons
 
 interface PopupProps {
   isOpen: boolean;
@@ -11,9 +11,9 @@ interface PopupProps {
   imageSrc?: string;
   imageAlt?: string;
   primaryButtonText: string;
-  primaryButtonAction: () => void | string; // Can be a function or a link path
+  primaryButtonAction: () => void; // Action is always a function
   secondaryButtonText?: string;
-  secondaryButtonAction?: () => void | string; // Can be a function or a link path
+  secondaryButtonAction?: () => void; // Action is always a function (optional)
 }
 
 const Popup: React.FC<PopupProps> = ({
@@ -30,71 +30,46 @@ const Popup: React.FC<PopupProps> = ({
 }) => {
 
   const handlePrimaryAction = () => {
-    if (typeof primaryButtonAction === 'string') {
-      // If it's a string, it's a link path, handled by the Link component
-      // We still close the popup
-      onClose();
-    } else {
-      // If it's a function, execute it and close the popup
-      primaryButtonAction();
-      onClose();
-    }
+    primaryButtonAction(); // Execute the provided action function
+    onClose(); // Close the popup
   };
 
    const handleSecondaryAction = () => {
-    if (typeof secondaryButtonAction === 'string') {
-      // If it's a string, it's a link path, handled by the Link component
-      // We still close the popup
-      onClose();
-    } else if (secondaryButtonAction) {
-      // If it's a function, execute it and close the popup
-      secondaryButtonAction();
-      onClose();
-    } else {
-       // If no action is provided, just close the popup
-       onClose();
+    if (secondaryButtonAction) {
+      secondaryButtonAction(); // Execute the provided action function if it exists
     }
+    onClose(); // Always close the popup on secondary action (or just close if no action)
   };
 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]"> {/* Removed p-6 text-center from here */}
-        <div className="p-6 text-center"> {/* Added a wrapper div and moved classes here */}
+      <DialogContent className="sm:max-w-[425px]">
+        <div className="p-6 text-center">
           <DialogHeader>
             {imageSrc && (
-              <img src={imageSrc} alt={imageAlt || title} className="mx-auto mb-4 max-h-48 object-contain" /> // Added styling
+              <img src={imageSrc} alt={imageAlt || title} className="mx-auto mb-4 max-h-48 object-contain" />
             )}
-            <DialogTitle className="text-2xl font-bold text-gray-800">{title}</DialogTitle> {/* Added styling */}
-            {description && <DialogDescription className="text-gray-600 mt-2">{description}</DialogDescription>} {/* Added styling */}
+            <DialogTitle className="text-2xl font-bold text-gray-800">{title}</DialogTitle>
+            {description && <DialogDescription className="text-gray-600 mt-2">{description}</DialogDescription>}
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            {/* Content goes here if needed, but for this style, header/footer is enough */}
+            {/* Content goes here if needed */}
           </div>
-          <DialogFooter className="flex flex-col sm:flex-row sm:justify-center gap-3 mt-4"> {/* Adjusted layout */}
-            {typeof primaryButtonAction === 'string' ? (
-               <Button asChild className="bg-sbf-red text-white hover:bg-red-700 text-base px-6 py-3 rounded-md font-semibold"> {/* Added styling */}
-                 <Link to={primaryButtonAction} onClick={handlePrimaryAction}>{primaryButtonText}</Link>
-               </Button>
-            ) : (
-              <Button onClick={handlePrimaryAction} className="bg-sbf-red text-white hover:bg-red-700 text-base px-6 py-3 rounded-md font-semibold"> {/* Added styling */}
-                {primaryButtonText}
+          <DialogFooter className="flex flex-col sm:flex-row sm:justify-center gap-3 mt-4">
+            {/* Primary Button */}
+            <Button onClick={handlePrimaryAction} className="bg-sbf-red text-white hover:bg-red-700 text-base px-6 py-3 rounded-md font-semibold">
+              {primaryButtonText}
+            </Button>
+
+            {/* Secondary Button (only render if text is provided) */}
+            {secondaryButtonText && (
+              <Button onClick={handleSecondaryAction} variant="outline" className="text-gray-800 border-gray-300 hover:bg-gray-200 text-base px-6 py-3 rounded-md font-semibold">
+                {secondaryButtonText}
               </Button>
             )}
-
-            {secondaryButtonText && (
-              typeof secondaryButtonAction === 'string' ? (
-                <Button asChild variant="outline" className="text-gray-800 border-gray-300 hover:bg-gray-200 text-base px-6 py-3 rounded-md font-semibold"> {/* Added styling */}
-                  <Link to={secondaryButtonAction} onClick={handleSecondaryAction}>{secondaryButtonText}</Link>
-                </Button>
-              ) : (
-                <Button onClick={handleSecondaryAction} variant="outline" className="text-gray-800 border-gray-300 hover:bg-gray-200 text-base px-6 py-3 rounded-md font-semibold"> {/* Added styling */}
-                  {secondaryButtonText}
-                </Button>
-              )
-            )}
           </DialogFooter>
-        </div> {/* Close wrapper div */}
+        </div>
       </DialogContent>
     </Dialog>
   );
