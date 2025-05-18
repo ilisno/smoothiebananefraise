@@ -28,7 +28,8 @@ const Index: React.FC = () => {
         {/* Call To Action Button */}
         <Button
           asChild // Use asChild to render as a Link
-          className="bg-sbf-yellow text-sbf-red hover:bg-sbf-red hover:text-sbf-yellow text-lg px-8 py-6 rounded-full font-semibold shadow-lg transition-colors duration-300"
+          // Updated classes for red background, white text, yellow border, and rounded corners
+          className="bg-sbf-red text-white hover:bg-sbf-yellow hover:text-sbf-red text-lg px-8 py-6 rounded-md font-semibold shadow-lg transition-colors duration-300 border-2 border-sbf-yellow"
         >
            <Link to="/programme">Créer mon programme</Link>
         </Button>
@@ -37,6 +38,9 @@ const Index: React.FC = () => {
         <p className="mt-4 text-gray-600 text-sm italic">
           Résultats garantis, satisfait ou 100% remboursé
         </p>
+
+        {/* Separator Line */}
+        <hr className="w-full max-w-4xl my-12 border-gray-300" />
 
         {/* Benefits Section */}
         <section className="mt-16 w-full max-w-4xl">
