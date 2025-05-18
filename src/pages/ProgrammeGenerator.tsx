@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useForm } from "react-hook-form";
@@ -13,12 +13,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription, // <-- Added FormDescription here
+  FormDescription,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription as CardDescriptionShadcn } from "@/components/ui/card"; // Renamed CardDescription to avoid conflict
+import { Card, CardContent, CardHeader, CardTitle, CardDescription as CardDescriptionShadcn } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"; // Import Accordion components
+import { showSuccess, showError } from '@/utils/toast'; // Import toast utilities
+import { supabase } from '@/integrations/supabase/client'; // Import Supabase client
 
 // Define the schema for form validation
 const formSchema = z.object({
@@ -45,36 +48,171 @@ const formSchema = z.object({
   }),
 });
 
+// Define a type for the program structure (placeholder for now)
+type Program = {
+  title: string;
+  description: string;
+  weeks: {
+    weekNumber: number;
+    days: {
+      dayNumber: number;
+      exercises: { name: string; sets: string; reps: string }[];
+    }[];
+  }[];
+};
+
 const ProgrammeGenerator: React.FC = () => {
+  const [generatedProgram, setGeneratedProgram] = useState<Program | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Initialize the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      objectif: undefined, // No default selected
-      experience: undefined, // No default selected
-      split: undefined, // No default selected
-      joursEntrainement: 3, // Default value from image
-      dureeMax: 60, // Default value from image
-      materiel: [], // Default empty array
+      objectif: undefined,
+      experience: undefined,
+      split: undefined,
+      joursEntrainement: 3,
+      dureeMax: 60,
+      materiel: [],
       email: "",
     },
   });
 
   // Handle form submission
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // For now, just log them to the console.
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
     console.log("Form submitted with values:", values);
-    // Here you would typically send the data to an API
-    // and then navigate the user or show a success message.
+
+    try {
+      // Insert form data into Supabase table
+      const { data, error } = await supabase
+        .from('program_generation_logs')
+        .insert([
+          {
+            form_data: values,
+            user_email: values.email,
+            // program_title and program_description can be added later if generated
+          },
+        ]);
+
+      if (error) {
+        console.error("Error inserting data:", error);
+        showError("Une erreur est survenue lors de l'enregistrement de vos informations.");
+      } else {
+        console.log("Data inserted successfully:", data);
+        showSuccess("Vos informations ont été enregistrées !");
+
+        // --- Placeholder Program Generation ---
+        // In a real scenario, you would call a backend function here
+        // to generate the program based on 'values'.
+        // For now, we'll create a simple mock program structure.
+        const mockProgram: Program = {
+          title: "Votre Programme Personnalisé (Placeholder)",
+          description: "Voici un exemple de programme basé sur vos préférences.",
+          weeks: [
+            {
+              weekNumber: 1,
+              days: [
+                {
+                  dayNumber: 1,
+                  exercises: [
+                    { name: "Développé Couché", sets: "3", reps: "8-12" },
+                    { name: "Tractions", sets: "3", reps: "Max" },
+                    { name: "Squat", sets: "3", reps: "8-12" },
+                  ],
+                },
+                {
+                  dayNumber: 2,
+                  exercises: [
+                    { name: "Développé Militaire", sets: "3", reps: "8-12" },
+                    { name: "Rowing Barre", sets: "3", reps: "8-12" },
+                    { name: "Soulevé de Terre Roumain", sets: "3", reps: "10-15" },
+                  ],
+                },
+                // Add more days based on values.joursEntrainement
+              ],
+            },
+             {
+              weekNumber: 2,
+              days: [
+                {
+                  dayNumber: 1,
+                  exercises: [
+                    { name: "Développé Incliné", sets: "3", reps: "8-12" },
+                    { name: "Tirage Vertical", sets: "3", reps: "8-12" },
+                    { name: "Fentes", sets: "3", reps: "10-15/jambe" },
+                  ],
+                },
+                {
+                  dayNumber: 2,
+                  exercises: [
+                    { name: "Élévations Latérales", sets: "3", reps: "12-15" },
+                    { name: "Curl Biceps", sets: "3", reps: "10-15" },
+                    { name: "Extension Triceps", sets: "3", reps: "10-15" },
+                  ],
+                },
+                // Add more days based on values.joursEntrainement
+              ],
+            },
+            // Add more weeks as needed for the placeholder
+          ],
+        };
+        setGeneratedProgram(mockProgram);
+
+      }
+    } catch (error) {
+      console.error("An unexpected error occurred:", error);
+      showError("Une erreur inattendue est survenue.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
-  const materielOptions = [
-    { id: "barre-halteres", label: "Barre & Haltères" },
-    { id: "machines-guidees", label: "Machines Guidées" },
-    { id: "poids-corps", label: "Poids du Corps (dips tractions)" },
-  ];
+  // Render the program if generated, otherwise render the form
+  if (generatedProgram) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-100">
+        <Header />
+        <main className="flex-grow container mx-auto px-4 py-12 flex justify-center">
+          <Card className="w-full max-w-2xl shadow-lg">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl font-bold text-gray-800">{generatedProgram.title}</CardTitle>
+              <CardDescriptionShadcn className="text-gray-600">{generatedProgram.description}</CardDescriptionShadcn>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="single" collapsible className="w-full">
+                {generatedProgram.weeks.map((week) => (
+                  <AccordionItem value={`week-${week.weekNumber}`} key={week.weekNumber}>
+                    <AccordionTrigger className="text-lg font-semibold text-gray-800">Semaine {week.weekNumber}</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-4">
+                        {week.days.map((day) => (
+                          <div key={day.dayNumber} className="border-t pt-4">
+                            <h4 className="text-md font-semibold mb-2">Jour {day.dayNumber}</h4>
+                            <ul className="list-disc pl-5 space-y-1">
+                              {day.exercises.map((exercise, index) => (
+                                <li key={index} className="text-gray-700">
+                                  {exercise.name}: {exercise.sets} séries de {exercise.reps} répétitions
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </CardContent>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
+  // Render the form if no program is generated yet
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />
@@ -82,7 +220,7 @@ const ProgrammeGenerator: React.FC = () => {
         <Card className="w-full max-w-2xl shadow-lg">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-gray-800">Générer un programme personnalisé</CardTitle>
-            <CardDescriptionShadcn className="text-gray-600">Remplissez le formulaire pour obtenir votre plan d'entraînement sur mesure.</CardDescriptionShadcn> {/* Using the renamed CardDescription */}
+            <CardDescriptionShadcn className="text-gray-600">Remplissez le formulaire pour obtenir votre plan d'entraînement sur mesure.</CardDescriptionShadcn>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -334,8 +472,8 @@ const ProgrammeGenerator: React.FC = () => {
                 />
 
                 {/* Submit Button */}
-                <Button type="submit" className="w-full bg-sbf-red text-white hover:bg-red-700 text-lg py-6">
-                  Générer mon programme
+                <Button type="submit" className="w-full bg-sbf-red text-white hover:bg-red-700 text-lg py-6" disabled={isSubmitting}>
+                  {isSubmitting ? 'Génération en cours...' : 'Générer mon programme'}
                 </Button>
               </form>
             </Form>
