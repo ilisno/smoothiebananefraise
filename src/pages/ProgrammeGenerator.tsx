@@ -169,6 +169,14 @@ const ProgrammeGenerator: React.FC = () => {
     }
   }
 
+  // Define materielOptions here, before it's used in the return statement
+  const materielOptions = [
+    { id: "barre-halteres", label: "Barre & Haltères" },
+    { id: "machines-guidees", label: "Machines Guidées" },
+    { id: "poids-corps", label: "Poids du Corps (dips tractions)" },
+  ];
+
+
   // Render the program if generated, otherwise render the form
   if (generatedProgram) {
     return (
