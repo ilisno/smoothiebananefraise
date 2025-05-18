@@ -27,7 +27,7 @@ const Blog: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { showPopup, hidePopup } = usePopup(); // Use the popup hook
+  const { showRandomPopup } = usePopup(); // Use the showRandomPopup hook
   const navigate = useNavigate(); // Hook for navigation
 
   // --- Sanity Data Fetching ---
@@ -72,27 +72,17 @@ const Blog: React.FC = () => {
   // --- Timer for Blog Popup ---
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log("2 minutes passed on blog page, showing popup...");
-      showPopup({
-        id: 'blog_timer_popup', // Unique ID for this popup
-        title: "Ne manquez pas nos offres !",
-        description: "Découvrez comment obtenir un programme personnalisé ou discutez avec notre coach virtuel.",
-        imageSrc: "/popup-placeholder-3.jpg", // Updated image source
-        imageAlt: "Special Offer",
-        primaryButtonText: "Découvrir l'offre", // Changed text to be more generic
-        primaryButtonAction: () => {
-           console.log("Primary button clicked from Blog timer popup: Discover Offer -> https://ericflag.com/?ref=ebdudilx");
-           window.open('https://ericflag.com/?ref=ebdudilx', '_blank');
-           hidePopup();
-        },
-        secondaryButtonText: "Accéder au Coach Virtuel",
-        secondaryButtonAction: '/coach-virtuel', // Link to the coach virtuel page
-      });
+      console.log("2 minutes passed on blog page, showing random popup...");
+
+      // No specific action needed after the blog timer popup closes,
+      // so no onCloseCallback is required here. The user just stays on the blog page.
+      showRandomPopup();
+
     }, 2 * 60 * 1000); // 2 minutes in milliseconds
 
     // Cleanup the timer when the component unmounts or the effect re-runs
     return () => clearTimeout(timer);
-  }, [showPopup]); // Re-run effect if showPopup changes (though it's stable from context)
+  }, [showRandomPopup]); // Re-run effect if showRandomPopup changes (though it's stable from context)
 
 
   return (

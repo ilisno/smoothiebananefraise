@@ -5,7 +5,7 @@ import { usePopup } from '@/contexts/PopupContext'; // Import usePopup hook
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { showPopup, hidePopup } = usePopup(); // Use the popup hook
+  const { showRandomPopup } = usePopup(); // Use the showRandomPopup hook
   const navigate = useNavigate(); // Hook for navigation
 
   const toggleMenu = () => {
@@ -21,25 +21,14 @@ const Header: React.FC = () => {
     event.preventDefault(); // Prevent default navigation
     closeMenu(); // Close mobile menu if open
 
-    showPopup({
-      id: 'coach_virtuel_popup', // Unique ID for this popup
-      title: "Accède à ton Coach Virtuel",
-      description: "Discute avec notre IA pour obtenir des conseils personnalisés, des ajustements de programme, et des réponses à toutes tes questions fitness.",
-      imageSrc: "/popup-placeholder-2.jpg", // Updated image source
-      imageAlt: "Chatbot icon",
-      primaryButtonText: "Découvrir la whey de qualité", // Example button from the image
-      primaryButtonAction: () => {
-         console.log("Primary button clicked from Coach Virtuel popup: Discover Whey -> https://go.nordvpn.net/aff_c?offer_id=15&aff_id=122852&url_id=1172");
-         window.open('https://go.nordvpn.net/aff_c?offer_id=15&aff_id=122852&url_id=1172', '_blank');
-         hidePopup();
-      },
-      secondaryButtonText: "Accéder au Coach Virtuel",
-      secondaryButtonAction: () => {
-         console.log("Secondary button clicked from Coach Virtuel popup: Navigate to Coach Virtuel");
-         navigate('/coach-virtuel'); // Navigate to the Coach Virtuel page
-         hidePopup();
-      },
-    });
+    // Define a callback function that navigates after the popup is closed
+    const handlePopupCloseAndNavigate = () => {
+        console.log("Popup closed, navigating to Coach Virtuel...");
+        navigate('/coach-virtuel');
+    };
+
+    // Show a random popup. When it's closed, the callback will run.
+    showRandomPopup({ onCloseCallback: handlePopupCloseAndNavigate });
   };
 
 

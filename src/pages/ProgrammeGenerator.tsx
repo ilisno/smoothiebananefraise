@@ -213,7 +213,7 @@ const ProgrammeGenerator: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<z.infer<typeof formSchema> | null>(null); // State to hold form data temporarily
 
-  const { showPopup, hidePopup } = usePopup(); // Use the popup hook
+  const { showRandomPopup } = usePopup(); // Use the showRandomPopup hook
   const navigate = useNavigate(); // Hook for navigation
 
   // Initialize the form
@@ -278,33 +278,22 @@ const ProgrammeGenerator: React.FC = () => {
 
   // Handle form submission - show popup first
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Form submitted, showing popup...");
+    console.log("Form submitted, showing random popup...");
     setFormData(values); // Store form data temporarily
 
-    showPopup({
-      id: 'programme_generator_popup', // Unique ID for this popup
-      title: "Nutrimuscle — Construis du muscle",
-      description: "Que du propre, du traçable et du performant.\nLa whey Nutrimuscle, c'est du sérieux pour des vrais résultats.\nFormulations haut de gamme, sans compromis.",
-      imageSrc: "/popup-placeholder-1.jpg", // Updated image source
-      imageAlt: "Nutrimuscle Whey Protein",
-      primaryButtonText: "Découvrir la whey de qualité",
-      primaryButtonAction: () => {
-         // Action for the primary button - navigate to affiliate link
-         console.log("Primary button clicked: Discover Whey -> https://nmsquad.link/03olk");
-         window.open('https://nmsquad.link/03olk', '_blank');
-         hidePopup(); // Hide popup after action
-      },
-      secondaryButtonText: "Générer mon programme", // Changed text to match the action
-      secondaryButtonAction: () => {
-         // Action for the secondary button - proceed with program generation
-         console.log("Secondary button clicked: Generate Program");
-         if (formData) {
-            generateAndSaveProgram(formData); // Use the stored form data
-            setFormData(null); // Clear stored data
-         }
-         hidePopup(); // Hide popup after action
-      },
-    });
+    // Define a callback function that calls generateAndSaveProgram after the popup is closed
+    const handlePopupCloseAndGenerate = () => {
+        console.log("Popup closed, proceeding with program generation...");
+        if (formData) { // Use the stored formData
+            generateAndSaveProgram(formData);
+            setFormData(null); // Clear stored data after use
+        }
+    };
+
+    // Show a random popup. When it's closed (by clicking "Continuer" or outside), the callback will run.
+    showRandomPopup({ onCloseCallback: handlePopupCloseAndGenerate });
+
+    // The rest of the onSubmit function is handled by the callback.
   }
 
 
