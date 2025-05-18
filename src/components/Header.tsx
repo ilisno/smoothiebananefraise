@@ -33,14 +33,14 @@ const Header: React.FC = () => {
         {/* Mobile Menu (Hamburger Icon) */}
         <div className="md:hidden"> {/* Show only on mobile */}
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            {/* Corrected SheetTrigger usage with asChild */}
+            {/* Correct SheetTrigger usage with asChild */}
             <SheetTrigger asChild> {/* Use asChild={true} */}
-              {/* Make Button the single child of SheetTrigger */}
+              {/* Button is the single child of SheetTrigger */}
               <Button
                 variant="ghost"
                 size="icon"
                 aria-label="Toggle Menu"
-                className="md:hidden" // Keep mobile visibility class
+                className="md:hidden" // Keep mobile visibility class on the button
               >
                  <Menu className="h-6 w-6" /> {/* Menu icon is inside the Button */}
               </Button>
