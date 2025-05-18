@@ -115,14 +115,14 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
 
   // Generate 4 weeks
   for (let weekNum = 1; weekNum <= 4; weekNum++) {
-    const week: Program['weeks'][0] = {
+    const week: Program['weeks'][number] = { // Corrected type annotation
       weekNumber: weekNum,
       days: [],
     };
 
     // Generate days based on joursEntrainement
     for (let dayIndex = 0; dayIndex < joursEntrainement; dayIndex++) {
-      const day: Program['weeks'][0']['days'][0] = {
+      const day: Program['weeks'][number]['days'][number] = { // Corrected type annotation
         dayNumber: dayIndex + 1,
         exercises: [],
       };
@@ -206,6 +206,13 @@ const ProgrammeGenerator: React.FC = () => {
     },
   });
 
+  // Define materielOptions here, before it's used in the return statement
+  const materielOptions = [
+    { id: "barre-halteres", label: "Barre & Haltères" },
+    { id: "machines-guidees", label: "Machines Guidées" },
+    { id: "poids-corps", label: "Poids du Corps (dips tractions)" },
+  ];
+
   // Handle form submission
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
@@ -243,13 +250,6 @@ const ProgrammeGenerator: React.FC = () => {
       setIsSubmitting(false);
     }
   }
-
-  // Define materielOptions here, before it's used in the return statement
-  const materielOptions = [
-    { id: "barre-halteres", label: "Barre & Haltères" },
-    { id: "machines-guidees", label: "Machines Guidées" },
-    { id: "poids-corps", label: "Poids du Corps (dips tractions)" },
-  ];
 
 
   // Render the program if generated, otherwise render the form
