@@ -347,11 +347,10 @@ const ProgrammeGenerator: React.FC = () => {
        if (values.email && values.email !== "b") { // Check if email is provided and not the default "b"
            const { data: subscriberData, error: subscriberError } = await supabase
              .from('subscribers')
-             .insert([
-               { email: values.email }
-             ])
-             .onConflict('email') // Specify the column to check for conflicts
-             .ignoreDuplicates(); // Ignore the insert if there's a conflict on the email
+             .insert(
+               { email: values.email }, // Insert a single object
+               { onConflict: 'email' } // Use the suggested onConflict syntax
+             );
 
            if (subscriberError) {
              console.error("Error inserting email into subscribers table:", subscriberError);
