@@ -64,11 +64,12 @@ const CoachVirtuel: React.FC = () => {
 
     // --- Insert email into subscribers table (if email is provided and valid) ---
     if (values.email && values.email !== "b") { // Check if email is provided and not the default "b"
+        console.log("Email to insert:", values.email);
         const { data: subscriberData, error: subscriberError } = await supabase
           .from('subscribers')
           .insert(
-            { email: values.email }, // Insert a single object
-            { onConflict: 'email' } // Use the suggested onConflict syntax
+            [{ email: values.email }], // CORRECT: Array syntax
+            { onConflict: 'email' } // CORRECT: Column name (must be UNIQUE)
           );
 
         if (subscriberError) {
@@ -76,7 +77,7 @@ const CoachVirtuel: React.FC = () => {
           // Optionally show an error, but maybe not critical if program log saved
           // showError("Impossible d'ajouter votre email à la liste d'abonnés.");
         } else {
-          console.log("Email inserted into subscribers table (or already exists):", subscriberData);
+          console.log("Email inserted or already exists:", subscriberData);
           // showSuccess("Votre email a été ajouté à la liste d'abonnés !"); // Avoid multiple success toasts
         }
     }
