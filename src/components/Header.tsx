@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import { Menu, X } from 'lucide-react'; // Import icons
 import { usePopup } from '@/contexts/PopupContext'; // Import usePopup hook
+import { cn } from '@/lib/utils'; // Import cn utility for conditional classes
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -61,17 +62,20 @@ const Header: React.FC = () => {
       </div>
 
       {/* Mobile Menu Panel */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 bg-white z-10 flex flex-col items-center pt-16 space-y-6 md:hidden"> {/* Full screen overlay on mobile */}
-           {/* Close button is now part of the header row */}
-          <Link to="/" className="text-xl font-semibold" onClick={closeMenu}>Accueil</Link>
-          <Link to="/programme" className="text-xl font-semibold" onClick={closeMenu}>Générateur de programme</Link>
-          {/* Modified Link to trigger the popup */}
-          <Link to="/coach-virtuel" className="text-xl font-semibold" onClick={handleCoachVirtuelClick}>Coach virtuel</Link>
-          <Link to="/blog" className="text-xl font-semibold" onClick={closeMenu}>Blog</Link>
-          <Link to="/mon-espace" className="text-xl font-semibold" onClick={closeMenu}>Mon espace</Link>
-        </div>
-      )}
+      {/* Use cn utility for conditional classes for animation */}
+      <div className={cn(
+        "fixed inset-0 bg-white z-10 flex flex-col items-center pt-16 space-y-6 md:hidden",
+        "transition-all duration-300 ease-in-out", // Transition properties
+        isMenuOpen ? "opacity-100 translate-x-0 visible pointer-events-auto" : "opacity-0 translate-x-full invisible pointer-events-none" // States
+      )}>
+         {/* Close button is now part of the header row */}
+        <Link to="/" className="text-xl font-semibold" onClick={closeMenu}>Accueil</Link>
+        <Link to="/programme" className="text-xl font-semibold" onClick={closeMenu}>Générateur de programme</Link>
+        {/* Modified Link to trigger the popup */}
+        <Link to="/coach-virtuel" className="text-xl font-semibold" onClick={handleCoachVirtuelClick}>Coach virtuel</Link>
+        <Link to="/blog" className="text-xl font-semibold" onClick={closeMenu}>Blog</Link>
+        <Link to="/mon-espace" className="text-xl font-semibold" onClick={closeMenu}>Mon espace</Link>
+      </div>
     </header>
   );
 };
