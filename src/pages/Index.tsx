@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button'; // Using shadcn Button
-import { Card, CardContent, CardHeader, CardTitle, CardDescription as CardDescriptionShadcn } from '@/components/ui/card'; // Using shadcn Card
+import { Card, CardContent, CardHeader, CardTitle, CardDescription as CardDescriptionShadcn, CardFooter } from '@/components/ui/card'; // Using shadcn Card, Added CardFooter
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'; // Using shadcn Accordion
 import { DollarSign, Target, Clock, LineChart, ChevronRight, Quote } from 'lucide-react'; // Importing icons
 
@@ -114,7 +114,7 @@ const Index: React.FC = () => {
                 <p className="text-gray-600">Entraînez-vous où et quand vous voulez.</p>
               </CardContent>
             </Card>
-            <Card className="bg-white shadow-md flex flex-col items-center text-center p-6"> {/* Added flex, items-center, text-center, p-6 */}
+            <Card className="bg-white shadow-md p-6 flex flex-col items-center text-center"> {/* Added flex, items-center, text-center, p-6 */}
               <LineChart size={40} className="text-sbf-red mb-3" /> {/* Added Icon */}
               <CardHeader className="p-0 mb-3"> {/* Adjusted padding */}
                 <CardTitle className="text-gray-800 text-xl font-semibold">RÉSULTATS VISIBLES</CardTitle> {/* Changed text color */}
