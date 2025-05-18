@@ -1,71 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Menu } from 'lucide-react'; // Import the Menu icon
-
-import { Button } from '@/components/ui/button'; // Import Button component
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetClose, // Import SheetClose to close the sheet on link click
-} from '@/components/ui/sheet'; // Import Sheet components
 
 const Header: React.FC = () => {
-  const [isSheetOpen, setIsSheetOpen] = useState(false); // State to manage sheet open/close
-
   return (
-    <header className="bg-white text-gray-800 p-4 shadow-md border-b border-gray-200">
+    <header className="bg-white text-gray-800 p-4 shadow-md border-b border-gray-200"> {/* Changed background and text color, added border */}
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo with Emojis */}
-        <Link to="/" className="text-xl font-semibold flex items-center">
-          smoothie banane fraise <span className="ml-2">🍌🍓</span>
+        <Link to="/" className="text-xl font-semibold flex items-center"> {/* Adjusted text size and weight, added flex for alignment */}
+          smoothie banane fraise <span className="ml-2">🍌🍓</span> {/* Added emojis */}
         </Link>
-
-        {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex space-x-6"> {/* Hide on mobile, show on md and up */}
+        {/* Navigation Links */}
+        <nav className="space-x-6"> {/* Added space between links */}
           <Link to="/" className="hover:underline">accueil</Link>
           <Link to="/programme" className="hover:underline">générateur de programme</Link>
+          {/* Placeholder links for other pages */}
           <Link to="/coach-virtuel" className="hover:underline">coach virtuel</Link>
           <Link to="/blog" className="hover:underline">blog</Link>
           <Link to="/mon-espace" className="hover:underline">mon espace</Link>
         </nav>
-
-        {/* Mobile Menu (Hamburger Icon) */}
-        <div className="md:hidden"> {/* Show only on mobile */}
-          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            {/* Correct SheetTrigger usage with asChild */}
-            <SheetTrigger asChild> {/* Use asChild={true} */}
-              {/* Button is the single child of SheetTrigger */}
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Toggle Menu"
-                className="md:hidden" // Keep mobile visibility class on the button
-              >
-                 <Menu className="h-6 w-6" /> {/* Menu icon is inside the Button */}
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-64 p-6"> {/* Sidebar content */}
-              <nav className="flex flex-col space-y-4"> {/* Stack links vertically */}
-                 <SheetClose asChild> {/* Close sheet when link is clicked */}
-                    <Link to="/" className="text-lg font-medium hover:underline">accueil</Link>
-                 </SheetClose>
-                 <SheetClose asChild> {/* Close sheet when link is clicked */}
-                    <Link to="/programme" className="text-lg font-medium hover:underline">générateur de programme</Link>
-                 </SheetClose>
-                 <SheetClose asChild> {/* Close sheet when link is clicked */}
-                    <Link to="/coach-virtuel" className="text-lg font-medium hover:underline">coach virtuel</Link>
-                 </SheetClose>
-                 <SheetClose asChild> {/* Close sheet when link is clicked */}
-                    <Link to="/blog" className="text-lg font-medium hover:underline">blog</Link>
-                 </SheetClose>
-                 <SheetClose asChild> {/* Close sheet when link is clicked */}
-                    <Link to="/mon-espace" className="text-lg font-medium hover:underline">mon espace</Link>
-                 </SheetClose>
-              </nav>
-            </SheetContent>
-          </Sheet>
-        </div>
       </div>
     </header>
   );
