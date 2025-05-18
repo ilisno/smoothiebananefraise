@@ -344,23 +344,24 @@ const ProgrammeGenerator: React.FC = () => {
        }
 
        // --- Insert email into subscribers table (if email is provided and valid) ---
-       if (values.email && values.email !== "b") { // Check if email is provided and not the default "b"
-           console.log("Email to insert:", values.email);
-           const { data: subscriberData, error: subscriberError } = await supabase
-             .from('subscribers')
-             .upsert(
-               [{ email: values.email }], // tableau obligatoire
-               { onConflict: ['email'], ignoreDuplicates: true }
-             );
+       if (values.email && values.email !== "b") {
+         console.log("Email to insert:", values.email);
+         const { data: subscriberData, error: subscriberError } = await supabase
+           .from('subscribers')
+           .insert([
+             {
+               email: values.email,
+             },
+           ]);
 
-           if (subscriberError) {
-             console.error("Error inserting email into subscribers table:", subscriberError);
-             // Optionally show an error, but maybe not critical if program log saved
-             // showError("Impossible d'ajouter votre email à la liste d'abonnés.");
-           } else {
-             console.log("Email inserted or already exists:", subscriberData);
-             // showSuccess("Votre email a été ajouté à la liste d'abonnés !"); // Avoid multiple success toasts
-           }
+         if (subscriberError) {
+           console.error("Error inserting email into subscribers table:", subscriberError);
+           // Optionally show an error
+           // showError("Impossible d'ajouter votre email à la liste d'abonnés.");
+         } else {
+           console.log("Email inserted into subscribers table:", subscriberData);
+           // showSuccess("Votre email a été ajouté à la liste d'abonnés !");
+         }
        }
 
        // Show a single success toast after both operations (or the main one)
