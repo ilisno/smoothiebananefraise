@@ -25,8 +25,8 @@ const Header: React.FC = () => {
       id: 'coach_virtuel_popup', // Unique ID for this popup
       title: "Accède à ton Coach Virtuel",
       description: "Discute avec notre IA pour obtenir des conseils personnalisés, des ajustements de programme, et des réponses à toutes tes questions fitness.",
-      // imageSrc: "/placeholder-chatbot.png", // Optional: Add an image for the chatbot popup
-      // imageAlt: "Chatbot icon",
+      imageSrc: "/popup-placeholder-2.jpg", // Updated image source
+      imageAlt: "Chatbot icon",
       primaryButtonText: "Découvrir la whey de qualité", // Example button from the image
       primaryButtonAction: () => {
          console.log("Primary button clicked from Coach Virtuel popup");

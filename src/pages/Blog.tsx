@@ -77,8 +77,8 @@ const Blog: React.FC = () => {
         id: 'blog_timer_popup', // Unique ID for this popup
         title: "Ne manquez pas nos offres !",
         description: "Découvrez comment obtenir un programme personnalisé ou discutez avec notre coach virtuel.",
-        // imageSrc: "/placeholder-offer.png", // Optional: Add an image for the blog popup
-        // imageAlt: "Special Offer",
+        imageSrc: "/popup-placeholder-3.jpg", // Updated image source
+        imageAlt: "Special Offer",
         primaryButtonText: "Générer mon programme",
         primaryButtonAction: '/programme', // Link to the program generator page
         secondaryButtonText: "Accéder au Coach Virtuel",

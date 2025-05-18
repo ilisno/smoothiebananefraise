@@ -285,7 +285,7 @@ const ProgrammeGenerator: React.FC = () => {
       id: 'programme_generator_popup', // Unique ID for this popup
       title: "Nutrimuscle — Construis du muscle",
       description: "Que du propre, du traçable et du performant.\nLa whey Nutrimuscle, c'est du sérieux pour des vrais résultats.\nFormulations haut de gamme, sans compromis.",
-      imageSrc: "/placeholder-whey.png", // Placeholder image - replace with actual path
+      imageSrc: "/popup-placeholder-1.jpg", // Updated image source
       imageAlt: "Nutrimuscle Whey Protein",
       primaryButtonText: "Découvrir la whey de qualité",
       primaryButtonAction: () => {
