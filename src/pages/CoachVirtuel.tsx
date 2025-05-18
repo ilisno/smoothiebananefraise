@@ -63,26 +63,10 @@ const CoachVirtuel: React.FC = () => {
     console.log("Email submitted:", values.email);
 
     // --- Insert email into subscribers table (if email is provided and valid) ---
-    if (values.email && values.email !== "b") {
-      console.log("Email to insert:", values.email);
-      const { data: subscriberData, error: subscriberError } = await supabase
-        .from('subscribers')
-        .insert([
-          {
-            email: values.email,
-          },
-        ]);
-
-      if (subscriberError) {
-        console.error("Error inserting email into subscribers table:", subscriberError);
-        // Optionally show an error
-        // showError("Impossible d'ajouter votre email à la liste d'abonnés.");
-      } else {
-        console.log("Email inserted into subscribers table:", subscriberData);
-        // showSuccess("Votre email a été ajouté à la liste d'abonnés !");
-      }
-    }
-    // --- End Insert email ---
+    // This is now handled by a database trigger on program_generation_logs
+    // We still need to save the email to the chatbot_conversations table later,
+    // so we store it in the userEmail state.
+    // The trigger will handle adding it to subscribers if it's a new email.
 
     // Optionally save the email to local storage or session storage
     // localStorage.setItem('chatbotUserEmail', values.email);
@@ -128,6 +112,8 @@ const CoachVirtuel: React.FC = () => {
       setMessages(prevMessages => [...prevMessages, newAssistantMessage]);
 
       // --- Save conversation to Supabase ---
+      // This insertion will NOT trigger the subscribers update, only the program_generation_logs one does.
+      // If you wanted chatbot emails to also populate subscribers, you'd need a similar trigger on chatbot_conversations.
       const { error: dbError } = await supabase
         .from('chatbot_conversations')
         .insert([

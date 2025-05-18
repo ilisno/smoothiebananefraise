@@ -324,14 +324,15 @@ const ProgrammeGenerator: React.FC = () => {
        console.log("Program generated:", program);
 
        // --- Insert form data into program_generation_logs table ---
+       // The database trigger will handle inserting the email into the subscribers table
        const { data: logData, error: logError } = await supabase
          .from('program_generation_logs')
          .insert([
            {
              form_data: values,
-             user_email: values.email,
-             program_title: program.title, // Add program title
-             program_description: program.description, // Add program description
+             user_email: values.email, // This email will be picked up by the trigger
+             program_title: program.title,
+             program_description: program.description,
            },
          ]);
 
@@ -343,28 +344,7 @@ const ProgrammeGenerator: React.FC = () => {
          // showSuccess("Vos informations de programme ont été enregistrées !"); // Avoid multiple success toasts
        }
 
-       // --- Insert email into subscribers table (if email is provided and valid) ---
-       if (values.email && values.email !== "b") {
-         console.log("Email to insert:", values.email);
-         const { data: subscriberData, error: subscriberError } = await supabase
-           .from('subscribers')
-           .insert([
-             {
-               email: values.email,
-             },
-           ]);
-
-         if (subscriberError) {
-           console.error("Error inserting email into subscribers table:", subscriberError);
-           // Optionally show an error
-           // showError("Impossible d'ajouter votre email à la liste d'abonnés.");
-         } else {
-           console.log("Email inserted into subscribers table:", subscriberData);
-           // showSuccess("Votre email a été ajouté à la liste d'abonnés !");
-         }
-       }
-
-       // Show a single success toast after both operations (or the main one)
+       // Show a single success toast after the main operation
        showSuccess("Votre programme a été généré et vos informations enregistrées !");
 
 
