@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription as CardDescriptionShadcn } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"; // Import Accordion components
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"; // Import Table components
 import { showSuccess, showError } from '@/utils/toast'; // Import toast utilities
 import { supabase } from '@/integrations/supabase/client'; // Import Supabase client
 
@@ -43,25 +44,9 @@ const formSchema = z.object({
     invalid_type_error: "Veuillez entrer un nombre valide.",
   }).min(15, { message: "Doit être au moins 15 minutes." }).max(180, { message: "Doit être au maximum 180 minutes." }),
   materiel: z.array(z.string()).optional(), // Array of selected equipment
-  // Corrected email validation using z.union
-  email: z.union([
-    z.string().email({ message: "Veuillez entrer une adresse email valide." }),
-    z.literal("b")
-  ], {
-    errorMap: (issue, ctx) => {
-      if (issue.code === z.ZodIssueCode.invalid_union) {
-        // Find the specific email error if it exists within the union issues
-        const emailIssue = issue.unionErrors.find(err =>
-          err.issues.some(subIssue => subIssue.code === z.ZodIssueCode.invalid_string && subIssue.validation === 'email')
-        );
-        if (emailIssue) {
-           return { message: "Veuillez entrer une adresse email valide." };
-        }
-      }
-      // Fallback to default error message for other union issues or types
-      return { message: ctx.defaultError };
-    }
-  }),
+  email: z.string().email({
+    message: "Veuillez entrer une adresse email valide.",
+  }).or(z.literal("b")), // Allow "b" or a valid email
 });
 
 // Define a type for the program structure
@@ -307,13 +292,26 @@ const ProgrammeGenerator: React.FC = () => {
                         {week.days.map((day) => (
                           <div key={day.dayNumber} className="border-t pt-4">
                             <h4 className="text-md font-semibold mb-2">Jour {day.dayNumber}</h4>
-                            <ul className="list-disc pl-5 space-y-1">
-                              {day.exercises.map((exercise, index) => (
-                                <li key={index} className="text-gray-700">
-                                  <strong>{exercise.name}:</strong> {exercise.sets} séries de {exercise.reps} répétitions ({exercise.notes})
-                                </li>
-                              ))}
-                            </ul>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Exercice</TableHead>
+                                  <TableHead>Séries</TableHead>
+                                  <TableHead>Répétitions</TableHead>
+                                  <TableHead>Notes</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {day.exercises.map((exercise, index) => (
+                                  <TableRow key={index}>
+                                    <TableCell className="font-medium">{exercise.name}</TableCell>
+                                    <TableCell>{exercise.sets}</TableCell>
+                                    <TableCell>{exercise.reps}</TableCell>
+                                    <TableCell>{exercise.notes}</TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
                           </div>
                         ))}
                       </div>
