@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom'; // Import Link
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription as CardDescriptionShadcn } from '@/components/ui/card';
 import { sanityClient } from '@/integrations/sanity/client'; // Import Sanity client
+import { PortableText } from '@portabletext/react'; // Import PortableText component
 
 // Define the type for a single blog post based on the Sanity query
 type BlogPost = {
@@ -22,6 +23,58 @@ type BlogPost = {
   metaKeywords?: string;
   author?: { name: string };
 };
+
+// Optional: Define custom components for Portable Text rendering
+// This allows you to control how headings, paragraphs, images, etc., are displayed
+const components = {
+  // Example: Custom rendering for headings
+  block: {
+    h1: ({children}: any) => <h1 className="text-2xl font-bold mt-6 mb-4">{children}</h1>,
+    h2: ({children}: any) => <h2 className="text-xl font-semibold mt-5 mb-3">{children}</h2>,
+    h3: ({children}: any) => <h3 className="text-lg font-semibold mt-4 mb-2">{children}</h3>,
+    normal: ({children}: any) => <p className="mb-4">{children}</p>,
+    // Add other block types as needed (blockquote, etc.)
+  },
+  // Example: Custom rendering for images
+  types: {
+    image: ({value}: any) => {
+      // You might need to use @sanity/image-url to generate image URLs with transformations
+      // For simplicity, we'll just use the raw URL if available
+      if (!value || !value.asset || !value.asset.url) return null;
+      return (
+        <img
+          src={value.asset.url}
+          alt={value.alt || 'Blog image'}
+          className="my-6 rounded-md max-w-full h-auto mx-auto" // Basic styling
+        />
+      );
+    },
+    // Add other custom types from your schema if any
+  },
+  // Example: Custom rendering for lists
+  list: {
+    bullet: ({children}: any) => <ul className="list-disc list-inside mb-4">{children}</ul>,
+    number: ({children}: any) => <ol className="list-decimal list-inside mb-4">{children}</ol>,
+  },
+  // Example: Custom rendering for list items
+  listItem: {
+    bullet: ({children}: any) => <li className="mb-1">{children}</li>,
+    number: ({children}: any) => <li className="mb-1">{children}</li>,
+  },
+  // Example: Custom rendering for marks (bold, italic, links, etc.)
+  marks: {
+    link: ({value, children}: any) => {
+      const target = (value?.href || '').startsWith('http') ? '_blank' : undefined;
+      return (
+        <a href={value?.href} target={target} rel={target === '_blank' ? 'noindex nofollow' : undefined} className="text-blue-600 hover:underline">
+          {children}
+        </a>
+      );
+    },
+    // Add other marks as needed (strong, em, code, etc.)
+  },
+};
+
 
 const BlogPostDetail: React.FC = () => {
   // Get slugs from the URL parameters
@@ -155,14 +208,8 @@ const BlogPostDetail: React.FC = () => {
             </CardDescriptionShadcn>
           </CardHeader>
           <CardContent className="prose max-w-none p-6"> {/* Using prose class for basic text styling */}
-            {/* TODO: Render Sanity Portable Text 'body' content */}
-            {/* For now, just show excerpt or a placeholder */}
-            {post.excerpt && <p>{post.excerpt}</p>}
-            {/* You will need a component to render post.body (Portable Text) */}
-            {/* Example: <PortableText value={post.body} components={...} /> */}
-            <p className="italic mt-4 text-gray-600">
-              [Le contenu complet de l'article sera affiché ici. Il faut un composant pour gérer le Portable Text de Sanity.]
-            </p>
+            {/* Render the Portable Text body */}
+            {post.body && <PortableText value={post.body} components={components} />}
           </CardContent>
         </Card>
       </main>
