@@ -51,12 +51,12 @@ const Header: React.FC = () => {
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex space-x-6"> {/* Hide on mobile, show on desktop */}
-          <Link to="/" className="hover:underline">accueil</Link>
-          <Link to="/programme" className="hover:underline">générateur de programme</Link>
+          <Link to="/" className="hover:underline">Accueil</Link>
+          <Link to="/programme" className="hover:underline">Générateur de programme</Link>
           {/* Modified Link to trigger the popup */}
-          <Link to="/coach-virtuel" className="hover:underline" onClick={handleCoachVirtuelClick}>coach virtuel</Link>
-          <Link to="/blog" className="hover:underline">blog</Link>
-          <Link to="/mon-espace" className="hover:underline">mon espace</Link>
+          <Link to="/coach-virtuel" className="hover:underline" onClick={handleCoachVirtuelClick}>Coach virtuel</Link>
+          <Link to="/blog" className="hover:underline">Blog</Link>
+          <Link to="/mon-espace" className="hover:underline">Mon espace</Link>
         </nav>
       </div>
 
@@ -64,12 +64,12 @@ const Header: React.FC = () => {
       {isMenuOpen && (
         <div className="fixed inset-0 bg-white z-10 flex flex-col items-center pt-16 space-y-6 md:hidden"> {/* Full screen overlay on mobile */}
            {/* Close button is now part of the header row */}
-          <Link to="/" className="text-xl font-semibold" onClick={closeMenu}>accueil</Link>
-          <Link to="/programme" className="text-xl font-semibold" onClick={closeMenu}>générateur de programme</Link>
+          <Link to="/" className="text-xl font-semibold" onClick={closeMenu}>Accueil</Link>
+          <Link to="/programme" className="text-xl font-semibold" onClick={closeMenu}>Générateur de programme</Link>
           {/* Modified Link to trigger the popup */}
-          <Link to="/coach-virtuel" className="text-xl font-semibold" onClick={handleCoachVirtuelClick}>coach virtuel</Link>
-          <Link to="/blog" className="text-xl font-semibold" onClick={closeMenu}>blog</Link>
-          <Link to="/mon-espace" className="text-xl font-semibold" onClick={closeMenu}>mon espace</Link>
+          <Link to="/coach-virtuel" className="text-xl font-semibold" onClick={handleCoachVirtuelClick}>Coach virtuel</Link>
+          <Link to="/blog" className="text-xl font-semibold" onClick={closeMenu}>Blog</Link>
+          <Link to="/mon-espace" className="text-xl font-semibold" onClick={closeMenu}>Mon espace</Link>
         </div>
       )}
     </header>
