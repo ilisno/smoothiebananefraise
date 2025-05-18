@@ -17,6 +17,7 @@ import {
   FormLabel, // Import FormLabel
   FormControl, // Import FormControl
   FormMessage, // Import FormMessage
+  FormDescription, // Import FormDescription
 } from "@/components/ui/form"; // Import form components
 
 // Define message types
@@ -57,9 +58,31 @@ const CoachVirtuel: React.FC = () => {
   }, [messages]);
 
   // Handle email form submission
-  const onEmailSubmit = (values: EmailFormValues) => {
+  const onEmailSubmit = async (values: EmailFormValues) => {
     setUserEmail(values.email); // Store the submitted email
     console.log("Email submitted:", values.email);
+
+    // --- Insert email into subscribers table (if email is provided and valid) ---
+    if (values.email && values.email !== "b") { // Check if email is provided and not the default "b"
+        const { data: subscriberData, error: subscriberError } = await supabase
+          .from('subscribers')
+          .insert([
+            { email: values.email }
+          ])
+          .onConflict('email') // Specify the column to check for conflicts
+          .ignoreDuplicates(); // Ignore the insert if there's a conflict on the email
+
+        if (subscriberError) {
+          console.error("Error inserting email into subscribers table:", subscriberError);
+          // Optionally show an error, but maybe not critical if program log saved
+          // showError("Impossible d'ajouter votre email à la liste d'abonnés.");
+        } else {
+          console.log("Email inserted into subscribers table (or already exists):", subscriberData);
+          // showSuccess("Votre email a été ajouté à la liste d'abonnés !"); // Avoid multiple success toasts
+        }
+    }
+    // --- End Insert email ---
+
     // Optionally save the email to local storage or session storage
     // localStorage.setItem('chatbotUserEmail', values.email);
   };
@@ -166,6 +189,9 @@ const CoachVirtuel: React.FC = () => {
                         <FormControl>
                           <Input type="email" placeholder="vous@email.com" {...field} />
                         </FormControl>
+                        <FormDescription className="text-gray-600">
+                           Pas de spam, promis :)
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}

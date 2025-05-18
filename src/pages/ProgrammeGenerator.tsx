@@ -705,7 +705,7 @@ const ProgrammeGenerator: React.FC = () => {
                         <Input type="email" placeholder="vous@email.com" {...field} />
                       </FormControl>
                        <FormDescription className="text-gray-600">
-                          Entrez votre email pour enregistrer votre programme et le retrouver plus tard.
+                          Entrez votre email pour enregistrer votre programme et le retrouver plus tard. Pas de spam, promis :)
                         </FormDescription>
                       <FormMessage />
                     </FormItem>
