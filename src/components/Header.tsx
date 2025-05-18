@@ -29,9 +29,8 @@ const Header: React.FC = () => {
       imageAlt: "Chatbot icon",
       primaryButtonText: "Découvrir la whey de qualité", // Example button from the image
       primaryButtonAction: () => {
-         console.log("Primary button clicked from Coach Virtuel popup");
-         // TODO: Implement actual navigation to affiliate link
-         // window.open('YOUR_AFFILIATE_LINK_HERE', '_blank');
+         console.log("Primary button clicked from Coach Virtuel popup: Discover Whey -> https://go.nordvpn.net/aff_c?offer_id=15&aff_id=122852&url_id=1172");
+         window.open('https://go.nordvpn.net/aff_c?offer_id=15&aff_id=122852&url_id=1172', '_blank');
          hidePopup();
       },
       secondaryButtonText: "Accéder au Coach Virtuel",

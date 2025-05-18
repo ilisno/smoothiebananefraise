@@ -289,10 +289,9 @@ const ProgrammeGenerator: React.FC = () => {
       imageAlt: "Nutrimuscle Whey Protein",
       primaryButtonText: "Découvrir la whey de qualité",
       primaryButtonAction: () => {
-         // Action for the primary button - e.g., navigate to an affiliate link
-         console.log("Primary button clicked: Discover Whey");
-         // TODO: Implement actual navigation to affiliate link
-         // window.open('YOUR_AFFILIATE_LINK_HERE', '_blank');
+         // Action for the primary button - navigate to affiliate link
+         console.log("Primary button clicked: Discover Whey -> https://nmsquad.link/03olk");
+         window.open('https://nmsquad.link/03olk', '_blank');
          hidePopup(); // Hide popup after action
       },
       secondaryButtonText: "Générer mon programme", // Changed text to match the action

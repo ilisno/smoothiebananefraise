@@ -79,8 +79,12 @@ const Blog: React.FC = () => {
         description: "Découvrez comment obtenir un programme personnalisé ou discutez avec notre coach virtuel.",
         imageSrc: "/popup-placeholder-3.jpg", // Updated image source
         imageAlt: "Special Offer",
-        primaryButtonText: "Générer mon programme",
-        primaryButtonAction: '/programme', // Link to the program generator page
+        primaryButtonText: "Découvrir l'offre", // Changed text to be more generic
+        primaryButtonAction: () => {
+           console.log("Primary button clicked from Blog timer popup: Discover Offer -> https://ericflag.com/?ref=ebdudilx");
+           window.open('https://ericflag.com/?ref=ebdudilx', '_blank');
+           hidePopup();
+        },
         secondaryButtonText: "Accéder au Coach Virtuel",
         secondaryButtonAction: '/coach-virtuel', // Link to the coach virtuel page
       });
