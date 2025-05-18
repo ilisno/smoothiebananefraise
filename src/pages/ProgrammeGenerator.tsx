@@ -93,7 +93,7 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
 
   // Filter exercises based on available equipment
   const availableExercises = allExercises.filter(ex =>
-    ex.equipment.length === 0 || ex.equipment.some(eq => materiel?.includes(eq))
+    ex.equipment.length === 0 || (materiel && ex.equipment.some(eq => materiel.includes(eq)))
   );
 
   const program: Program = {
@@ -115,14 +115,14 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
 
   // Generate 4 weeks
   for (let weekNum = 1; weekNum <= 4; weekNum++) {
-    const week: Program['weeks'][number] = { // Corrected type annotation
+    const week: Program['weeks'][number] = {
       weekNumber: weekNum,
       days: [],
     };
 
     // Generate days based on joursEntrainement
     for (let dayIndex = 0; dayIndex < joursEntrainement; dayIndex++) {
-      const day: Program['weeks'][number]['days'][number] = { // Corrected type annotation
+      const day: Program['weeks'][number]['days'][number] = {
         dayNumber: dayIndex + 1,
         exercises: [],
       };
@@ -131,47 +131,61 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
       const targetMuscleGroups = selectedSplitMuscles[dayIndex % numSplitDays];
 
       let dayExercises: typeof allExercises = [];
+      const addedExerciseNames = new Set<string>(); // To track added exercises
+
+      // Helper to add exercise if available, targets muscle group, and not already added
+      const addExerciseIfAvailable = (name: string, muscleGroup: string, type: 'compound' | 'isolation') => {
+          const exercise = availableExercises.find(ex =>
+              ex.name === name &&
+              targetMuscleGroups.includes(ex.muscleGroup) &&
+              ex.type === type &&
+              !addedExerciseNames.has(ex.name)
+          );
+          if (exercise) {
+              dayExercises.push(exercise);
+              addedExerciseNames.add(exercise.name);
+              return true; // Indicate if added
+          }
+          return false; // Indicate if not added
+      };
 
       // 1. Add Squat if applicable and available
-      const squat = availableExercises.find(ex => ex.name === "Squat Barre" && targetMuscleGroups.includes(ex.muscleGroup));
-      if (squat) dayExercises.push(squat);
+      addExerciseIfAvailable("Squat Barre", "Jambes", "compound");
 
       // 2. Add Deadlift (Romanian Deadlift used here) if applicable and available
-      const deadlift = availableExercises.find(ex => ex.name === "Soulevé de Terre Roumain" && targetMuscleGroups.includes(ex.muscleGroup));
-       // Only add if Squat wasn't added or if it's a different day/focus (simplified logic)
-      if (deadlift && !dayExercises.find(ex => ex.name === deadlift.name)) dayExercises.push(deadlift);
-
+      addExerciseIfAvailable("Soulevé de Terre Roumain", "Jambes", "compound");
 
       // 3. Add Bench Press if applicable and available
-      const bench = availableExercises.find(ex => ex.name === "Développé Couché" && targetMuscleGroups.includes(ex.muscleGroup));
-       // Only add if Squat/Deadlift weren't added or if it's a different day/focus (simplified logic)
-      if (bench && !dayExercises.find(ex => ex.name === bench.name)) dayExercises.push(bench);
-
+      addExerciseIfAvailable("Développé Couché", "Pectoraux", "compound");
 
       // 4. Add other Compound exercises for target muscle groups
       const otherCompounds = availableExercises.filter(ex =>
-        ex.type === "compound" &&
-        targetMuscleGroups.includes(ex.muscleGroup) &&
-        !dayExercises.find(existing => existing.name === ex.name) // Avoid duplicates
+          ex.type === "compound" &&
+          targetMuscleGroups.some(group => ex.muscleGroup === group) && // Check if exercise muscle group is in target groups
+          !addedExerciseNames.has(ex.name)
       );
-      dayExercises.push(...otherCompounds);
+      // Add other compounds, aiming for a reasonable number
+      dayExercises.push(...otherCompounds.slice(0, 3)); // Add up to 3 other compounds
+      otherCompounds.slice(0, 3).forEach(ex => addedExerciseNames.add(ex.name));
+
 
       // 5. Add Isolation exercises for target muscle groups
-       const isolationExercises = availableExercises.filter(ex =>
-        ex.type === "isolation" &&
-        targetMuscleGroups.includes(ex.muscleGroup) &&
-        !dayExercises.find(existing => existing.name === ex.name) // Avoid duplicates
+      const isolationExercises = availableExercises.filter(ex =>
+          ex.type === "isolation" &&
+          targetMuscleGroups.some(group => ex.muscleGroup === group) && // Check if exercise muscle group is in target groups
+          !addedExerciseNames.has(ex.name)
       );
-      dayExercises.push(...isolationExercises);
+      // Add isolation exercises, aiming for a reasonable number
+      dayExercises.push(...isolationExercises.slice(0, 3)); // Add up to 3 isolation exercises
+      isolationExercises.slice(0, 3).forEach(ex => addedExerciseNames.add(ex.name));
 
 
-      // Simple limit on exercises per day to roughly fit dureeMax (e.g., max 8 exercises)
-      const maxExercises = Math.min(dayExercises.length, 8); // Arbitrary limit for simplicity
-      dayExercises = dayExercises.slice(0, maxExercises);
+      // Simple limit on total exercises per day (e.g., max 8 exercises)
+      const finalDayExercises = dayExercises.slice(0, 8);
 
 
       // Format exercises for the program structure
-      day.exercises = dayExercises.map(ex => ({
+      day.exercises = finalDayExercises.map(ex => ({
         name: ex.name,
         sets: baseSets,
         reps: baseReps,
@@ -212,6 +226,7 @@ const ProgrammeGenerator: React.FC = () => {
     { id: "machines-guidees", label: "Machines Guidées" },
     { id: "poids-corps", label: "Poids du Corps (dips tractions)" },
   ];
+
 
   // Handle form submission
   async function onSubmit(values: z.infer<typeof formSchema>) {
