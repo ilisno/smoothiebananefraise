@@ -38,7 +38,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo with Emojis */}
         <Link to="/" className="text-xl font-semibold flex items-center z-20" onClick={closeMenu}> {/* Added z-20 to keep logo clickable above menu */}
-          smoothie banane fraise <span className="ml-2">🍌🍓</span>
+          SBF coaching
         </Link>
 
         {/* Mobile Menu Button */}
