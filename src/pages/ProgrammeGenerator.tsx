@@ -48,7 +48,7 @@ const formSchema = z.object({
   }).or(z.literal("b")), // Allow "b" or a valid email
 });
 
-// Define a type for the program structure (placeholder for now)
+// Define a type for the program structure
 type Program = {
   title: string;
   description: string;
@@ -56,10 +56,97 @@ type Program = {
     weekNumber: number;
     days: {
       dayNumber: number;
-      exercises: { name: string; sets: string; reps: string }[];
+      exercises: { name: string; sets: string; reps: string; notes?: string }[];
     }[];
   }[];
 };
+
+// --- Simplified Client-Side Program Generation Logic ---
+// NOTE: This is a basic placeholder. A real generator would be much more complex.
+const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program => {
+  const { objectif, experience, split, joursEntrainement, materiel } = values;
+
+  const baseReps = objectif === "Powerlifting" ? "3-5" : (objectif === "Sèche / Perte de Gras" ? "12-15" : "8-12");
+  const baseSets = "3"; // Simplified
+
+  // Very basic exercise list - needs expansion for real use
+  const allExercises = [
+    { name: "Développé Couché", muscle: "Pectoraux", equipment: ["barre-halteres"] },
+    { name: "Développé Incliné Haltères", muscle: "Pectoraux", equipment: ["barre-halteres"] },
+    { name: "Écartés Poulie", muscle: "Pectoraux", equipment: ["machines-guidees"] },
+    { name: "Tractions", muscle: "Dos", equipment: ["poids-corps"] },
+    { name: "Rowing Barre", muscle: "Dos", equipment: ["barre-halteres"] },
+    { name: "Tirage Vertical Machine", muscle: "Dos", equipment: ["machines-guidees"] },
+    { name: "Soulevé de Terre Roumain", muscle: "Jambes", equipment: ["barre-halteres"] },
+    { name: "Squat Barre", muscle: "Jambes", equipment: ["barre-halteres"] },
+    { name: "Presse à Cuisses", muscle: "Jambes", equipment: ["machines-guidees"] },
+    { name: "Fentes Haltères", muscle: "Jambes", equipment: ["barre-halteres"] },
+    { name: "Développé Militaire Barre", muscle: "Épaules", equipment: ["barre-halteres"] },
+    { name: "Élévations Latérales Haltères", muscle: "Épaules", equipment: ["barre-halteres"] },
+    { name: "Curl Biceps Barre", muscle: "Biceps", equipment: ["barre-halteres"] },
+    { name: "Extension Triceps Poulie Haute", muscle: "Triceps", equipment: ["machines-guidees"] },
+    { name: "Crunchs", muscle: "Abdos", equipment: [] },
+  ];
+
+  // Filter exercises based on available equipment
+  const availableExercises = allExercises.filter(ex =>
+    ex.equipment.length === 0 || ex.equipment.some(eq => materiel?.includes(eq))
+  );
+
+  const program: Program = {
+    title: `Programme ${objectif} - ${experience}`,
+    description: `Programme généré pour ${joursEntrainement} jours/semaine, split ${split}.`,
+    weeks: [],
+  };
+
+  // Generate 4 weeks for demonstration
+  for (let weekNum = 1; weekNum <= 4; weekNum++) {
+    const week: Program['weeks'][0] = {
+      weekNumber: weekNum,
+      days: [],
+    };
+
+    // Simple distribution based on split and days
+    const exercisesPerDay = Math.floor(availableExercises.length / joursEntrainement) || 3; // Ensure at least 3 exercises if possible
+
+    for (let dayIndex = 0; dayIndex < joursEntrainement; dayIndex++) {
+      const day: Program['weeks'][0]['days'][0] = {
+        dayNumber: dayIndex + 1,
+        exercises: [],
+      };
+
+      // Very basic exercise selection - just pick some available exercises
+      // A real generator would select based on split, muscle groups, etc.
+      const selectedExercises = availableExercises
+        .slice(dayIndex * exercisesPerDay, (dayIndex + 1) * exercisesPerDay)
+        .map(ex => ({
+          name: ex.name,
+          sets: baseSets,
+          reps: baseReps,
+          notes: `RPE ${experience === 'Débutant (< 1 an)' ? '6-7' : (experience === 'Intermédiaire (1-3 ans)' ? '7-8' : '8-9')}` // Simplified RPE
+        }));
+
+      // If not enough exercises for the last day, just take the remaining ones
+      if (selectedExercises.length === 0 && dayIndex * exercisesPerDay < availableExercises.length) {
+           selectedExercises.push(...availableExercises.slice(dayIndex * exercisesPerDay).map(ex => ({
+              name: ex.name,
+              sets: baseSets,
+              reps: baseReps,
+              notes: `RPE ${experience === 'Débutant (< 1 an)' ? '6-7' : (experience === 'Intermédiaire (1-3 ans)' ? '7-8' : '8-9')}`
+           })));
+      }
+
+
+      day.exercises = selectedExercises;
+      week.days.push(day);
+    }
+    program.weeks.push(week);
+  }
+
+  return program;
+};
+// --- End of Simplified Client-Side Program Generation Logic ---
+
 
 const ProgrammeGenerator: React.FC = () => {
   const [generatedProgram, setGeneratedProgram] = useState<Program | null>(null);
@@ -103,63 +190,11 @@ const ProgrammeGenerator: React.FC = () => {
         console.log("Data inserted successfully:", data);
         showSuccess("Vos informations ont été enregistrées !");
 
-        // --- Placeholder Program Generation ---
-        // In a real scenario, you would call a backend function here
-        // to generate the program based on 'values'.
-        // For now, we'll create a simple mock program structure.
-        const mockProgram: Program = {
-          title: "Votre Programme Personnalisé (Placeholder)",
-          description: "Voici un exemple de programme basé sur vos préférences.",
-          weeks: [
-            {
-              weekNumber: 1,
-              days: [
-                {
-                  dayNumber: 1,
-                  exercises: [
-                    { name: "Développé Couché", sets: "3", reps: "8-12" },
-                    { name: "Tractions", sets: "3", reps: "Max" },
-                    { name: "Squat", sets: "3", reps: "8-12" },
-                  ],
-                },
-                {
-                  dayNumber: 2,
-                  exercises: [
-                    { name: "Développé Militaire", sets: "3", reps: "8-12" },
-                    { name: "Rowing Barre", sets: "3", reps: "8-12" },
-                    { name: "Soulevé de Terre Roumain", sets: "3", reps: "10-15" },
-                  ],
-                },
-                // Add more days based on values.joursEntrainement
-              ],
-            },
-             {
-              weekNumber: 2,
-              days: [
-                {
-                  dayNumber: 1,
-                  exercises: [
-                    { name: "Développé Incliné", sets: "3", reps: "8-12" },
-                    { name: "Tirage Vertical", sets: "3", reps: "8-12" },
-                    { name: "Fentes", sets: "3", reps: "10-15/jambe" },
-                  ],
-                },
-                {
-                  dayNumber: 2,
-                  exercises: [
-                    { name: "Élévations Latérales", sets: "3", reps: "12-15" },
-                    { name: "Curl Biceps", sets: "3", reps: "10-15" },
-                    { name: "Extension Triceps", sets: "3", reps: "10-15" },
-                  ],
-                },
-                // Add more days based on values.joursEntrainement
-              ],
-            },
-            // Add more weeks as needed for the placeholder
-          ],
-        };
-        setGeneratedProgram(mockProgram);
-
+        // --- Call the client-side generator ---
+        const program = generateProgramClientSide(values);
+        setGeneratedProgram(program);
+        // You might want to update the Supabase log with program details here
+        // await supabase.from('program_generation_logs').update({ program_title: program.title, program_description: program.description }).eq('id', data[0].id);
       }
     } catch (error) {
       console.error("An unexpected error occurred:", error);
@@ -201,7 +236,7 @@ const ProgrammeGenerator: React.FC = () => {
                             <ul className="list-disc pl-5 space-y-1">
                               {day.exercises.map((exercise, index) => (
                                 <li key={index} className="text-gray-700">
-                                  {exercise.name}: {exercise.sets} séries de {exercise.reps} répétitions
+                                  <strong>{exercise.name}:</strong> {exercise.sets} séries de {exercise.reps} répétitions ({exercise.notes})
                                 </li>
                               ))}
                             </ul>
