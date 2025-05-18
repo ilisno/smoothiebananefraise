@@ -13,11 +13,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription, // <-- Added FormDescription here
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription as CardDescriptionShadcn } from "@/components/ui/card"; // Renamed CardDescription to avoid conflict
 
 // Define the schema for form validation
 const formSchema = z.object({
@@ -81,7 +82,7 @@ const ProgrammeGenerator: React.FC = () => {
         <Card className="w-full max-w-2xl shadow-lg">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-gray-800">Générer un programme personnalisé</CardTitle>
-            <CardDescription className="text-gray-600">Remplissez le formulaire pour obtenir votre plan d'entraînement sur mesure.</CardDescription>
+            <CardDescriptionShadcn className="text-gray-600">Remplissez le formulaire pour obtenir votre plan d'entraînement sur mesure.</CardDescriptionShadcn> {/* Using the renamed CardDescription */}
           </CardHeader>
           <CardContent>
             <Form {...form}>
