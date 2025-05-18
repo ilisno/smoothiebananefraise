@@ -32,7 +32,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "mixtral-8x7b-32768", // Using the model from your example JSON
+        model: "llama3-70b-8192", // Changed model to llama3-70b-8192
         messages: [
           { "role": "system", "content": "Tu es un coach musculation. Donne des conseils pratiques et adaptés." },
           ...messages // Include the last 5 messages from the client
