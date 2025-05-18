@@ -103,9 +103,9 @@ const Blog: React.FC = () => {
                 </CardHeader>
                  <CardContent className="p-4 pt-0"> {/* Adjusted padding */}
                    {post.excerpt && <p className="text-gray-700 text-left mb-4">{post.excerpt}</p>} {/* Display excerpt if available */}
-                   {/* Link to the individual post page - assuming a route structure like /blog/:categorySlug/:postSlug */}
+                   {/* Link to the individual post page - assuming a route structure like /:categorySlug/:postSlug */}
                    {post.slug?.current && post.category?.slug?.current && (
-                     <Link to={`/blog/${post.category.slug.current}/${post.slug.current}`} className="text-sbf-red hover:underline font-semibold flex items-center justify-start"> {/* Adjusted link color and alignment */}
+                     <Link to={`/${post.category.slug.current}/${post.slug.current}`} className="text-sbf-red hover:underline font-semibold flex items-center justify-start"> {/* Adjusted link color and alignment */}
                        Lire la suite →
                      </Link>
                    )}
