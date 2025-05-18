@@ -43,9 +43,25 @@ const formSchema = z.object({
     invalid_type_error: "Veuillez entrer un nombre valide.",
   }).min(15, { message: "Doit être au moins 15 minutes." }).max(180, { message: "Doit être au maximum 180 minutes." }),
   materiel: z.array(z.string()).optional(), // Array of selected equipment
-  email: z.string().email({
-    message: "Veuillez entrer une adresse email valide.",
-  }).or(z.literal("b")), // Allow "b" or a valid email
+  // Corrected email validation using z.union
+  email: z.union([
+    z.string().email({ message: "Veuillez entrer une adresse email valide." }),
+    z.literal("b")
+  ], {
+    errorMap: (issue, ctx) => {
+      if (issue.code === z.ZodIssueCode.invalid_union) {
+        // Find the specific email error if it exists within the union issues
+        const emailIssue = issue.unionErrors.find(err =>
+          err.issues.some(subIssue => subIssue.code === z.ZodIssueCode.invalid_string && subIssue.validation === 'email')
+        );
+        if (emailIssue) {
+           return { message: "Veuillez entrer une adresse email valide." };
+        }
+      }
+      // Fallback to default error message for other union issues or types
+      return { message: ctx.defaultError };
+    }
+  }),
 });
 
 // Define a type for the program structure
