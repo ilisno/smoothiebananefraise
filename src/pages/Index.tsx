@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button'; // Using shadcn Button
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Using shadcn Card
 
 const Index: React.FC = () => {
   return (
@@ -10,12 +11,16 @@ const Index: React.FC = () => {
       <Header />
 
       <main className="flex-grow container mx-auto px-4 py-12 flex flex-col items-center justify-center text-center">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-          Programme de musculation personnalisé, scientifique et facile à suivre
+        {/* Main Heading and Subtitle */}
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+          Tes outils pour <br className="hidden md:block"/> transformer ton physique
         </h1>
         <p className="text-xl text-gray-600 mb-8 max-w-2xl">
-          Obtenez un programme d'entraînement sur mesure basé sur les dernières recherches scientifiques pour atteindre vos objectifs plus rapidement.
+          Obtenez votre programme de musculation personnalisé pour 10x moins cher qu'un coaching classique.
         </p>
+
+        {/* Placeholder for Illustration */}
+        {/* <div className="mb-8">[Illustration de personnes s'entraînant]</div> */}
 
         {/* Call To Action Button */}
         <Button
@@ -25,24 +30,51 @@ const Index: React.FC = () => {
            <Link to="/programme">Créer mon programme</Link>
         </Button>
 
-        {/* Optional: Testimonials or Advantages Section */}
-        {/* <section className="mt-16 w-full max-w-4xl">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8">Pourquoi nous choisir ?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-3">Scientifique</h3>
-              <p className="text-gray-600">Programmes basés sur les dernières études.</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-3">Personnalisé</h3>
-              <p className="text-gray-600">Adapté à vos objectifs et votre niveau.</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-3">Simple</h3>
-              <p className="text-gray-600">Facile à suivre et à comprendre.</p>
-            </div>
+        {/* Guarantee Text */}
+        <p className="mt-4 text-gray-600 text-sm italic">
+          Résultats garantis, satisfait ou 100% remboursé
+        </p>
+
+        {/* Benefits Section */}
+        <section className="mt-16 w-full max-w-4xl">
+          <h2 className="text-3xl font-bold text-gray-800 mb-8">
+            Le coaching réinventé, c'est surtout
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="bg-white shadow-md">
+              <CardHeader>
+                <CardTitle className="text-sbf-red text-xl">ÉCONOMISEZ GROS</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">L'efficacité d'un pro, le prix en moins.</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white shadow-md">
+              <CardHeader>
+                <CardTitle className="text-sbf-red text-xl">SUR MESURE TOTAL</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">Un programme unique, fait pour vous.</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white shadow-md">
+              <CardHeader>
+                <CardTitle className="text-sbf-red text-xl">LIBERTÉ MAXIMALE</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">Entraînez-vous où et quand vous voulez.</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white shadow-md">
+              <CardHeader>
+                <CardTitle className="text-sbf-red text-xl">RÉSULTATS VISIBLES</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">Progressez plus vite grâce à un plan optimisé.</p>
+              </CardContent>
+            </Card>
           </div>
-        </section> */}
+        </section>
       </main>
 
       <Footer />
