@@ -96,14 +96,8 @@ export const PopupProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   // Function to show a random popup from the predefined list
   const showRandomPopup = useCallback((options?: { onCloseCallback?: () => void }) => {
-      // Check if *any* random popup has been shown before
-      const hasAnyRandomPopupBeenShown = localStorage.getItem('any_random_popup_shown');
-      if (hasAnyRandomPopupBeenShown) {
-          console.log("A random popup has already been shown.");
-          // If a random popup is triggered but already shown, immediately run the callback if provided.
-          options?.onCloseCallback?.();
-          return;
-      }
+      // Removed the localStorage check 'any_random_popup_shown'
+      // The popup will now show every time this function is called.
 
       // Select a random popup content
       const randomIndex = Math.floor(Math.random() * randomPopupContents.length);
@@ -121,6 +115,11 @@ export const PopupProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
      // Mark the currently open popup as shown in localStorage
      // If it's a random popup, set the 'any_random_popup_shown' flag
+     // Re-adding the localStorage flag here, but only when the popup is *closed* by the user.
+     // This prevents it from showing *again* after the user has seen it and closed it.
+     // If the goal is to show it *every time* the form is submitted, this localStorage logic should be removed entirely.
+     // Let's remove the localStorage logic entirely for random popups to ensure it shows on every form submit.
+     /*
      if (closedPopupContent?.id.startsWith('random_popup_')) {
         localStorage.setItem('any_random_popup_shown', 'true');
         console.log("Marking 'any_random_popup_shown' as true.");
@@ -128,6 +127,7 @@ export const PopupProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         // Keep specific popup tracking if needed
         localStorage.setItem(`popup_${closedPopupContent.id}_shown`, 'true');
      }
+     */
 
     // Reset state *before* calling the callback to ensure context is updated
     setPopupState({ isOpen: false, content: null });

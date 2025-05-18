@@ -4,7 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button'; // Using shadcn Button
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Using shadcn Card
-import { DollarSign, Target, Clock, LineChart } from 'lucide-react'; // Importing icons
+import { DollarSign, Target, Clock, LineChart, Zap, Heart, Scale, Dumbbell } from 'lucide-react'; // Importing icons
 
 const Index: React.FC = () => {
   return (
@@ -43,7 +43,7 @@ const Index: React.FC = () => {
         {/* Separator Line */}
         <hr className="w-full max-w-4xl my-12 border-gray-300" />
 
-        {/* Benefits Section */}
+        {/* Benefits Section 1 */}
         <section className="mt-16 w-full max-w-4xl">
           <h2 className="text-3xl font-bold text-gray-800 mb-8">
             Le coaching réinventé, c'est surtout
@@ -87,6 +87,47 @@ const Index: React.FC = () => {
             </Card>
           </div>
         </section>
+
+        {/* Separator Line */}
+        <hr className="w-full max-w-4xl my-12 border-gray-300" />
+
+        {/* Benefits Section 2 - Life Improvement */}
+        <section className="mt-16 w-full max-w-4xl text-left"> {/* Align text left */}
+           <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center"> {/* Center heading */}
+             Comment SmoothieBananeFraise va changer votre vie
+           </h2>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-8"> {/* Two columns on medium screens */}
+             <div className="flex items-start space-x-4"> {/* Align items to start */}
+               <Zap size={30} className="text-sbf-red flex-shrink-0 mt-1" /> {/* Icon */}
+               <div>
+                 <p className="font-bold text-gray-800">Plus d'énergie au quotidien</p>
+                 <p className="text-gray-600 text-sm">Un corps plus fort, c'est une vitalité décuplée pour affronter vos journées.</p>
+               </div>
+             </div>
+             <div className="flex items-start space-x-4">
+               <Heart size={30} className="text-sbf-red flex-shrink-0 mt-1" /> {/* Icon */}
+               <div>
+                 <p className="font-bold text-gray-800">Meilleure santé globale</p>
+                 <p className="text-gray-600 text-sm">Réduisez les risques de maladies et améliorez votre bien-être général.</p>
+               </div>
+             </div>
+             <div className="flex items-start space-x-4">
+               <Scale size={30} className="text-sbf-red flex-shrink-0 mt-1" /> {/* Icon */}
+               <div>
+                 <p className="font-bold text-gray-800">Confiance en soi boostée</p>
+                 <p className="text-gray-600 text-sm">Voir votre corps se transformer renforce votre estime et votre mental.</p>
+               </div>
+             </div>
+             <div className="flex items-start space-x-4">
+               <Dumbbell size={30} className="text-sbf-red flex-shrink-0 mt-1" /> {/* Icon */}
+               <div>
+                 <p className="font-bold text-gray-800">Des résultats concrets et durables</p>
+                 <p className="text-gray-600 text-sm">Suivez un plan structuré pour atteindre vos objectifs physiques efficacement.</p>
+               </div>
+             </div>
+           </div>
+        </section>
+
       </main>
 
       <Footer />
