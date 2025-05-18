@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +24,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"; // Import Table components
 import { showSuccess, showError } from '@/utils/toast'; // Import toast utilities
 import { supabase } from '@/integrations/supabase/client'; // Import Supabase client
+import { usePopup } from '@/contexts/PopupContext'; // Import usePopup hook
 
 // Define the schema for form validation
 const formSchema = z.object({
@@ -209,6 +211,10 @@ const generateProgramClientSide = (values: z.infer<typeof formSchema>): Program 
 const ProgrammeGenerator: React.FC = () => {
   const [generatedProgram, setGeneratedProgram] = useState<Program | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<z.infer<typeof formSchema> | null>(null); // State to hold form data temporarily
+
+  const { showPopup, hidePopup } = usePopup(); // Use the popup hook
+  const navigate = useNavigate(); // Hook for navigation
 
   // Initialize the form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -231,43 +237,75 @@ const ProgrammeGenerator: React.FC = () => {
     { id: "poids-corps", label: "Poids du Corps (dips tractions)" },
   ];
 
+  // Function to handle the actual program generation and Supabase insertion
+  async function generateAndSaveProgram(values: z.infer<typeof formSchema>) {
+     setIsSubmitting(true);
+     console.log("Generating and saving program for values:", values);
 
-  // Handle form submission
+     try {
+       // Insert form data into Supabase table
+       const { data, error } = await supabase
+         .from('program_generation_logs')
+         .insert([
+           {
+             form_data: values,
+             user_email: values.email,
+             // program_title and program_description can be added later if generated
+           },
+         ]);
+
+       if (error) {
+         console.error("Error inserting data:", error);
+         showError("Une erreur est survenue lors de l'enregistrement de vos informations.");
+       } else {
+         console.log("Data inserted successfully:", data);
+         showSuccess("Vos informations ont été enregistrées !");
+
+         // --- Call the client-side generator ---
+         const program = generateProgramClientSide(values);
+         setGeneratedProgram(program);
+         // You might want to update the Supabase log with program details here
+         // await supabase.from('program_generation_logs').update({ program_title: program.title, program_description: program.description }).eq('id', data[0].id);
+       }
+     } catch (error) {
+       console.error("An unexpected error occurred:", error);
+       showError("Une erreur inattendue est survenue.");
+     } finally {
+       setIsSubmitting(false);
+     }
+  }
+
+
+  // Handle form submission - show popup first
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
-    console.log("Form submitted with values:", values);
+    console.log("Form submitted, showing popup...");
+    setFormData(values); // Store form data temporarily
 
-    try {
-      // Insert form data into Supabase table
-      const { data, error } = await supabase
-        .from('program_generation_logs')
-        .insert([
-          {
-            form_data: values,
-            user_email: values.email,
-            // program_title and program_description can be added later if generated
-          },
-        ]);
-
-      if (error) {
-        console.error("Error inserting data:", error);
-        showError("Une erreur est survenue lors de l'enregistrement de vos informations.");
-      } else {
-        console.log("Data inserted successfully:", data);
-        showSuccess("Vos informations ont été enregistrées !");
-
-        // --- Call the client-side generator ---
-        const program = generateProgramClientSide(values);
-        setGeneratedProgram(program);
-        // You might want to update the Supabase log with program details here
-        // await supabase.from('program_generation_logs').update({ program_title: program.title, program_description: program.description }).eq('id', data[0].id);
-      }
-    } catch (error) {
-      console.error("An unexpected error occurred:", error);
-      showError("Une erreur inattendue est survenue.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    showPopup({
+      id: 'programme_generator_popup', // Unique ID for this popup
+      title: "Nutrimuscle — Construis du muscle",
+      description: "Que du propre, du traçable et du performant.\nLa whey Nutrimuscle, c'est du sérieux pour des vrais résultats.\nFormulations haut de gamme, sans compromis.",
+      imageSrc: "/placeholder-whey.png", // Placeholder image - replace with actual path
+      imageAlt: "Nutrimuscle Whey Protein",
+      primaryButtonText: "Découvrir la whey de qualité",
+      primaryButtonAction: () => {
+         // Action for the primary button - e.g., navigate to an affiliate link
+         console.log("Primary button clicked: Discover Whey");
+         // TODO: Implement actual navigation to affiliate link
+         // window.open('YOUR_AFFILIATE_LINK_HERE', '_blank');
+         hidePopup(); // Hide popup after action
+      },
+      secondaryButtonText: "Générer mon programme", // Changed text to match the action
+      secondaryButtonAction: () => {
+         // Action for the secondary button - proceed with program generation
+         console.log("Secondary button clicked: Generate Program");
+         if (formData) {
+            generateAndSaveProgram(formData); // Use the stored form data
+            setFormData(null); // Clear stored data
+         }
+         hidePopup(); // Hide popup after action
+      },
+    });
   }
 
 

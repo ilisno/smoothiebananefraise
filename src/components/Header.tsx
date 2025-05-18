@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import { Menu, X } from 'lucide-react'; // Import icons
+import { usePopup } from '@/contexts/PopupContext'; // Import usePopup hook
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { showPopup, hidePopup } = usePopup(); // Use the popup hook
+  const navigate = useNavigate(); // Hook for navigation
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -12,6 +15,34 @@ const Header: React.FC = () => {
   const closeMenu = () => {
     setIsMenuOpen(false);
   };
+
+  // Function to handle the click on the "coach virtuel" link
+  const handleCoachVirtuelClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault(); // Prevent default navigation
+    closeMenu(); // Close mobile menu if open
+
+    showPopup({
+      id: 'coach_virtuel_popup', // Unique ID for this popup
+      title: "Accède à ton Coach Virtuel",
+      description: "Discute avec notre IA pour obtenir des conseils personnalisés, des ajustements de programme, et des réponses à toutes tes questions fitness.",
+      // imageSrc: "/placeholder-chatbot.png", // Optional: Add an image for the chatbot popup
+      // imageAlt: "Chatbot icon",
+      primaryButtonText: "Découvrir la whey de qualité", // Example button from the image
+      primaryButtonAction: () => {
+         console.log("Primary button clicked from Coach Virtuel popup");
+         // TODO: Implement actual navigation to affiliate link
+         // window.open('YOUR_AFFILIATE_LINK_HERE', '_blank');
+         hidePopup();
+      },
+      secondaryButtonText: "Accéder au Coach Virtuel",
+      secondaryButtonAction: () => {
+         console.log("Secondary button clicked from Coach Virtuel popup: Navigate to Coach Virtuel");
+         navigate('/coach-virtuel'); // Navigate to the Coach Virtuel page
+         hidePopup();
+      },
+    });
+  };
+
 
   return (
     <header className="bg-white text-gray-800 p-4 shadow-md border-b border-gray-200">
@@ -34,7 +65,8 @@ const Header: React.FC = () => {
         <nav className="hidden md:flex space-x-6"> {/* Hide on mobile, show on desktop */}
           <Link to="/" className="hover:underline">accueil</Link>
           <Link to="/programme" className="hover:underline">générateur de programme</Link>
-          <Link to="/coach-virtuel" className="hover:underline">coach virtuel</Link>
+          {/* Modified Link to trigger the popup */}
+          <Link to="/coach-virtuel" className="hover:underline" onClick={handleCoachVirtuelClick}>coach virtuel</Link>
           <Link to="/blog" className="hover:underline">blog</Link>
           <Link to="/mon-espace" className="hover:underline">mon espace</Link>
         </nav>
@@ -46,7 +78,8 @@ const Header: React.FC = () => {
            {/* Close button is now part of the header row */}
           <Link to="/" className="text-xl font-semibold" onClick={closeMenu}>accueil</Link>
           <Link to="/programme" className="text-xl font-semibold" onClick={closeMenu}>générateur de programme</Link>
-          <Link to="/coach-virtuel" className="text-xl font-semibold" onClick={closeMenu}>coach virtuel</Link>
+          {/* Modified Link to trigger the popup */}
+          <Link to="/coach-virtuel" className="text-xl font-semibold" onClick={handleCoachVirtuelClick}>coach virtuel</Link>
           <Link to="/blog" className="text-xl font-semibold" onClick={closeMenu}>blog</Link>
           <Link to="/mon-espace" className="text-xl font-semibold" onClick={closeMenu}>mon espace</Link>
         </div>

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import { sanityClient } from '@/integrations/sanity/client'; // Import Sanity client
+import { usePopup } from '@/contexts/PopupContext'; // Import usePopup hook
 
 // Define the type for blog posts based on the Sanity query
 type BlogPost = {
@@ -25,6 +26,9 @@ const Blog: React.FC = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { showPopup, hidePopup } = usePopup(); // Use the popup hook
+  const navigate = useNavigate(); // Hook for navigation
 
   // --- Sanity Data Fetching ---
   useEffect(() => {
@@ -64,6 +68,28 @@ const Blog: React.FC = () => {
 
     fetchPosts();
   }, []); // Empty dependency array means this runs once on mount
+
+  // --- Timer for Blog Popup ---
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("2 minutes passed on blog page, showing popup...");
+      showPopup({
+        id: 'blog_timer_popup', // Unique ID for this popup
+        title: "Ne manquez pas nos offres !",
+        description: "Découvrez comment obtenir un programme personnalisé ou discutez avec notre coach virtuel.",
+        // imageSrc: "/placeholder-offer.png", // Optional: Add an image for the blog popup
+        // imageAlt: "Special Offer",
+        primaryButtonText: "Générer mon programme",
+        primaryButtonAction: '/programme', // Link to the program generator page
+        secondaryButtonText: "Accéder au Coach Virtuel",
+        secondaryButtonAction: '/coach-virtuel', // Link to the coach virtuel page
+      });
+    }, 2 * 60 * 1000); // 2 minutes in milliseconds
+
+    // Cleanup the timer when the component unmounts or the effect re-runs
+    return () => clearTimeout(timer);
+  }, [showPopup]); // Re-run effect if showPopup changes (though it's stable from context)
+
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
