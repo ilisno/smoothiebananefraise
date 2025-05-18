@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button'; // Using shadcn Button
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Using shadcn Card
+import { DollarSign, Target, Clock, LineChart } from 'lucide-react'; // Importing icons
 
 const Index: React.FC = () => {
   return (
@@ -48,35 +49,39 @@ const Index: React.FC = () => {
             Le coaching réinventé, c'est surtout
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="bg-white shadow-md">
-              <CardHeader>
-                <CardTitle className="text-sbf-red text-xl">ÉCONOMISEZ GROS</CardTitle>
+            <Card className="bg-white shadow-md flex flex-col items-center text-center p-6"> {/* Added flex, items-center, text-center, p-6 */}
+              <DollarSign size={40} className="text-sbf-red mb-3" /> {/* Added Icon */}
+              <CardHeader className="p-0 mb-3"> {/* Adjusted padding */}
+                <CardTitle className="text-gray-800 text-xl font-semibold">ÉCONOMISEZ GROS</CardTitle> {/* Changed text color */}
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0"> {/* Adjusted padding */}
                 <p className="text-gray-600">L'efficacité d'un pro, le prix en moins.</p>
               </CardContent>
             </Card>
-            <Card className="bg-white shadow-md">
-              <CardHeader>
-                <CardTitle className="text-sbf-red text-xl">SUR MESURE TOTAL</CardTitle>
+            <Card className="bg-white shadow-md flex flex-col items-center text-center p-6"> {/* Added flex, items-center, text-center, p-6 */}
+              <Target size={40} className="text-sbf-red mb-3" /> {/* Added Icon */}
+              <CardHeader className="p-0 mb-3"> {/* Adjusted padding */}
+                <CardTitle className="text-gray-800 text-xl font-semibold">SUR MESURE TOTAL</CardTitle> {/* Changed text color */}
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0"> {/* Adjusted padding */}
                 <p className="text-gray-600">Un programme unique, fait pour vous.</p>
               </CardContent>
             </Card>
-            <Card className="bg-white shadow-md">
-              <CardHeader>
-                <CardTitle className="text-sbf-red text-xl">LIBERTÉ MAXIMALE</CardTitle>
+            <Card className="bg-white shadow-md flex flex-col items-center text-center p-6"> {/* Added flex, items-center, text-center, p-6 */}
+              <Clock size={40} className="text-sbf-red mb-3" /> {/* Added Icon */}
+              <CardHeader className="p-0 mb-3"> {/* Adjusted padding */}
+                <CardTitle className="text-gray-800 text-xl font-semibold">LIBERTÉ MAXIMALE</CardTitle> {/* Changed text color */}
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0"> {/* Adjusted padding */}
                 <p className="text-gray-600">Entraînez-vous où et quand vous voulez.</p>
               </CardContent>
             </Card>
-            <Card className="bg-white shadow-md">
-              <CardHeader>
-                <CardTitle className="text-sbf-red text-xl">RÉSULTATS VISIBLES</CardTitle>
+            <Card className="bg-white shadow-md flex flex-col items-center text-center p-6"> {/* Added flex, items-center, text-center, p-6 */}
+              <LineChart size={40} className="text-sbf-red mb-3" /> {/* Added Icon */}
+              <CardHeader className="p-0 mb-3"> {/* Adjusted padding */}
+                <CardTitle className="text-gray-800 text-xl font-semibold">RÉSULTATS VISIBLES</CardTitle> {/* Changed text color */}
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0"> {/* Adjusted padding */}
                 <p className="text-gray-600">Progressez plus vite grâce à un plan optimisé.</p>
               </CardContent>
             </Card>
