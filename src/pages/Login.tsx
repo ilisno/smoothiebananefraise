@@ -1,9 +1,64 @@
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import fr from '@supabase/auth-ui-shared/dist/esm/locales/fr'; // Corrected import path using esm
+// Removed: import fr from '@supabase/auth-ui-shared/dist/esm/locales/fr';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+
+// Manually defined French translations
+const frenchTranslations = {
+  sign_in: {
+    email_label: 'Adresse e-mail',
+    password_label: 'Mot de passe',
+    email_input_placeholder: 'Votre adresse e-mail',
+    password_input_placeholder: 'Votre mot de passe',
+    button_label: 'Se connecter',
+    loading_button_label: 'Connexion en cours...',
+    link_text: 'Vous avez déjà un compte ? Connectez-vous',
+  },
+  sign_up: {
+    email_label: 'Adresse e-mail',
+    password_label: 'Mot de passe',
+    email_input_placeholder: 'Votre adresse e-mail',
+    password_input_placeholder: 'Votre mot de passe',
+    button_label: "S'inscrire",
+    loading_button_label: 'Inscription en cours...',
+    link_text: "Pas encore de compte ? Inscrivez-vous",
+  },
+  magic_link: {
+    email_input_label: 'Adresse e-mail',
+    email_input_placeholder: 'Votre adresse e-mail',
+    button_label: 'Envoyer un lien magique',
+    loading_button_label: 'Envoi en cours...',
+    link_text: 'Connexion par lien magique',
+  },
+  forgotten_password: {
+    email_label: 'Adresse e-mail',
+    password_label: 'Nouveau mot de passe',
+    email_input_placeholder: 'Votre adresse e-mail',
+    button_label: 'Réinitialiser le mot de passe',
+    loading_button_label: 'Réinitialisation...',
+    link_text: 'Mot de passe oublié ?',
+  },
+  // Add other keys as needed
+  update_password: { // Added update_password section
+    password_label: 'Nouveau mot de passe',
+    password_input_placeholder: 'Votre nouveau mot de passe',
+    button_label: 'Mettre à jour le mot de passe',
+    loading_button_label: 'Mise à jour...',
+  },
+  verify_otp: { // Added verify_otp section
+    email_input_label: 'Adresse e-mail',
+    email_input_placeholder: 'Votre adresse e-mail',
+    phone_input_label: 'Numéro de téléphone',
+    phone_input_placeholder: 'Votre numéro de téléphone',
+    token_input_label: 'Code OTP',
+    token_input_placeholder: 'Votre code OTP',
+    button_label: 'Vérifier le code OTP',
+    loading_button_label: 'Vérification...',
+  },
+};
+
 
 function Login() {
   const navigate = useNavigate();
@@ -41,8 +96,8 @@ function Login() {
             }}
             theme="light" // Use light theme
             redirectTo={window.location.origin + '/'} // Redirect to home after login
-            localization={{ // Add localization prop
-              variables: fr.variables, // Use French variables
+            localization={{ // Use the manually defined translations
+              variables: frenchTranslations,
             }}
           />
         </div>
