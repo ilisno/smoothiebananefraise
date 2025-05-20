@@ -28,7 +28,6 @@ const frenchTranslations = {
     first_name_input_placeholder: 'Votre prénom',
     last_name_label: 'Nom',
     last_name_input_placeholder: 'Votre nom',
-    // Added translation for confirmation message
     confirmation_text: 'Vérifiez votre e-mail pour le lien de confirmation',
   },
   magic_link: {
@@ -61,6 +60,12 @@ const frenchTranslations = {
     token_input_placeholder: 'Votre code OTP',
     button_label: 'Vérifier le code OTP',
     loading_button_label: 'Vérification...',
+  },
+  // Added common translations for messages like errors
+  common: {
+    email_not_confirmed: 'Email pas encore confirmé',
+    // Add other common messages here if needed
+    // e.g., 'invalid_credentials': 'Identifiants invalides',
   },
 };
 
