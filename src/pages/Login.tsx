@@ -1,5 +1,5 @@
 import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { ThemeSupa, fr } from '@supabase/auth-ui-shared'; // Import 'fr' for French localization
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -40,6 +40,9 @@ function Login() {
             }}
             theme="light" // Use light theme
             redirectTo={window.location.origin + '/'} // Redirect to home after login
+            localization={{ // Add localization prop
+              variables: fr.variables, // Use French variables
+            }}
           />
         </div>
       </div>
