@@ -36,9 +36,9 @@ const Header: React.FC = () => {
   return (
     <header className="bg-white text-gray-800 p-4 shadow-md border-b border-gray-200">
       <div className="container mx-auto flex justify-between items-center">
-        {/* Logo with Emojis */}
-        <Link to="/" className="text-xl font-semibold flex items-center z-20" onClick={closeMenu}> {/* Added z-20 to keep logo clickable above menu */}
-          SBF coaching
+        {/* Logo with Image */}
+        <Link to="/" className="flex items-center z-20" onClick={closeMenu}> {/* Added z-20 to keep logo clickable above menu */}
+          <img src="/logo.png" alt="SBF coaching logo" className="h-10 w-auto" /> {/* Use logo.png from public */}
         </Link>
 
         {/* Mobile Menu Button */}
