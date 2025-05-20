@@ -24,11 +24,12 @@ const frenchTranslations = {
     button_label: "S'inscrire",
     loading_button_label: 'Inscription en cours...',
     link_text: "Pas encore de compte ? Inscrivez-vous",
-    // Added translations for first and last name
     first_name_label: 'Prénom',
     first_name_input_placeholder: 'Votre prénom',
     last_name_label: 'Nom',
     last_name_input_placeholder: 'Votre nom',
+    // Added translation for confirmation message
+    confirmation_text: 'Vérifiez votre e-mail pour le lien de confirmation',
   },
   magic_link: {
     email_input_label: 'Adresse e-mail',
@@ -103,7 +104,6 @@ function Login() {
             localization={{
               variables: frenchTranslations,
             }}
-            // Add data-attributes to collect first and last name during sign-up
             data-attributes={{
               first_name: 'first_name',
               last_name: 'last_name',
