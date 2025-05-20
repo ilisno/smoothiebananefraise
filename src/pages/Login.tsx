@@ -24,6 +24,11 @@ const frenchTranslations = {
     button_label: "S'inscrire",
     loading_button_label: 'Inscription en cours...',
     link_text: "Pas encore de compte ? Inscrivez-vous",
+    // Added translations for first and last name
+    first_name_label: 'Prénom',
+    first_name_input_placeholder: 'Votre prénom',
+    last_name_label: 'Nom',
+    last_name_input_placeholder: 'Votre nom',
   },
   magic_link: {
     email_input_label: 'Adresse e-mail',
@@ -40,14 +45,13 @@ const frenchTranslations = {
     loading_button_label: 'Réinitialisation...',
     link_text: 'Mot de passe oublié ?',
   },
-  // Add other keys as needed
-  update_password: { // Added update_password section
+  update_password: {
     password_label: 'Nouveau mot de passe',
     password_input_placeholder: 'Votre nouveau mot de passe',
     button_label: 'Mettre à jour le mot de passe',
     loading_button_label: 'Mise à jour...',
   },
-  verify_otp: { // Added verify_otp section
+  verify_otp: {
     email_input_label: 'Adresse e-mail',
     email_input_placeholder: 'Votre adresse e-mail',
     phone_input_label: 'Numéro de téléphone',
@@ -96,8 +100,13 @@ function Login() {
             }}
             theme="light" // Use light theme
             redirectTo={window.location.origin + '/'} // Redirect to home after login
-            localization={{ // Use the manually defined translations
+            localization={{
               variables: frenchTranslations,
+            }}
+            // Add data-attributes to collect first and last name during sign-up
+            data-attributes={{
+              first_name: 'first_name',
+              last_name: 'last_name',
             }}
           />
         </div>
