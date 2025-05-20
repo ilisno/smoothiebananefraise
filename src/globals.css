@@ -49,6 +49,10 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Custom HSL colors for SmoothieBananeFraise inspiration */
+    --sbf-red: 0 78% 56; /* HSL for #E53935 */
+    --sbf-yellow: 54 100% 61; /* HSL for #FFEB3B */
   }
 
   .dark {
@@ -87,6 +91,10 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Custom HSL colors for SmoothieBananeFraise inspiration */
+    --sbf-red: 0 78% 56; /* HSL for #E53935 */
+    --sbf-yellow: 54 100% 61; /* HSL for #FFEB3B */
   }
 }
 
