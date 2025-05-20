@@ -22,16 +22,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { showSuccess, showError } from '@/utils/toast';
 import { supabase } from '@/integrations/supabase/client';
 import { generateProgramClientSide, Program, ProgramFormData } from '@/utils/programGenerator';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Edit, Save, X, Loader2 } from 'lucide-react'; // Import Edit, Save, X, Loader2 icons
 import { useSession } from '@supabase/auth-helpers-react'; // Import useSession
-
-// Define the schema for email validation (still needed if we allow lookup by email for non-logged-in users, but let's simplify for now and require login)
-// const emailSchema = z.object({
-//   email: z.string().email({
-//     message: "Veuillez entrer une adresse email valide.",
-//   }),
-// });
-// type EmailFormValues = z.infer<typeof emailSchema>;
 
 // Define type for the data fetched from program_generation_logs
 interface ProgramLog {
@@ -50,6 +42,11 @@ const MonEspace: React.FC = () => {
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [isLoading, setIsLoading] = useState(true); // Start loading as we check session and fetch
   const [error, setError] = useState<string | null>(null);
+
+  // State for renaming feature
+  const [editingProgramId, setEditingProgramId] = useState<number | null>(null);
+  const [newTitle, setNewTitle] = useState('');
+  const [isRenaming, setIsRenaming] = useState(false); // State for renaming loading
 
   // Fetch programs when session changes or component mounts
   useEffect(() => {
@@ -84,10 +81,8 @@ const MonEspace: React.FC = () => {
           console.log("Fetched program logs:", data);
           if (data && data.length > 0) {
             setProgramLogs(data as ProgramLog[]);
-            // showSuccess(`Trouvé ${data.length} programme(s) pour cet email.`); // Avoid toast on load
           } else {
             setProgramLogs([]); // Set to empty array if no programs found
-            // showError("Aucun programme trouvé pour cet email."); // Avoid toast on no programs found on load
           }
         }
       } catch (err) {
@@ -119,7 +114,64 @@ const MonEspace: React.FC = () => {
   // Handle going back to the program list
   const handleBackToList = () => {
     setSelectedProgram(null);
+    setEditingProgramId(null); // Ensure editing mode is off
+    setNewTitle(''); // Clear new title state
   };
+
+  // Handle starting rename mode
+  const handleStartRename = (log: ProgramLog) => {
+    setEditingProgramId(log.id);
+    setNewTitle(log.program_title);
+  };
+
+  // Handle canceling rename mode
+  const handleCancelRename = () => {
+    setEditingProgramId(null);
+    setNewTitle('');
+  };
+
+  // Handle saving the new program title
+  const handleSaveRename = async (logId: number) => {
+    if (newTitle.trim() === '') {
+      showError("Le nom du programme ne peut pas être vide.");
+      return;
+    }
+
+    setIsRenaming(true);
+    setError(null); // Clear previous errors
+
+    try {
+      const { error: updateError } = await supabase
+        .from('program_generation_logs')
+        .update({ program_title: newTitle.trim() })
+        .eq('id', logId);
+
+      if (updateError) {
+        console.error("Error updating program title:", updateError);
+        setError("Une erreur est survenue lors du renommage.");
+        showError("Impossible de renommer le programme.");
+      } else {
+        console.log(`Program ${logId} renamed to "${newTitle.trim()}"`);
+        showSuccess("Programme renommé avec succès !");
+
+        // Update the programLogs state locally instead of refetching everything
+        setProgramLogs(prevLogs =>
+          prevLogs ? prevLogs.map(log =>
+            log.id === logId ? { ...log, program_title: newTitle.trim() } : log
+          ) : null
+        );
+
+        handleCancelRename(); // Exit editing mode
+      }
+    } catch (err) {
+      console.error("Unexpected error during renaming:", err);
+      setError("Une erreur inattendue est survenue.");
+      showError("Une erreur inattendue est survenue.");
+    } finally {
+      setIsRenaming(false);
+    }
+  };
+
 
   // --- Render Logic ---
 
@@ -163,13 +215,12 @@ const MonEspace: React.FC = () => {
   }
 
   // Show error state
-  if (error) {
+  if (error && !isRenaming) { // Only show main error if not currently renaming
     return (
       <div className="flex flex-col min-h-screen bg-gray-100">
         <Header />
         <main className="flex-grow container mx-auto px-4 py-12 text-center">
           <p className="text-red-500">{error}</p>
-           {/* No need for back to email search button anymore */}
         </main>
         <Footer />
       </div>
@@ -246,15 +297,52 @@ const MonEspace: React.FC = () => {
                   {programLogs.map((log) => (
                     <Card
                       key={log.id}
-                      className="cursor-pointer hover:bg-gray-50 transition-colors"
-                      onClick={() => handleSelectProgram(log)}
+                      className="hover:bg-gray-50 transition-colors"
                     >
-                      <CardHeader className="p-4">
-                        <CardTitle className="text-lg font-semibold text-gray-800">{log.program_title}</CardTitle>
-                        <CardDescriptionShadcn className="text-sm text-gray-600">
-                          Généré le {new Date(log.created_at).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                        </CardDescriptionShadcn>
+                      <CardHeader className="p-4 flex flex-row items-center justify-between"> {/* Use flex for layout */}
+                         {editingProgramId === log.id ? (
+                            // Editing mode
+                            <div className="flex-grow flex items-center space-x-2">
+                               <Input
+                                  value={newTitle}
+                                  onChange={(e) => setNewTitle(e.target.value)}
+                                  placeholder="Nouveau nom du programme"
+                                  disabled={isRenaming}
+                                  className="flex-grow"
+                               />
+                               <Button
+                                  size="sm"
+                                  onClick={() => handleSaveRename(log.id)}
+                                  disabled={isRenaming || newTitle.trim() === ''}
+                               >
+                                  {isRenaming ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save size={16} />}
+                               </Button>
+                               <Button size="sm" variant="outline" onClick={handleCancelRename} disabled={isRenaming}>
+                                  <X size={16} />
+                               </Button>
+                            </div>
+                         ) : (
+                            // Viewing mode
+                            <div className="flex-grow cursor-pointer" onClick={() => handleSelectProgram(log)}>
+                               <CardTitle className="text-lg font-semibold text-gray-800">{log.program_title}</CardTitle>
+                               <CardDescriptionShadcn className="text-sm text-gray-600">
+                                  Généré le {new Date(log.created_at).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                               </CardDescriptionShadcn>
+                            </div>
+                         )}
+                         {/* Edit button - hidden when editing */}
+                         {editingProgramId !== log.id && (
+                            <Button variant="ghost" size="sm" onClick={() => handleStartRename(log)} disabled={isRenaming}>
+                               <Edit size={16} />
+                            </Button>
+                         )}
                       </CardHeader>
+                       {/* Show renaming error if exists for this item */}
+                       {editingProgramId === log.id && error && (
+                           <CardContent className="p-4 pt-0 text-red-500 text-sm">
+                               {error}
+                           </CardContent>
+                       )}
                     </Card>
                   ))}
                 </div>
@@ -262,7 +350,6 @@ const MonEspace: React.FC = () => {
                 // No programs found message
                 <div className="text-center text-gray-600">
                   <p>Aucun programme trouvé pour votre compte.</p>
-                   {/* No need for try another email button */}
                 </div>
               )
             )}
