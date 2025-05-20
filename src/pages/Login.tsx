@@ -1,6 +1,6 @@
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { fr } from '@supabase/auth-ui-shared/locales/fr'; // Import 'fr' from the correct subpath
+import fr from '@supabase/auth-ui-shared/dist/locales/fr'; // Corrected import path for French localization
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
