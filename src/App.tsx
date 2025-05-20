@@ -9,7 +9,7 @@ import ProgrammeGenerator from "./pages/ProgrammeGenerator";
 import Blog from "./pages/Blog";
 import BlogPostDetail from "./pages/BlogPostDetail";
 import CoachVirtuel from "./pages/CoachVirtuel";
-import MonEspace from "./pages/MonEspace"; // Keep MonEspace for now, will update its logic
+import Profile from "./pages/Profile"; // Updated import path to Profile
 import Login from "./pages/Login"; // Import the new Login page
 import { PopupProvider } from "./contexts/PopupContext";
 import { SessionContextProvider } from '@supabase/auth-ui-react'; // Import SessionContextProvider
@@ -56,10 +56,10 @@ const App = () => (
               {/* Protected Route for Mon Espace */}
               {/* MonEspace will now require authentication */}
               <Route
-                path="/mon-espace"
+                path="/mon-espace" // Keep the path as /mon-espace for the URL
                 element={
                   <ProtectedRoute>
-                    <MonEspace />
+                    <Profile /> {/* Use the imported Profile component */}
                   </ProtectedRoute>
                 }
               />
