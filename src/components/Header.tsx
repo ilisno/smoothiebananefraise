@@ -57,8 +57,7 @@ const Header: React.FC = () => {
           {/* Modified Link to trigger the popup */}
           <Link to="/coach-virtuel" className="hover:underline" onClick={handleCoachVirtuelClick}>Coach virtuel</Link>
           <Link to="/blog" className="hover:underline">Blog</Link>
-          {/* Update Mon espace link to point to login */}
-          <Link to="/login" className="hover:underline" onClick={closeMenu}>Mon espace</Link>
+          <Link to="/mon-espace" className="hover:underline">Mon espace</Link>
         </nav>
       </div>
 
@@ -75,8 +74,7 @@ const Header: React.FC = () => {
         {/* Modified Link to trigger the popup */}
         <Link to="/coach-virtuel" className="text-xl font-semibold" onClick={handleCoachVirtuelClick}>Coach virtuel</Link>
         <Link to="/blog" className="text-xl font-semibold" onClick={closeMenu}>Blog</Link>
-        {/* Update Mon espace link to point to login */}
-        <Link to="/login" className="text-xl font-semibold" onClick={closeMenu}>Mon espace</Link>
+        <Link to="/mon-espace" className="text-xl font-semibold" onClick={closeMenu}>Mon espace</Link>
       </div>
     </header>
   );

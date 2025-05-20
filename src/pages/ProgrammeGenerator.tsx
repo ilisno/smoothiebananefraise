@@ -94,10 +94,6 @@ const ProgrammeGenerator: React.FC = () => {
        setGeneratedProgram(program);
        console.log("Program generated:", program);
 
-       // --- Get current user session ---
-       const { data: { user } } = await supabase.auth.getUser();
-       const userId = user ? user.id : null;
-
        // --- Insert form data into program_generation_logs table ---
        // The database trigger will handle inserting the email into the subscribers table
        const { data: logData, error: logError } = await supabase
@@ -105,8 +101,7 @@ const ProgrammeGenerator: React.FC = () => {
          .insert([
            {
              form_data: values,
-             user_email: values.email, // Always save email (for test generation or fallback)
-             user_id: userId, // Save user_id if user is logged in
+             user_email: values.email, // This email will be picked up by the trigger
              program_title: program.title,
              program_description: program.description,
            },
