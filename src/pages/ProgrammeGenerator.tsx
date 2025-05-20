@@ -4,7 +4,7 @@ import Footer from '@/components/Footer';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,12 +20,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription as CardDescriptionShadcn } from "@/components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"; // Import Accordion components
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"; // Import Table components
-import { showSuccess, showError } from '@/utils/toast'; // Import toast utilities
-import { supabase } from '@/integrations/supabase/client'; // Import Supabase client
-import { usePopup } from '@/contexts/PopupContext'; // Import usePopup hook
-import { generateProgramClientSide, Program, ProgramFormData } from '@/utils/programGenerator'; // Import the generator function and types
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { showSuccess, showError } from '@/utils/toast';
+import { supabase } from '@/integrations/supabase/client';
+import { usePopup } from '@/contexts/PopupContext';
+import { generateProgramClientSide, Program, ProgramFormData } from '@/utils/programGenerator';
+import { useSession } from '@supabase/auth-helpers-react'; // Import useSession
 
 // Define the schema for form validation
 const formSchema = z.object({
@@ -46,20 +47,21 @@ const formSchema = z.object({
     required_error: "Veuillez indiquer la durée maximale par séance.",
     invalid_type_error: "Veuillez entrer un nombre valide.",
   }).min(15, { message: "Doit être au moins 15 minutes." }).max(180, { message: "Doit être au maximum 180 minutes." }),
-  materiel: z.array(z.string()).optional(), // Array of selected equipment
+  materiel: z.array(z.string()).optional(),
   email: z.string().email({
     message: "Veuillez entrer une adresse email valide.",
-  }).or(z.literal("b")), // Allow "b" or a valid email
+  }).or(z.literal("")), // Allow empty string or a valid email
 });
 
 
 const ProgrammeGenerator: React.FC = () => {
   const [generatedProgram, setGeneratedProgram] = useState<Program | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<z.infer<typeof formSchema> | null>(null); // State to hold form data temporarily
+  const [formData, setFormData] = useState<z.infer<typeof formSchema> | null>(null);
 
-  const { showRandomPopup } = usePopup(); // Use the showRandomPopup hook
-  const navigate = useNavigate(); // Hook for navigation
+  const { showRandomPopup } = usePopup();
+  const navigate = useNavigate();
+  const session = useSession(); // Get the user session
 
   // Initialize the form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -71,11 +73,21 @@ const ProgrammeGenerator: React.FC = () => {
       joursEntrainement: 3,
       dureeMax: 60,
       materiel: [],
-      email: "",
+      email: session?.user?.email || "", // Pre-fill email if logged in
     },
   });
 
-  // Define materielOptions here, before it's used in the return statement
+  // Update default email value if session changes after initial render
+  React.useEffect(() => {
+    if (session?.user?.email) {
+      form.setValue("email", session.user.email);
+    } else {
+       // Optionally clear email if user logs out while on the page
+       form.setValue("email", "");
+    }
+  }, [session, form]);
+
+
   const materielOptions = [
     { id: "barre-halteres", label: "Barre & Haltères" },
     { id: "machines-guidees", label: "Machines Guidées" },
@@ -89,19 +101,19 @@ const ProgrammeGenerator: React.FC = () => {
 
      try {
        // --- Call the client-side generator ---
-       // Cast values to ProgramFormData as email is not needed by the generator function itself
        const program = generateProgramClientSide(values as ProgramFormData);
        setGeneratedProgram(program);
        console.log("Program generated:", program);
 
        // --- Insert form data into program_generation_logs table ---
-       // The database trigger will handle inserting the email into the subscribers table
+       // Include user_id if session exists
        const { data: logData, error: logError } = await supabase
          .from('program_generation_logs')
          .insert([
            {
              form_data: values,
-             user_email: values.email, // This email will be picked up by the trigger
+             user_email: values.email || null, // Save email if provided
+             user_id: session?.user?.id || null, // Save user ID if logged in
              program_title: program.title,
              program_description: program.description,
            },
@@ -112,12 +124,9 @@ const ProgrammeGenerator: React.FC = () => {
          showError("Une erreur est survenue lors de l'enregistrement de vos informations de programme.");
        } else {
          console.log("Program log data inserted successfully:", logData);
-         // showSuccess("Vos informations de programme ont été enregistrées !"); // Avoid multiple success toasts
        }
 
-       // Show a single success toast after the main operation
        showSuccess("Votre programme a été généré et vos informations enregistrées !");
-
 
      } catch (error) {
        console.error("An unexpected error occurred during generation or saving:", error);
